@@ -1074,11 +1074,13 @@
             "file": "src/pixi/loaders/AssetLoader.js",
             "line": 51,
             "description": "This will begin loading the assets sequentially",
+            "itemtype": "method",
+            "name": "load",
             "class": "AssetLoader"
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 79,
+            "line": 82,
             "description": "Invoked after each file is loaded",
             "access": "private",
             "tagname": "",
@@ -1937,6 +1939,7 @@
             "file": "src/pixi/textures/Texture.js",
             "line": 127,
             "description": "Helper function that returns a texture based on a frame id\n If the frame id is not in the texture cache an error will be thrown",
+            "static": 1,
             "itemtype": "method",
             "name": "fromFrame",
             "params": [
@@ -1953,7 +1956,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 142,
+            "line": 143,
             "description": "Helper function that returns a texture based on a canvas element\n If the canvas is not in the texture cache it will be  created and loaded",
             "static": 1,
             "itemtype": "method",
@@ -1972,7 +1975,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 158,
+            "line": 159,
             "description": "Adds a texture to the textureCache.",
             "static": 1,
             "itemtype": "method",
@@ -1993,7 +1996,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 171,
+            "line": 172,
             "description": "Remove a texture from the textureCache.",
             "static": 1,
             "itemtype": "method",
@@ -2947,12 +2950,8 @@
             "line": " src/pixi/loaders/AssetLoader.js:1"
         },
         {
-            "message": "Missing item type\nThis will begin loading the assets sequentially",
-            "line": " src/pixi/loaders/AssetLoader.js:51"
-        },
-        {
             "message": "Missing item type\nInvoked after each file is loaded",
-            "line": " src/pixi/loaders/AssetLoader.js:79"
+            "line": " src/pixi/loaders/AssetLoader.js:82"
         },
         {
             "message": "Missing item type",

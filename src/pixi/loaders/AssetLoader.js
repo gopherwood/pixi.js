@@ -50,6 +50,7 @@ PIXI.AssetLoader.constructor = PIXI.AssetLoader;
 
 /**
  * This will begin loading the assets sequentially
+ * @method load
  */
 PIXI.AssetLoader.prototype.load = function()
 {
@@ -60,7 +61,9 @@ PIXI.AssetLoader.prototype.load = function()
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+		var fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+		if(fileType.indexOf("?") != -1)
+			fileType = fileType.substring(0, fileType.indexOf("?"));
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)

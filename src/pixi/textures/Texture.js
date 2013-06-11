@@ -128,6 +128,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
  * 
  * Helper function that returns a texture based on a frame id
  * If the frame id is not in the texture cache an error will be thrown
+ * @static
  * @method fromFrame
  * @param frameId {String} The frame id of the texture
  * @return Texture
