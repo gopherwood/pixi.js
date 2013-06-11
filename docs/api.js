@@ -12,6 +12,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "ImageLoader",
         "InteractionData",
         "InteractionManager",
+        "JsonLoader",
         "MovieClip",
         "Point",
         "Rectangle",

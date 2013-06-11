@@ -66,6 +66,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/loaders/JsonLoader.js": {
+            "name": "src/pixi/loaders/JsonLoader.js",
+            "modules": {},
+            "classes": {
+                "JsonLoader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/loaders/SpriteSheetLoader.js": {
             "name": "src/pixi/loaders/SpriteSheetLoader.js",
             "modules": {},
@@ -289,6 +298,7 @@
                 "AssetLoader": 1,
                 "BitmapFontLoader": 1,
                 "ImageLoader": 1,
+                "JsonLoader": 1,
                 "SpriteSheetLoader": 1,
                 "CanvasRenderer": 1,
                 "WebGLBatch": 1,
@@ -430,6 +440,33 @@
                 {
                     "name": "url",
                     "description": "The url of the image",
+                    "type": "String"
+                },
+                {
+                    "name": "crossorigin",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ]
+        },
+        "JsonLoader": {
+            "name": "JsonLoader",
+            "shortname": "JsonLoader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 5,
+            "description": "The json file loader is used to load in JSON data and parsing it\nWhen loaded this class will dispatch a \"loaded\" event\nIf load failed this class will dispatch a \"error\" event",
+            "extends": "EventTarget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "url",
+                    "description": "the url of the JSON file",
                     "type": "String"
                 },
                 {
@@ -662,6 +699,20 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
+                        },
+                        {
+                            "name": "wordWrap",
+                            "description": "Indicates if word wrap should be used",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "wordWrapWidth",
+                            "description": "The width at which text will wrap",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "100"
                         }
                     ]
                 }
@@ -1055,7 +1106,7 @@
         },
         {
             "file": "src/pixi/loaders/BitmapFontLoader.js",
-            "line": 118,
+            "line": 121,
             "description": "Invoked when all files are loaded (xml/fnt and texture)",
             "access": "private",
             "tagname": "",
@@ -1082,6 +1133,42 @@
             "class": "ImageLoader"
         },
         {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 26,
+            "description": "This will begin loading the JSON file",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 41,
+            "description": "Invoke when JSON file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 56,
+            "description": "Invoke when json file loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 67,
+            "description": "Invoke when error occured",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -1089,13 +1176,13 @@
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 38,
+            "line": 37,
             "description": "This will begin loading the JSON file",
             "class": "SpriteSheetLoader"
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 55,
+            "line": 50,
             "description": "Invoke when JSON file is loaded",
             "access": "private",
             "tagname": "",
@@ -1103,7 +1190,7 @@
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 97,
+            "line": 85,
             "description": "Invoke when all files are loaded (json and texture)",
             "access": "private",
             "tagname": "",
@@ -1138,6 +1225,16 @@
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
             "line": 41,
+            "description": "If the view should be cleared before each render.",
+            "itemtype": "property",
+            "name": "clearView",
+            "type": "Boolean",
+            "default": "true",
+            "class": "CanvasRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/CanvasRenderer.js",
+            "line": 49,
             "description": "The canvas element that the everything is drawn to",
             "itemtype": "property",
             "name": "view",
@@ -1146,7 +1243,7 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 55,
+            "line": 63,
             "description": "The canvas context that the everything is drawn to",
             "itemtype": "property",
             "name": "context",
@@ -1155,7 +1252,7 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 66,
+            "line": 74,
             "description": "Renders the stage to its canvas view",
             "itemtype": "method",
             "name": "render",
@@ -1170,7 +1267,7 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 110,
+            "line": 121,
             "description": "resizes the canvas view to the specified width and height",
             "params": [
                 {
@@ -1186,28 +1283,28 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 124,
+            "line": 135,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 210,
+            "line": 221,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 245,
+            "line": 256,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 274,
+            "line": 285,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -1336,7 +1433,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 267,
+            "line": 268,
             "description": "Merges two batchs together",
             "itemtype": "method",
             "name": "merge",
@@ -1351,14 +1448,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 292,
+            "line": 293,
             "description": "Grows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added",
             "methos": "growBatch",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 345,
+            "line": 346,
             "description": "Refresh's all the data in the batch and sync's it with the webGL buffers",
             "itemtype": "method",
             "name": "refresh",
@@ -1366,7 +1463,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 400,
+            "line": 401,
             "description": "Updates all the relevant geometry and uploads the data to the GPU",
             "itemtype": "method",
             "name": "update",
@@ -1374,7 +1471,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 513,
+            "line": 514,
             "description": "Draws the batch to the frame buffer",
             "itemtype": "method",
             "name": "render",
@@ -1388,35 +1485,35 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 527,
+            "line": 525,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 613,
+            "line": 611,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 669,
+            "line": 667,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 746,
+            "line": 744,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 783,
+            "line": 781,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
@@ -1429,28 +1526,38 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 81,
+            "line": 35,
+            "description": "If the view should be cleared before each render.",
+            "itemtype": "property",
+            "name": "clearView",
+            "type": "Boolean",
+            "default": "true",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/WebGLRenderer.js",
+            "line": 89,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 96,
+            "line": 104,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 106,
+            "line": 114,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 144,
+            "line": 152,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -1465,14 +1572,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 225,
+            "line": 236,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 284,
+            "line": 295,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -1492,14 +1599,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 308,
+            "line": 319,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 317,
+            "line": 328,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1583,7 +1690,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 35,
+            "line": 37,
             "description": "Set the style of the text",
             "itemtype": "method",
             "name": "setStyle",
@@ -1620,6 +1727,20 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
+                        },
+                        {
+                            "name": "wordWrap",
+                            "description": "Indicates if word wrap should be used",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "wordWrapWidth",
+                            "description": "The width at which text will wrap",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "100"
                         }
                     ]
                 },
@@ -1633,7 +1754,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 56,
+            "line": 62,
             "description": "Set the copy for the text object. To split a line you can use \"\\n\"",
             "methos": "setText",
             "params": [
@@ -1647,7 +1768,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 67,
+            "line": 73,
             "description": "Renders text",
             "access": "private",
             "tagname": "",
@@ -1655,7 +1776,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 130,
+            "line": 142,
             "description": "Updates texture size based on canvas size",
             "access": "private",
             "tagname": "",
@@ -1663,7 +1784,15 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 148,
+            "line": 160,
+            "access": "private",
+            "tagname": "",
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 202,
+            "description": "A Text Object will apply wordwrap",
             "access": "private",
             "tagname": "",
             "class": "Text"
@@ -1703,7 +1832,7 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 103,
+            "line": 101,
             "description": "Helper function that returns a base texture based on an image url\n If the image is not in the base texture cache it will be  created and loaded",
             "static": 1,
             "itemtype": "method",
@@ -1740,7 +1869,7 @@
                 },
                 {
                     "name": "clear",
-                    "description": "If true the texture will not be cleared before the displayObject is drawn",
+                    "description": "If true the texture will be cleared before the displayObject is drawn",
                     "type": "Boolean"
                 }
             ],
@@ -2308,7 +2437,22 @@
         },
         {
             "file": "src/pixi/DisplayObjectContainer.js",
-            "line": 226,
+            "line": 225,
+            "description": "Removes all children from front to back.",
+            "itemtype": "method",
+            "name": "removeChildren",
+            "params": [
+                {
+                    "name": "leave=0",
+                    "description": "The number of children at the back to leave. Default is 0.",
+                    "type": "Number"
+                }
+            ],
+            "class": "DisplayObjectContainer"
+        },
+        {
+            "file": "src/pixi/DisplayObjectContainer.js",
+            "line": 250,
             "access": "private",
             "tagname": "",
             "class": "DisplayObjectContainer"
@@ -2772,11 +2916,11 @@
     "warnings": [
         {
             "message": "unknown tag: methos",
-            "line": " src/pixi/renderers/WebGLBatch.js:292"
+            "line": " src/pixi/renderers/WebGLBatch.js:293"
         },
         {
             "message": "unknown tag: methos",
-            "line": " src/pixi/text/Text.js:56"
+            "line": " src/pixi/text/Text.js:62"
         },
         {
             "message": "unknown tag: internal",
@@ -2824,7 +2968,7 @@
         },
         {
             "message": "Missing item type\nInvoked when all files are loaded (xml/fnt and texture)",
-            "line": " src/pixi/loaders/BitmapFontLoader.js:118"
+            "line": " src/pixi/loaders/BitmapFontLoader.js:121"
         },
         {
             "message": "Missing item type",
@@ -2840,19 +2984,39 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/loaders/JsonLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nThis will begin loading the JSON file",
+            "line": " src/pixi/loaders/JsonLoader.js:26"
+        },
+        {
+            "message": "Missing item type\nInvoke when JSON file is loaded",
+            "line": " src/pixi/loaders/JsonLoader.js:41"
+        },
+        {
+            "message": "Missing item type\nInvoke when json file loaded",
+            "line": " src/pixi/loaders/JsonLoader.js:56"
+        },
+        {
+            "message": "Missing item type\nInvoke when error occured",
+            "line": " src/pixi/loaders/JsonLoader.js:67"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/loaders/SpriteSheetLoader.js:1"
         },
         {
             "message": "Missing item type\nThis will begin loading the JSON file",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:38"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:37"
         },
         {
             "message": "Missing item type\nInvoke when JSON file is loaded",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:55"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:50"
         },
         {
             "message": "Missing item type\nInvoke when all files are loaded (json and texture)",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:97"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:85"
         },
         {
             "message": "Missing item type",
@@ -2860,23 +3024,23 @@
         },
         {
             "message": "Missing item type\nresizes the canvas view to the specified width and height",
-            "line": " src/pixi/renderers/CanvasRenderer.js:110"
+            "line": " src/pixi/renderers/CanvasRenderer.js:121"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:124"
+            "line": " src/pixi/renderers/CanvasRenderer.js:135"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:210"
+            "line": " src/pixi/renderers/CanvasRenderer.js:221"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:245"
+            "line": " src/pixi/renderers/CanvasRenderer.js:256"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:274"
+            "line": " src/pixi/renderers/CanvasRenderer.js:285"
         },
         {
             "message": "Missing item type",
@@ -2900,7 +3064,7 @@
         },
         {
             "message": "Missing item type\nGrows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added",
-            "line": " src/pixi/renderers/WebGLBatch.js:292"
+            "line": " src/pixi/renderers/WebGLBatch.js:293"
         },
         {
             "message": "Missing item type",
@@ -2908,23 +3072,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:527"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:525"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:613"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:611"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:669"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:667"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:746"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:744"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:783"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:781"
         },
         {
             "message": "Missing item type",
@@ -2932,27 +3096,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:81"
+            "line": " src/pixi/renderers/WebGLRenderer.js:89"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:96"
+            "line": " src/pixi/renderers/WebGLRenderer.js:104"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:106"
+            "line": " src/pixi/renderers/WebGLRenderer.js:114"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:225"
+            "line": " src/pixi/renderers/WebGLRenderer.js:236"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:308"
+            "line": " src/pixi/renderers/WebGLRenderer.js:319"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:317"
+            "line": " src/pixi/renderers/WebGLRenderer.js:328"
         },
         {
             "message": "Missing item type",
@@ -2976,19 +3140,23 @@
         },
         {
             "message": "Missing item type\nSet the copy for the text object. To split a line you can use \"\\n\"",
-            "line": " src/pixi/text/Text.js:56"
+            "line": " src/pixi/text/Text.js:62"
         },
         {
             "message": "Missing item type\nRenders text",
-            "line": " src/pixi/text/Text.js:67"
+            "line": " src/pixi/text/Text.js:73"
         },
         {
             "message": "Missing item type\nUpdates texture size based on canvas size",
-            "line": " src/pixi/text/Text.js:130"
+            "line": " src/pixi/text/Text.js:142"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/text/Text.js:148"
+            "line": " src/pixi/text/Text.js:160"
+        },
+        {
+            "message": "Missing item type\nA Text Object will apply wordwrap",
+            "line": " src/pixi/text/Text.js:202"
         },
         {
             "message": "Missing item type",
@@ -3032,7 +3200,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/DisplayObjectContainer.js:226"
+            "line": " src/pixi/DisplayObjectContainer.js:250"
         },
         {
             "message": "Missing item type",

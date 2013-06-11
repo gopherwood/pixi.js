@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/textures/BaseTexture.js - Pixi.JS</title>
+    <title>src/pixi/loaders/JsonLoader.js - Pixi.JS</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -130,7 +130,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/textures/BaseTexture.js</h1>
+                        <h1 class="file-heading">File: src/pixi/loaders/JsonLoader.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -138,129 +138,78 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-PIXI.BaseTextureCache = {};
-PIXI.texturesToUpdate = [];
-PIXI.texturesToDestroy = [];
-
 /**
- * A texture stores the information that represents an image. All textures have a base texture
- * @class BaseTexture
+ * The json file loader is used to load in JSON data and parsing it
+ * When loaded this class will dispatch a &quot;loaded&quot; event
+ * If load failed this class will dispatch a &quot;error&quot; event
+ * @class JsonLoader
  * @extends EventTarget
  * @constructor
- * @param source {String} the source object (image or canvas)
+ * @param {String} url the url of the JSON file
+ * @param {Boolean} crossorigin
  */
-PIXI.BaseTexture = function(source)
-{
-	PIXI.EventTarget.call( this );
-	
-	/*
-	 * The url of the texture
-	 * @property imageUrl
-	 * @type String
-	 */
-	//this.imageUrl = source.src;
-	
-	/**
-	 * [read only] The width of the base texture set when the image has loaded
-	 * @property width
-	 * @type Number
-	 */
-	this.width = 100;
-	/**
-	 * [read only] The height of the base texture set when the image has loaded
-	 * @property height
-	 * @type Number
-	 */
-	this.height = 100;
-	
-	/**
-	 * The source that is loaded to create the texture
-	 * @property source
-	 * @type Image
-	 */
-	this.source = source//new Image();
-	
-	if(!source)return;
-	
-	if(this.source instanceof Image)
-	{
-		if(this.source.complete)
-		{
-			this.hasLoaded = true;
-			this.width = this.source.width;
-			this.height = this.source.height;
-			
-			PIXI.texturesToUpdate.push(this);
-		}
-		else
-		{
-			
-			var scope = this;
-			this.source.onload = function(){
-				
-				scope.hasLoaded = true;
-				scope.width = scope.source.width;
-				scope.height = scope.source.height;
-			
-				// add it to somewhere...
-				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
-			}
-			//	this.image.src = imageUrl;
-		}
-	}
-	else
-	{
-		this.hasLoaded = true;
-		this.width = this.source.width;
-		this.height = this.source.height;
-			
-		PIXI.texturesToUpdate.push(this);
-	}
-	
-	this._powerOf2 = false;
-	
-}
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.JsonLoader = function (url, crossorigin) {
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, &quot;&quot;);
+	this.crossorigin = crossorigin;
+};
 
-PIXI.BaseTexture.prototype.destroy = function()
-{
-	if(this.source instanceof Image)
-	{
-		this.source.src = null;
-	}
-	this.source = null;
-	PIXI.texturesToDestroy.push(this);
-}
+// constructor
+PIXI.JsonLoader.constructor = PIXI.JsonLoader;
 
 /**
- * 
- * Helper function that returns a base texture based on an image url
- * If the image is not in the base texture cache it will be  created and loaded
- * @static
- * @method fromImage
- * @param imageUrl {String} The image url of the texture
- * @return BaseTexture
+ * This will begin loading the JSON file
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
-{
-	var baseTexture = PIXI.BaseTextureCache[imageUrl];
-	if(!baseTexture)
-	{
-		var image = new Image();
-		if (crossorigin)
-		{
-			image.crossOrigin = &#x27;&#x27;;
+PIXI.JsonLoader.prototype.load = function () {
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function () {
+		scope.onJSONLoaded();
+	};
+
+	this.ajaxRequest.open(&quot;GET&quot;, this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&quot;application/json&quot;);
+	this.ajaxRequest.send(null);
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+PIXI.JsonLoader.prototype.onJSONLoaded = function () {
+	if (this.ajaxRequest.readyState == 4) {
+		if (this.ajaxRequest.status == 200 || window.location.href.indexOf(&quot;http&quot;) == -1) {
+			this.json = JSON.parse(this.ajaxRequest.responseText);
+			this.onLoaded();
+		} else {
+			this.onError();
 		}
-		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
-		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}
+};
 
-	return baseTexture;
-}
+/**
+ * Invoke when json file loaded
+ * @private
+ */
+PIXI.JsonLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: &quot;loaded&quot;,
+		content: this
+	});
+};
 
+/**
+ * Invoke when error occured
+ * @private
+ */
+PIXI.JsonLoader.prototype.onError = function () {
+	this.dispatchEvent({
+		type: &quot;error&quot;,
+		content: this
+	});
+};
     </pre>
 </div>
 

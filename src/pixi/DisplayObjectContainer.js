@@ -222,6 +222,30 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	}
 }
 
+/**
+ * Removes all children from front to back.
+ * @method removeChildren
+ * @param  leave=0 {Number} The number of children at the back to leave. Default is 0.
+ */
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
+{
+	if(this.children.length == 0) return;
+	
+	if(typeof leave == "undefined")
+		leave = 0;
+	for(var i = this.children.length - 1; i >= leave; --i)
+	{
+		var child = this.children[i];
+		if(this.stage)
+			this.stage.__removeChild(child);
+		// webGL trim
+		if(child.__renderGroup)
+			child.__renderGroup.removeDisplayObjectAndChildren(child);
+		child.parent = undefined;
+	}
+	this.children.length = leave;
+}
+
 
 /**
  * @private

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="pixi.js" default="build" basedir="./">
+	<target name="build" description="Compile with grunt">
+		<exec executable="grunt" failonerror="true">
+			<arg line="build" />
+		</exec>
+	</target>
+	
+	<target name="doc" description="Generate docs with grunt">
+		<exec executable="grunt" failonerror="true">
+			<arg line="docs" />
+		</exec>
+	</target>
+</project>
