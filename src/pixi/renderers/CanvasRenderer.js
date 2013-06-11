@@ -39,6 +39,14 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	this.refresh = true;
 	
 	/**
+	 * If the view should be cleared before each render.
+	 * @property clearView
+	 * @type Boolean
+	 * @default true
+	 */
+	this.clearView = true;
+	
+	/**
 	 * The canvas element that the everything is drawn to
 	 * @property view
 	 * @type Canvas
@@ -84,8 +92,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// update the background color
 	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
-	this.context.setTransform(1,0,0,1,0,0); 
-	this.context.clearRect(0, 0, this.width, this.height)
+	this.context.setTransform(1,0,0,1,0,0);
+	if(this.clearView)
+	{
+		this.context.clearRect(0, 0, this.width, this.height);
+	}
     this.renderDisplayObject(stage);
     //as
    

@@ -32,6 +32,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	this.width = width || 800;
 	this.height = height || 600;
 	
+	/**
+	 * If the view should be cleared before each render.
+	 * @property clearView
+	 * @type Boolean
+	 * @default true
+	 */
+	this.clearView = true;
+	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;  
@@ -190,9 +198,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
    // gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	
+	if(this.clearView)
+	{
+		gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+		gl.clear(gl.COLOR_BUFFER_BIT);
+	}
 
 
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
