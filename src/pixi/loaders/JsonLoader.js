@@ -19,7 +19,9 @@ PIXI.JsonLoader = function (url, crossorigin) {
 	this.baseUrl = url.replace(/[^\/]*$/, "");
 	this.crossorigin = crossorigin;
 	this.loaded = false;
-	
+	this.versioning = null;
+	if(url.indexOf("?") != -1)
+		this.versioning = url.substring(url.indexOf("?"));
 };
 
 // constructor
@@ -53,7 +55,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 			{
 				// sprite sheet
 				var scope = this;
-				var textureUrl = this.baseUrl + this.json.meta.image;
+				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
 				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 				var frameData = this.json.frames;
 			
