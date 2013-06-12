@@ -606,30 +606,6 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	}
 }
 
-/**
- * Removes all children from front to back.
- * @method removeChildren
- * @param  leave=0 {Number} The number of children at the back to leave. Default is 0.
- */
-PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
-{
-	if(this.children.length == 0) return;
-	
-	if(typeof leave == "undefined")
-		leave = 0;
-	for(var i = this.children.length - 1; i >= leave; --i)
-	{
-		var child = this.children[i];
-		if(this.stage)
-			this.stage.__removeChild(child);
-		// webGL trim
-		if(child.__renderGroup)
-			child.__renderGroup.removeDisplayObjectAndChildren(child);
-		child.parent = undefined;
-	}
-	this.children.length = leave;
-}
-
 
 /**
  * @private
@@ -2507,14 +2483,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	this.width = width || 800;
 	this.height = height || 600;
 	
-	/**
-	 * If the view should be cleared before each render.
-	 * @property clearView
-	 * @type Boolean
-	 * @default true
-	 */
-	this.clearView = true;
-	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;  
@@ -2673,12 +2641,9 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
    // gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	
-	if(this.clearView)
-	{
-		gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
-		gl.clear(gl.COLOR_BUFFER_BIT);
-	}
+		
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+	gl.clear(gl.COLOR_BUFFER_BIT);
 
 
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
@@ -4363,14 +4328,6 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	this.refresh = true;
 	
 	/**
-	 * If the view should be cleared before each render.
-	 * @property clearView
-	 * @type Boolean
-	 * @default true
-	 */
-	this.clearView = true;
-	
-	/**
 	 * The canvas element that the everything is drawn to
 	 * @property view
 	 * @type Canvas
@@ -4416,11 +4373,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// update the background color
 	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
-	this.context.setTransform(1,0,0,1,0,0);
-	if(this.clearView)
-	{
-		this.context.clearRect(0, 0, this.width, this.height);
-	}
+	this.context.setTransform(1,0,0,1,0,0); 
+	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);
     //as
    
@@ -7030,9 +6984,7 @@ PIXI.AssetLoader.prototype.load = function()
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
-		var fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-		if(fileType.indexOf("?") != -1)
-			fileType = fileType.substring(0, fileType.indexOf("?"));
+		var fileType = fileName.split(".").pop().toLowerCase();
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)

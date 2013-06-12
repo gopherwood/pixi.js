@@ -4,7 +4,11 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
+<<<<<<< HEAD
+ * Compiled: 2013-06-11
+=======
  * Compiled: 2013-06-12
+>>>>>>> upstream/dev
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
