@@ -2107,48 +2107,39 @@ var AjaxRequest = function()
  * THankS mr DOob!
  */
 
-PIXI.EventTarget = function () {
-
+PIXI.EventTarget = function ()
+{
 	var listeners = {};
 	
-	this.addEventListener = this.on = function ( type, listener ) {
-		
-		
+	this.addEventListener = this.on = function ( type, listener )
+	{	
 		if ( listeners[ type ] === undefined ) {
-
-			listeners[ type ] = [];
-			
+			listeners[ type ] = [listener];	
 		}
-
-		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+		else if ( listeners[ type ].indexOf( listener ) === - 1 )
+		{
 
 			listeners[ type ].push( listener );
 		}
 
 	};
 
-	this.dispatchEvent = this.emit = function ( event ) {
-		
-		for ( var listener in listeners[ event.type ] ) {
-
-			listeners[ event.type ][ listener ]( event );
-			
+	this.dispatchEvent = this.emit = function ( event )
+	{
+		for ( var listener in listeners[ event.type ] )
+		{
+			listeners[ event.type ][ listener ]( event );	
 		}
-
 	};
 
-	this.removeEventListener = this.off = function ( type, listener ) {
-
+	this.removeEventListener = this.off = function ( type, listener )
+	{
 		var index = listeners[ type ].indexOf( listener );
-
-		if ( index !== - 1 ) {
-
+		if ( index !== - 1 )
+		{
 			listeners[ type ].splice( index, 1 );
-
 		}
-
 	};
-
 };
 
 
@@ -6743,6 +6734,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
  * 
  * Helper function that returns a texture based on a frame id
  * If the frame id is not in the texture cache an error will be thrown
+ * @static
  * @method fromFrame
  * @param frameId {String} The frame id of the texture
  * @return Texture
@@ -7020,6 +7012,7 @@ PIXI.AssetLoader.constructor = PIXI.AssetLoader;
 
 /**
  * This will begin loading the assets sequentially
+ * @method load
  */
 PIXI.AssetLoader.prototype.load = function()
 {
