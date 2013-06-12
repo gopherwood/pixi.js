@@ -109,7 +109,8 @@ PIXI.BaseTexture.prototype.destroy = function()
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
-	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	var id = filenameFromUrl(imageUrl);
+	var baseTexture = PIXI.BaseTextureCache[id];
 	if(!baseTexture)
 	{
 		var image = new Image();
@@ -119,7 +120,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 		}
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
-		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		PIXI.BaseTextureCache[id] = baseTexture;
 	}
 
 	return baseTexture;

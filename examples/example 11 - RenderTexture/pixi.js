@@ -2095,6 +2095,19 @@ var AjaxRequest = function()
  	}
 }
 
+/**
+ * @method filenameFromUrl
+ * @param {String} url The url to pull the filename from.
+ * @return {String} The filename (including extension).
+ */
+function filenameFromUrl(url)
+{
+	var name = url.substring(url.lastIndexOf("/") + 1);
+	if(name.indexOf("?") != -1)
+		name = name.substring(0, name.indexOf("?"));
+	return name;
+}
+
 
 
 
@@ -6588,7 +6601,8 @@ PIXI.BaseTexture.prototype.destroy = function()
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
-	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	var id = filenameFromUrl(imageUrl);
+	var baseTexture = PIXI.BaseTextureCache[id];
 	if(!baseTexture)
 	{
 		var image = new Image();
@@ -6598,7 +6612,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 		}
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
-		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		PIXI.BaseTextureCache[id] = baseTexture;
 	}
 
 	return baseTexture;
@@ -6719,12 +6734,13 @@ PIXI.Texture.prototype.setFrame = function(frame)
  */
 PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 {
-	var texture = PIXI.TextureCache[imageUrl];
+	var id = filenameFromUrl(imageUrl);
+	var texture = PIXI.TextureCache[id];
 	
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
-		PIXI.TextureCache[imageUrl] = texture;
+		PIXI.TextureCache[id] = texture;
 	}
 	
 	return texture;

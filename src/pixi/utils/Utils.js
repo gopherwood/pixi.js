@@ -68,6 +68,19 @@ var AjaxRequest = function()
  	}
 }
 
+/**
+ * @method filenameFromUrl
+ * @param {String} url The url to pull the filename from.
+ * @return {String} The filename (including extension).
+ */
+function filenameFromUrl(url)
+{
+	var name = url.substring(url.lastIndexOf("/") + 1);
+	if(name.indexOf("?") != -1)
+		name = name.substring(0, name.indexOf("?"));
+	return name;
+}
+
 
 
 
