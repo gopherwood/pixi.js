@@ -106,15 +106,17 @@ PIXI.Text.prototype.updateText = function()
 	this.context.fillStyle = this.style.fill;
 	this.context.font = this.style.font;
 	
-	this.context.strokeStyle = this.style.stroke;
+	if(this.style.stroke)
+		this.context.strokeStyle = this.style.stroke;
 	this.context.lineWidth = this.style.strokeThickness;
 
 	this.context.textBaseline = "top";
 
 	//draw lines line by line
+	var linePosition = new PIXI.Point(this.style.strokeThickness * 0.5, 0);
 	for (i = 0; i < lines.length; i++)
 	{
-		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+		linePosition.y = this.style.strokeThickness * 0.5 + i * lineHeight;
 	
 		if(this.style.align == "right")
 		{
@@ -122,7 +124,7 @@ PIXI.Text.prototype.updateText = function()
 		}
 		else if(this.style.align == "center")
 		{
-			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+			linePosition.x += (maxLineWidth - lineWidths[i]) * 0.5;
 		}
 
 		if(this.style.stroke && this.style.strokeThickness)
@@ -145,7 +147,6 @@ PIXI.Text.prototype.updateText = function()
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
