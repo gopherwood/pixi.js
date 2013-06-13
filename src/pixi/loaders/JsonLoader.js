@@ -13,7 +13,8 @@
  * @param {Boolean} crossorigin
  */
 
-PIXI.JsonLoader = function (url, crossorigin) {
+PIXI.JsonLoader = function(url, crossorigin)
+{
 	PIXI.EventTarget.call(this);
 	this.url = url;
 	this.baseUrl = url.replace(/[^\/]*$/, "");
@@ -30,10 +31,11 @@ PIXI.JsonLoader.constructor = PIXI.JsonLoader;
 /**
  * This will begin loading the JSON file
  */
-PIXI.JsonLoader.prototype.load = function () {
+PIXI.JsonLoader.prototype.load = function()
+{
 	this.ajaxRequest = new AjaxRequest();
 	var scope = this;
-	this.ajaxRequest.onreadystatechange = function () {
+	this.ajaxRequest.onreadystatechange = function() {
 		scope.onJSONLoaded();
 	};
 
@@ -46,9 +48,11 @@ PIXI.JsonLoader.prototype.load = function () {
  * Invoke when JSON file is loaded
  * @private
  */
-PIXI.JsonLoader.prototype.onJSONLoaded = function () {
+PIXI.JsonLoader.prototype.onJSONLoaded = function()
+{
 	if (this.ajaxRequest.readyState == 4) {
-		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
+		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+		{
 			this.json = JSON.parse(this.ajaxRequest.responseText);
 			
 			if(this.json.frames)
@@ -64,44 +68,45 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 					scope.onLoaded();
 				});
 			
-				for (var i in frameData) {
-					var rect = frameData[i].frame;
-					if (rect) {
-						PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+				for (var i in frameData)
+				{
+					var f = frameData[i];
+					var rect = f.frame;
+					if (rect)
+					{
+						var t = PIXI.TextureCache[i] = new PIXI.Texture(this.texture,
+						{
 							x: rect.x,
 							y: rect.y,
 							width: rect.w,
 							height: rect.h
 						});
-						if (frameData[i].trimmed) {
+						if (f.trimmed)
+						{
 							//var realSize = frameData[i].spriteSourceSize;
-							PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-							PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+							t.realSize = f.spriteSourceSize;
+							t.trim.x = 0; // (realSize.x / rect.w)
 							// calculate the offset!
 						}
 					}
 				}
-			
 				image.load();
-				
 			}
 			else if(this.json.bones)
 			{
 				// spine animation
 				var spineJsonParser = new spine.SkeletonJson();
 				var skeletonData = spineJsonParser.readSkeletonData(this.json);
-				PIXI.AnimCache[this.url] = skeletonData;
+				PIXI.AnimCache[filenameFromUrl(this.url)] = skeletonData;
 				this.onLoaded();
 			}
 			else
 			{
 				this.onLoaded();
 			}
-			
-			
-			
-			
-		} else {
+		}
+		else
+		{
 			this.onError();
 		}
 	}
@@ -111,7 +116,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
  * Invoke when json file loaded
  * @private
  */
-PIXI.JsonLoader.prototype.onLoaded = function () {
+PIXI.JsonLoader.prototype.onLoaded = function()
+{
 	this.loaded = true;
 	this.dispatchEvent({
 		type: "loaded",
@@ -123,7 +129,8 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * Invoke when error occured
  * @private
  */
-PIXI.JsonLoader.prototype.onError = function () {
+PIXI.JsonLoader.prototype.onError = function()
+{
 	this.dispatchEvent({
 		type: "error",
 		content: this

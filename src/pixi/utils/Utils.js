@@ -81,9 +81,4 @@ function filenameFromUrl(url)
 	return name;
 }
 
-
-
-
-
-
-
+Math.PI_OVER_180 = Math.PI / 180;

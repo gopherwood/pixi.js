@@ -21,7 +21,7 @@ PIXI.Spine = function(url)
 {
 	PIXI.DisplayObjectContainer.call(this);
 	
-	this.spineData = PIXI.AnimCache[url];
+	this.spineData = PIXI.AnimCache[filenameFromUrl(url)];
 	
 	if(!this.spineData)
 	{
@@ -60,46 +60,50 @@ PIXI.Spine = function(url)
 
 PIXI.Spine.constructor = PIXI.Spine;
 PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+PIXI.Spine.prototype.updateAnim = function(deltaSec)
+{
+	this.state.update(deltaSec);
+	this.state.apply(this.skeleton);
+};
+
 PIXI.Spine.prototype.updateTransform = function()
 {
-	// TODO should make this time based really..
-	this.state.update(1/60);
-	this.state.apply(this.skeleton);
 	this.skeleton.updateWorldTransform();
-
 	
-	for (var i = 0; i < this.skeleton.drawOrder.length; i++) 
+	for (var i = 0, len = this.skeleton.drawOrder.length; i < len; i++) 
 	{
 		var slot = this.skeleton.drawOrder[i];
+		var sprite = this.sprites[i];
+		var bone = slot.bone;
+		var attach = slot.attachment;
 
-		var x = slot.bone.worldX + slot.attachment.x * slot.bone.m00 + slot.attachment.y * slot.bone.m01 + slot.attachment.width * 0.5;
-		var y = slot.bone.worldY + slot.attachment.x * slot.bone.m10 + slot.attachment.y * slot.bone.m11 + slot.attachment.height * 0.5;
-		//console.log(x + ' : ' + y);
+		var x = bone.worldX + attach.x * bone.m00 + attach.y * bone.m01 + attach.width * 0.5;
+		var y = bone.worldY + attach.x * bone.m10 + attach.y * bone.m11 + attach.height * 0.5;
 		
-		 
-			//console.log(slot.attachment.name)
-			if(slot.cacheName != slot.attachment.name)
+		if(slot.cacheName != attach.name)
+		{
+			var attachmentName = attach.name;
+	
+			if(!PIXI.TextureCache[attachmentName])
 			{
-				var attachmentName = slot.attachment.name;
-		
-				if(!PIXI.TextureCache[attachmentName])
-				{
-					attachmentName += ".png";
-				}
-				
-				this.sprites[i].setTexture(PIXI.TextureCache[attachmentName]);
-				
-				slot.cacheName = slot.attachment.name;
+				attachmentName += ".png";
 			}
+			
+			sprite.setTexture(PIXI.TextureCache[attachmentName]);
+			
+			slot.cacheName = attach.name;
+		}
 		
-		x += -((slot.attachment.width * (slot.bone.worldScaleX + slot.attachment.scaleX - 1))>>1);
-		y += -((slot.attachment.height * (slot.bone.worldScaleY + slot.attachment.scaleY - 1))>>1);
+		x += -((attach.width * (bone.worldScaleX + attach.scaleX - 1))>>1);
+		y += -((attach.height * (bone.worldScaleY + attach.scaleY - 1))>>1);
 		
+		sprite.alpha = slot.a;
 		
-		this.sprites[i].position.x = x;
-		this.sprites[i].position.y = y;
-		this.sprites[i].rotation = (-(slot.bone.worldRotation + slot.attachment.rotation)) * (Math.PI/180);
-	}	
+		sprite.position.x = x;
+		sprite.position.y = y;
+		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * Math.PI_OVER_180;
+	}
 	
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 }
@@ -505,9 +509,9 @@ spine.ColorTimeline = function (frameCount) {
 spine.ColorTimeline.prototype = {
 	slotIndex: 0,
 	getFrameCount: function () {
-		return this.frames.length / 2;
+		return this.frames.length / 5;
 	},
-	setFrame: function (frameIndex, time, x, y) {
+	setFrame: function (frameIndex, time, r, g, b, a) {
 		frameIndex *= 5;
 		this.frames[frameIndex] = time;
 		this.frames[frameIndex + 1] = r;
@@ -567,7 +571,7 @@ spine.AttachmentTimeline = function (frameCount) {
 spine.AttachmentTimeline.prototype = {
 	slotIndex: 0,
 	getFrameCount: function () {
-		return this.frames.length / 2;
+		return this.frames.length;
 	},
 	setFrame: function (frameIndex, time, attachmentName) {
 		this.frames[frameIndex] = time;
@@ -1172,7 +1176,6 @@ spine.SkeletonJson.prototype = {
 					}
 					timelines.push(timeline);
 					duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 5 - 5]);
-
 				} else if (timelineName == "attachment") {
 					var timeline = new spine.AttachmentTimeline(values.length);
 					timeline.slotIndex = slotIndex;
@@ -1202,7 +1205,7 @@ spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
 };
 spine.SkeletonJson.toColor = function (hexString, colorIndex) {
 	if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
-	return parseInt(hexString.substring(colorIndex * 2, 2), 16) / 255;
+	return parseInt(hexString.substr(colorIndex * 2, 2), 16) / 255;
 };
 
 spine.Atlas = function (atlasText, textureLoader) {

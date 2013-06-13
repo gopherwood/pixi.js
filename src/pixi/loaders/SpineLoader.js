@@ -61,7 +61,7 @@ PIXI.SpineLoader.prototype.onJSONLoaded = function (event) {
 	
 	var skeletonData = spineJsonParser.readSkeletonData(this.json);
 	
-	PIXI.AnimCache[this.url] = skeletonData;
+	PIXI.AnimCache[filenameFromUrl(this.url)] = skeletonData;
 
 	this.onLoaded();
 };
