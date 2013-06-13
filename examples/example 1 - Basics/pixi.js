@@ -1127,7 +1127,7 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		var dummy = document.createElement("div");
 		var dummyText = document.createTextNode("M");
 		dummy.appendChild(dummyText);
-		dummy.setAttribute("style", fontStyle);
+		dummy.setAttribute("style", fontStyle + ';position:absolute;top:0;left:0');
 		body.appendChild(dummy);
 		
 		result = dummy.offsetHeight;
@@ -2026,19 +2026,40 @@ PIXI.Stage.prototype.__removeChild = function(child)
 	}
 }
 
-/**
- * Provides requestAnimationFrame in a cross browser way.
- */
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-           window.setTimeout(callback, 1000/60);
-         };
-})();
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+// MIT license
+var lastTime = 0;
+var vendors = ['ms', 'moz', 'webkit', 'o'];
+for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x)
+{
+	window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+	window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+}
+
+if (!window.requestAnimationFrame)
+{
+	window.requestAnimationFrame = function(callback, element)
+	{
+		var currTime = new Date().getTime();
+		var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+		var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+		lastTime = currTime + timeToCall;
+		return id;
+	};
+}
+
+if (!window.cancelAnimationFrame)
+{
+	window.cancelAnimationFrame = function(id)
+	{
+		clearTimeout(id);
+	};
+}
+window.requestAnimFrame = window.requestAnimationFrame;
 
 function HEXtoRGB(hex) {
 	return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
@@ -2110,6 +2131,7 @@ function filenameFromUrl(url)
 }
 
 Math.PI_OVER_180 = Math.PI / 180;
+
 /**
  * https://github.com/mrdoob/eventtarget.js/
  * THankS mr DOob!
@@ -4533,9 +4555,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	
 	// render!
-	for (var i=0; i < displayObject.children.length; i++) 
+	if(displayObject.children)
 	{
-		this.renderDisplayObject(displayObject.children[i]);
+		for (var i=0; i < displayObject.children.length; i++) 
+		{
+			this.renderDisplayObject(displayObject.children[i]);
+		}
 	}
 	
 	this.context.setTransform(1,0,0,1,0,0); 
