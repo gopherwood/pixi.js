@@ -128,3 +128,13 @@ It also copies the non-minified version to the examples.
 ```
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+
+
+### Changes from CloudKid ###
+- Spine skeletons and textures are stored by filename, not url.
+- Spine animations are framerate independent.
+- Added some url checks in loaders to be able to handle stuff like "?v=4".
+- Added removeChildren() to DisplayObjectContainer;
+- Added clearView to both renderers, this allows the skipping of the stage color wipe step if it isn't needed
+- Optimizations in the form of caching variables within functions if they are accessed a lot.
+- Minor bug fixes where they when they were found.
