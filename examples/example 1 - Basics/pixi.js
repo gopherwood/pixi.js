@@ -2697,10 +2697,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	if(this.clearView)
 	{
-		gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+		var bcs = stage.backgroundColorSplit;
+		gl.clearColor(bcs[0], bcs[1], bcs[2], !this.transparent);     
 		gl.clear(gl.COLOR_BUFFER_BIT);
 	}
-
 
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 	this.stageRenderGroup.render(this.projectionMatrix);
@@ -2718,11 +2718,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}
 	
 	// after rendering lets confirm all frames that have been uodated..
-	if(PIXI.Texture.frameUpdates.length > 0)
+	var len = PIXI.Texture.frameUpdates.length;
+	if(len > 0)
 	{
-		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
+		var updates = PIXI.Texture.frameUpdates;
+		for (var i=0; i < len; i++) 
 		{
-		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
+		  	updates[i].updateFrame = false;
 		};
 		
 		PIXI.Texture.frameUpdates = [];
@@ -2735,8 +2737,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 PIXI.WebGLRenderer.updateTextures = function()
 {
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
+	var t = PIXI.texturesToUpdate;
+	var len = t.length;
+	for (var i=0; i < len; i++) this.updateTexture(t[i]);
+	t = PIXI.texturesToDestroy;
+	len = t.length;
+	for (var i=0; i < len; i++) this.destroyTexture(t[i]);
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 }
@@ -2832,15 +2838,20 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
         
 	this.initShaders();	
 	
-	for (var i=0; i < PIXI.TextureCache.length; i++) 
+	var array = PIXI.TextureCache;
+	var len = array.length;
+	for (var i=0; i < len; i++) 
 	{
-		this.updateTexture(PIXI.TextureCache[i]);
+		this.updateTexture(array[i]);
 	};
 	
-	for (var i=0; i <  this.batchs.length; i++) 
+	array = this.batches;
+	len = array.length;
+	for (var i=0; i < len; i++) 
 	{
-		this.batchs[i].restoreLostContext(this.gl)//
-		this.batchs[i].dirty = true;
+		var b = array[i];
+		b.restoreLostContext(this.gl)//
+		b.dirty = true;
 	};
 	
 	PIXI._restoreBatchs(this.gl);
@@ -3290,18 +3301,19 @@ PIXI.WebGLBatch.prototype.update = function()
 			d = worldTransform[4];
 			tx = worldTransform[2];
 			ty = worldTransform[5];
-		
-			this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
-			this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
+			
+			var vArray = this.verticies;
+			vArray[index + 0 ] = a * w1 + c * h1 + tx; 
+			vArray[index + 1 ] = d * h1 + b * w1 + ty;
 			 
-			this.verticies[index + 2 ] = a * w0 + c * h1 + tx; 
-			this.verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+			vArray[index + 2 ] = a * w0 + c * h1 + tx; 
+			vArray[index + 3 ] = d * h1 + b * w0 + ty; 
 			
-			this.verticies[index + 4 ] = a * w0 + c * h0 + tx; 
-			this.verticies[index + 5 ] = d * h0 + b * w0 + ty; 
+			vArray[index + 4 ] = a * w0 + c * h0 + tx; 
+			vArray[index + 5 ] = d * h0 + b * w0 + ty; 
 			
-			this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
-			this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
+			vArray[index + 6] =  a * w1 + c * h0 + tx; 
+			vArray[index + 7] =  d * h0 + b * w1 + ty; 
 			
 			
 			if(displayObject.updateFrame || displayObject.texture.updateFrame)
@@ -3314,17 +3326,18 @@ PIXI.WebGLBatch.prototype.update = function()
 				var tw = texture.baseTexture.width;
 				var th = texture.baseTexture.height;
 				
-				this.uvs[index + 0] = frame.x / tw;
-				this.uvs[index +1] = frame.y / th;
+				var uvArray = this.uvs;
+				uvArray[index + 0] = frame.x / tw;
+				uvArray[index + 1] = frame.y / th;
 				
-				this.uvs[index +2] = (frame.x + frame.width) / tw;
-				this.uvs[index +3] = frame.y / th;
+				uvArray[index + 2] = (frame.x + frame.width) / tw;
+				uvArray[index + 3] = frame.y / th;
 				
-				this.uvs[index +4] = (frame.x + frame.width) / tw;
-				this.uvs[index +5] = (frame.y + frame.height) / th; 
+				uvArray[index + 4] = (frame.x + frame.width) / tw;
+				uvArray[index + 5] = (frame.y + frame.height) / th; 
 				
-				this.uvs[index +6] = frame.x / tw;
-				this.uvs[index +7] = (frame.y + frame.height) / th;
+				uvArray[index + 6] = frame.x / tw;
+				uvArray[index + 7] = (frame.y + frame.height) / th;
 				
 				displayObject.updateFrame = false;
 			}
@@ -3343,17 +3356,18 @@ PIXI.WebGLBatch.prototype.update = function()
 		{
 			index = indexRun * 8;
 			
-			this.verticies[index + 0 ] = 0;
-			this.verticies[index + 1 ] = 0;
+			var tempArray = this.verticies;
+			tempArray[index + 0 ] = 0;
+			tempArray[index + 1 ] = 0;
 			 
-			this.verticies[index + 2 ] = 0;
-			this.verticies[index + 3 ] = 0;
+			tempArray[index + 2 ] = 0;
+			tempArray[index + 3 ] = 0;
 			
-			this.verticies[index + 4 ] = 0;
-			this.verticies[index + 5 ] = 0;
+			tempArray[index + 4 ] = 0;
+			tempArray[index + 5 ] = 0;
 			
-			this.verticies[index + 6] = 0;
-			this.verticies[index + 7] = 0;
+			tempArray[index + 6] = 0;
+			tempArray[index + 7] = 0;
 		}
 		
 		indexRun++;
@@ -3383,6 +3397,8 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	
 	this.update();
 	var gl = this.gl;
+	var GL_ARRAY_BUFFER = gl.ARRAY_BUFFER;
+	var GL_FLOAT = gl.FLOAT;
 	
 	//TODO optimize this!
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -3391,35 +3407,35 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	gl.useProgram(shaderProgram);
 	
 	// update the verts..
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	gl.bindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);
 	// ok..
-	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	gl.bufferSubData(GL_ARRAY_BUFFER, 0, this.verticies)
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, GL_FLOAT, false, 0, 0);
 	
 	// update the uvs
-   	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+   	gl.bindBuffer(GL_ARRAY_BUFFER, this.uvBuffer);
 
     if(this.dirtyUVS)
     {
     	this.dirtyUVS = false;
-    	gl.bufferSubData(gl.ARRAY_BUFFER,  0, this.uvs);
+    	gl.bufferSubData(GL_ARRAY_BUFFER,  0, this.uvs);
     }
     
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, GL_FLOAT, false, 0, 0);
 	
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture._glTexture);
 	
 	// update color!
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+	gl.bindBuffer(GL_ARRAY_BUFFER, this.colorBuffer);
 
 	if(this.dirtyColors)
     {
     	this.dirtyColors = false;
-    	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors);
+    	gl.bufferSubData(GL_ARRAY_BUFFER, 0, this.colors);
 	}
 	
-    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, GL_FLOAT, false, 0, 0);
 	
 	// dont need to upload!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -3494,13 +3510,14 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 	// will render all the elements in the group
 	var renderable;
 	
-	
-	for (var i=0; i < this.batchs.length; i++) 
+	var batches = this.batchs;
+	var len = batches.length;
+	for (var i=0; i < len; i++) 
 	{
-		renderable = this.batchs[i];
+		renderable = batches[i];
 		if(renderable instanceof PIXI.WebGLBatch)
 		{
-			this.batchs[i].render();
+			renderable.render();
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
@@ -3696,7 +3713,7 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 	// give the dp a refference to its renderGroup...
 	var children = displayObject.children;
 	//displayObject.worldVisible = globalVisible;
-	for (var i=0; i < children.length; i++) 
+	for (var i=0, len=children.length; i < len; i++) 
 	{
 		var child = children[i];
 		
@@ -4486,7 +4503,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
-	var blit = false;
+	//var blit = false;
 	
 	if(!displayObject.visible)return;
 		
@@ -4524,18 +4541,19 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			//	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				
+				var w = frame.width;
+				var h = frame.height;
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (displayObject.anchor.x) * -frame.width, 
-								   (displayObject.anchor.y) * -frame.height,
+								   w,
+								   h,
+								   (displayObject.anchor.x) * -w, 
+								   (displayObject.anchor.y) * -h,
 								 //   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								  // (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
-								   frame.width,
-								   frame.height);
+								   w,
+								   h);
 			//}
 		}					   
    	}
@@ -4557,9 +4575,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	// render!
 	if(displayObject.children)
 	{
-		for (var i=0; i < displayObject.children.length; i++) 
+		var children = displayObject.children;
+		for (var i=0, len=children.length; i < len; i++) 
 		{
-			this.renderDisplayObject(displayObject.children[i]);
+			this.renderDisplayObject(children[i]);
 		}
 	}
 	

@@ -141,7 +141,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
-	var blit = false;
+	//var blit = false;
 	
 	if(!displayObject.visible)return;
 		
@@ -179,18 +179,19 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			//	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				
+				var w = frame.width;
+				var h = frame.height;
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (displayObject.anchor.x) * -frame.width, 
-								   (displayObject.anchor.y) * -frame.height,
+								   w,
+								   h,
+								   (displayObject.anchor.x) * -w, 
+								   (displayObject.anchor.y) * -h,
 								 //   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								  // (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
-								   frame.width,
-								   frame.height);
+								   w,
+								   h);
 			//}
 		}					   
    	}
@@ -212,9 +213,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	// render!
 	if(displayObject.children)
 	{
-		for (var i=0; i < displayObject.children.length; i++) 
+		var children = displayObject.children;
+		for (var i=0, len=children.length; i < len; i++) 
 		{
-			this.renderDisplayObject(displayObject.children[i]);
+			this.renderDisplayObject(children[i]);
 		}
 	}
 	

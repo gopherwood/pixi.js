@@ -59,13 +59,14 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 	// will render all the elements in the group
 	var renderable;
 	
-	
-	for (var i=0; i < this.batchs.length; i++) 
+	var batches = this.batchs;
+	var len = batches.length;
+	for (var i=0; i < len; i++) 
 	{
-		renderable = this.batchs[i];
+		renderable = batches[i];
 		if(renderable instanceof PIXI.WebGLBatch)
 		{
-			this.batchs[i].render();
+			renderable.render();
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
@@ -261,7 +262,7 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 	// give the dp a refference to its renderGroup...
 	var children = displayObject.children;
 	//displayObject.worldVisible = globalVisible;
-	for (var i=0; i < children.length; i++) 
+	for (var i=0, len=children.length; i < len; i++) 
 	{
 		var child = children[i];
 		

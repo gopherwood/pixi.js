@@ -439,18 +439,19 @@ PIXI.WebGLBatch.prototype.update = function()
 			d = worldTransform[4];
 			tx = worldTransform[2];
 			ty = worldTransform[5];
-		
-			this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
-			this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
+			
+			var vArray = this.verticies;
+			vArray[index + 0 ] = a * w1 + c * h1 + tx; 
+			vArray[index + 1 ] = d * h1 + b * w1 + ty;
 			 
-			this.verticies[index + 2 ] = a * w0 + c * h1 + tx; 
-			this.verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+			vArray[index + 2 ] = a * w0 + c * h1 + tx; 
+			vArray[index + 3 ] = d * h1 + b * w0 + ty; 
 			
-			this.verticies[index + 4 ] = a * w0 + c * h0 + tx; 
-			this.verticies[index + 5 ] = d * h0 + b * w0 + ty; 
+			vArray[index + 4 ] = a * w0 + c * h0 + tx; 
+			vArray[index + 5 ] = d * h0 + b * w0 + ty; 
 			
-			this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
-			this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
+			vArray[index + 6] =  a * w1 + c * h0 + tx; 
+			vArray[index + 7] =  d * h0 + b * w1 + ty; 
 			
 			
 			if(displayObject.updateFrame || displayObject.texture.updateFrame)
@@ -463,17 +464,18 @@ PIXI.WebGLBatch.prototype.update = function()
 				var tw = texture.baseTexture.width;
 				var th = texture.baseTexture.height;
 				
-				this.uvs[index + 0] = frame.x / tw;
-				this.uvs[index +1] = frame.y / th;
+				var uvArray = this.uvs;
+				uvArray[index + 0] = frame.x / tw;
+				uvArray[index + 1] = frame.y / th;
 				
-				this.uvs[index +2] = (frame.x + frame.width) / tw;
-				this.uvs[index +3] = frame.y / th;
+				uvArray[index + 2] = (frame.x + frame.width) / tw;
+				uvArray[index + 3] = frame.y / th;
 				
-				this.uvs[index +4] = (frame.x + frame.width) / tw;
-				this.uvs[index +5] = (frame.y + frame.height) / th; 
+				uvArray[index + 4] = (frame.x + frame.width) / tw;
+				uvArray[index + 5] = (frame.y + frame.height) / th; 
 				
-				this.uvs[index +6] = frame.x / tw;
-				this.uvs[index +7] = (frame.y + frame.height) / th;
+				uvArray[index + 6] = frame.x / tw;
+				uvArray[index + 7] = (frame.y + frame.height) / th;
 				
 				displayObject.updateFrame = false;
 			}
@@ -492,17 +494,18 @@ PIXI.WebGLBatch.prototype.update = function()
 		{
 			index = indexRun * 8;
 			
-			this.verticies[index + 0 ] = 0;
-			this.verticies[index + 1 ] = 0;
+			var tempArray = this.verticies;
+			tempArray[index + 0 ] = 0;
+			tempArray[index + 1 ] = 0;
 			 
-			this.verticies[index + 2 ] = 0;
-			this.verticies[index + 3 ] = 0;
+			tempArray[index + 2 ] = 0;
+			tempArray[index + 3 ] = 0;
 			
-			this.verticies[index + 4 ] = 0;
-			this.verticies[index + 5 ] = 0;
+			tempArray[index + 4 ] = 0;
+			tempArray[index + 5 ] = 0;
 			
-			this.verticies[index + 6] = 0;
-			this.verticies[index + 7] = 0;
+			tempArray[index + 6] = 0;
+			tempArray[index + 7] = 0;
 		}
 		
 		indexRun++;
@@ -532,6 +535,8 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	
 	this.update();
 	var gl = this.gl;
+	var GL_ARRAY_BUFFER = gl.ARRAY_BUFFER;
+	var GL_FLOAT = gl.FLOAT;
 	
 	//TODO optimize this!
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -540,35 +545,35 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	gl.useProgram(shaderProgram);
 	
 	// update the verts..
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	gl.bindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);
 	// ok..
-	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	gl.bufferSubData(GL_ARRAY_BUFFER, 0, this.verticies)
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, GL_FLOAT, false, 0, 0);
 	
 	// update the uvs
-   	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+   	gl.bindBuffer(GL_ARRAY_BUFFER, this.uvBuffer);
 
     if(this.dirtyUVS)
     {
     	this.dirtyUVS = false;
-    	gl.bufferSubData(gl.ARRAY_BUFFER,  0, this.uvs);
+    	gl.bufferSubData(GL_ARRAY_BUFFER,  0, this.uvs);
     }
     
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, GL_FLOAT, false, 0, 0);
 	
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture._glTexture);
 	
 	// update color!
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+	gl.bindBuffer(GL_ARRAY_BUFFER, this.colorBuffer);
 
 	if(this.dirtyColors)
     {
     	this.dirtyColors = false;
-    	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors);
+    	gl.bufferSubData(GL_ARRAY_BUFFER, 0, this.colors);
 	}
 	
-    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, GL_FLOAT, false, 0, 0);
 	
 	// dont need to upload!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
