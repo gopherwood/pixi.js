@@ -61,6 +61,16 @@ PIXI.Stage.prototype.updateTransform = function()
 }
 
 /**
+ * Updates the interaction manager with no regard to if it has happened recently. Use carefully as such.
+ * @method setBackgroundColor
+ */
+PIXI.Stage.prototype.forceUpdateInteraction = function()
+{
+	this.interactionManager.dirty = true;
+	this.interactionManager.update(true);
+}
+
+/**
  * @method setBackgroundColor
  * @param backgroundColor {Number}
  */

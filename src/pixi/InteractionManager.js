@@ -63,6 +63,9 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
+		if(!child.visible)
+			continue;
+		
 		// push all interactive bits
 		if(child.interactive)
 		{
@@ -110,17 +113,20 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
 }
 
-PIXI.InteractionManager.prototype.update = function()
+PIXI.InteractionManager.prototype.update = function(forceUpdate)
 {
-	if(!this.target)return;
+	if(!forceUpdate)
+	{
+		if(!this.target)return;
 	
-	// frequency of 30fps??
-	var now = Date.now();
-	var diff = now - this.last;
-	diff = (diff * 30) / 1000;
-	if(diff < 1)return;
-	this.last = now;
-	//
+		// frequency of 30fps??
+		var now = Date.now();
+		var diff = now - this.last;
+		diff = (diff * 30) / 1000;
+		if(diff < 1)return;
+		this.last = now;
+		//
+	}
 	
 	// ok.. so mouse events??
 	// yes for now :)
@@ -137,9 +143,12 @@ PIXI.InteractionManager.prototype.update = function()
 		
 		this.interactiveItems = [];
 		
-		if(this.stage.interactive)this.interactiveItems.push(this.stage);
-		// go through and collect all the objects that are interactive..
-		this.collectInteractiveSprite(this.stage, this.stage);
+		if(this.stage.interactive)
+		{
+			this.interactiveItems.push(this.stage);
+			// go through and collect all the objects that are interactive..
+			this.collectInteractiveSprite(this.stage, this.stage);
+		}
 	}
 	
 	// loop through interactive objects!
