@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-17
+ * Compiled: 2013-06-27
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1626,13 +1626,13 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 	event.preventDefault();
 	var global = this.mouse.global;
 	
-	
 	var length = this.interactiveItems.length;
 	var up = false;
 	
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
+		if(!item) continue;
 		
 		if(item.mouseup || item.mouseupoutside || item.click)
 		{
@@ -7440,16 +7440,16 @@ PIXI.ImageLoader.prototype.onLoaded = function()
 
 PIXI.BitmapFontLoader = function(url, crossorigin)
 {
-    /*
-     * i use texture packer to load the assets..
-     * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as "JSON"
-     */
-    PIXI.EventTarget.call(this);
-    this.url = url;
-    this.baseUrl = url.replace(/[^\/]*$/, "");
-    this.texture = null;
-    this.crossorigin = crossorigin;
+	/*
+	 * i use texture packer to load the assets..
+	 * http://www.codeandweb.com/texturepacker
+	 * make sure to set the format as "JSON"
+	 */
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.texture = null;
+	this.crossorigin = crossorigin;
 };
 
 // constructor
@@ -7460,16 +7460,16 @@ PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
  */
 PIXI.BitmapFontLoader.prototype.load = function()
 {
-    this.ajaxRequest = new XMLHttpRequest();
-    var scope = this;
-    this.ajaxRequest.onreadystatechange = function()
-    {
-        scope.onXMLLoaded();
-    };
+	this.ajaxRequest = new XMLHttpRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function()
+	{
+		scope.onXMLLoaded();
+	};
 
-    this.ajaxRequest.open("GET", this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/xml");
-    this.ajaxRequest.send(null)
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/xml");
+	this.ajaxRequest.send(null)
 };
 
 /**
@@ -7478,68 +7478,69 @@ PIXI.BitmapFontLoader.prototype.load = function()
  */
 PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 {
-    if (this.ajaxRequest.readyState == 4)
-    {
-        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
-        {
-            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-            this.texture = image.texture.baseTexture;
+	if (this.ajaxRequest.readyState == 4)
+	{
+		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+		{
+			var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
+			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+			this.texture = image.texture.baseTexture;
 
-            var data = {};
-            var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
-            var common = this.ajaxRequest.responseXML.getElementsByTagName("common")[0];
-            data.font = info.attributes.getNamedItem("face").nodeValue;
-            data.size = parseInt(info.attributes.getNamedItem("size").nodeValue, 10);
-            data.lineHeight = parseInt(common.attributes.getNamedItem("lineHeight").nodeValue, 10);
-            data.chars = {};
+			var data = {};
+			var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
+			var common = this.ajaxRequest.responseXML.getElementsByTagName("common")[0];
+			data.font = info.attributes.getNamedItem("face").nodeValue;
+			data.size = parseInt(info.attributes.getNamedItem("size").nodeValue, 10);
+			data.lineHeight = parseInt(common.attributes.getNamedItem("lineHeight").nodeValue, 10);
+			data.chars = {};
 
-            //parse letters
-            var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
+			//parse letters
+			var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
 
-            for (var i = 0; i < letters.length; i++)
-            {
-                var charCode = parseInt(letters[i].attributes.getNamedItem("id").nodeValue, 10);
+			var tempAttributes;
+			for (var i = 0; i < letters.length; i++)
+			{
+				tempAttributes = letters[i].attributes;
+				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
 
-                var textureRect = {
-                    x: parseInt(letters[i].attributes.getNamedItem("x").nodeValue, 10),
-                    y: parseInt(letters[i].attributes.getNamedItem("y").nodeValue, 10),
-                    width: parseInt(letters[i].attributes.getNamedItem("width").nodeValue, 10),
-                    height: parseInt(letters[i].attributes.getNamedItem("height").nodeValue, 10)
-                };
-                PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
+				var textureRect = {
+					x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
+					y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
+					width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
+					height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
+				};
+				PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
 
-                data.chars[charCode] = {
-                    xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
-                    yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
-                    xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
-                    kerning: {},
-                    texture:new PIXI.Texture(this.texture, textureRect)
+				data.chars[charCode] = {
+					xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
+					yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
+					xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
+					kerning: {},
+					texture:new PIXI.Texture(this.texture, textureRect)
+				};
+			}
 
-                };
-            }
+			//parse kernings
+			var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
+			for (i = 0; i < kernings.length; i++)
+			{
+				tempAttributes = kernings[i].attributes;
+				var first = parseInt(tempAttributes.getNamedItem("first").nodeValue, 10);
+				var second = parseInt(tempAttributes.getNamedItem("second").nodeValue, 10);
+				var amount = parseInt(tempAttributes.getNamedItem("amount").nodeValue, 10);
 
-            //parse kernings
-            var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
-            for (i = 0; i < kernings.length; i++)
-            {
-               var first = parseInt(kernings[i].attributes.getNamedItem("first").nodeValue, 10);
-               var second = parseInt(kernings[i].attributes.getNamedItem("second").nodeValue, 10);
-               var amount = parseInt(kernings[i].attributes.getNamedItem("amount").nodeValue, 10);
+				data.chars[second].kerning[first] = amount;
+			}
 
-                data.chars[second].kerning[first] = amount;
+			PIXI.BitmapText.fonts[data.font] = data;
 
-            }
-
-            PIXI.BitmapText.fonts[data.font] = data;
-
-            var scope = this;
-            image.addEventListener("loaded", function() {
-                scope.onLoaded();
-            });
-            image.load();
-        }
-    }
+			var scope = this;
+			image.addEventListener("loaded", function() {
+				scope.onLoaded();
+			});
+			image.load();
+		}
+	}
 };
 
 /**
@@ -7548,7 +7549,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: "loaded", content: this});
+	this.dispatchEvent({type: "loaded", content: this});
 };
 
 /**

@@ -267,13 +267,13 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 	event.preventDefault();
 	var global = this.mouse.global;
 	
-	
 	var length = this.interactiveItems.length;
 	var up = false;
 	
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
+		if(!item) continue;
 		
 		if(item.mouseup || item.mouseupoutside || item.click)
 		{
