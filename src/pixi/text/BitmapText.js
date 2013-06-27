@@ -75,10 +75,11 @@ PIXI.BitmapText.prototype.updateText = function()
     var lineWidths = [];
     var line = 0;
     var scale = this.fontSize / data.size;
-    for(var i = 0; i < this.text.length; i++)
+	var text = this.text;
+	var newLineTest = /(?:\r\n|\r|\n)/;
+    for(var i = 0, len = text.length; i < len; i++)
     {
-        var charCode = this.text.charCodeAt(i);
-        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+        if(newLineTest.test(text.charAt(i)))
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
@@ -90,10 +91,11 @@ PIXI.BitmapText.prototype.updateText = function()
             continue;
         }
         
-        var charData = data.chars[charCode];
-        if(!charData) continue;
+	    var charCode = text.charCodeAt(i);
+		var charData = data.chars[charCode];
+		if(!charData) continue;
 
-        if(prevCharCode && charData[prevCharCode])
+		if(prevCharCode && charData[prevCharCode])
         {
            pos.x += charData.kerning[prevCharCode];
         }
@@ -107,16 +109,17 @@ PIXI.BitmapText.prototype.updateText = function()
     maxLineWidth = Math.max(maxLineWidth, pos.x);
 
     var lineAlignOffsets = [];
+	var a = this.style.align;
     for(i = 0; i <= line; i++)
     {
         var alignOffset = 0;
-        if(this.style.align == "right")
+        if(a == "right")
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if(this.style.align == "center")
+        else if(a == "center")
         {
-            alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+            alignOffset = (maxLineWidth - lineWidths[i]) * 0.5;
         }
         lineAlignOffsets.push(alignOffset);
     }
@@ -129,10 +132,26 @@ PIXI.BitmapText.prototype.updateText = function()
         char.scale.x = char.scale.y = scale;
         this.addChild(char);
     }
-
+	
     this.width = pos.x * scale;
     this.height = (pos.y + data.lineHeight) * scale;
 };
+
+/**
+ * Forces an update of the text, if you need to know the width after setting the text. Use carefully.
+ * @method forceUpdateText
+ */
+PIXI.BitmapText.prototype.forceUpdateText = function()
+{
+	var c = this.children;
+	while(c.length > 0)
+    {
+        this.removeChild(this.getChildAt(0));
+    }
+    this.updateText();
+
+    this.dirty = false;
+}
 
 /**
  * @private
@@ -141,13 +160,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
 {
 	if(this.dirty)
 	{
-        while(this.children.length > 0)
-        {
-            this.removeChild(this.getChildAt(0));
-        }
-        this.updateText();
-
-        this.dirty = false;
+        this.forceUpdateText();
 	}
 	
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
