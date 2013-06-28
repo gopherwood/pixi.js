@@ -35,6 +35,38 @@ PIXI.Point.prototype.clone = function()
 	return new PIXI.Point(this.x, this.y);
 }
 
+/**
+ * Returns the dot product between this point and another one.
+ * @method dotProd 
+ * @param other {Point} The point to form a dot product with
+ * @return The dot product between the two points.
+ */
+PIXI.Point.prototype.dotProd = function(other)
+{
+	return this.x * other.x + this.y * other.y;
+}
+
+/**
+ * Returns the length (or magnitude) of this point.
+ * @method length
+ * @return The length of this point.
+ */
+PIXI.Point.prototype.length = function()
+{
+	return Math.sqrt(this.x * this.x + this.y * this.y);
+}
+
+/**
+ * Reduces the point to a length of 1.
+ * @method normalize
+ */
+PIXI.Point.prototype.normalize = function()
+{
+	var oneOverLen = 1 / this.length();
+	this.x *= oneOverLen;
+	this.y *= oneOverLen;
+}
+
 // constructor
 PIXI.Point.constructor = PIXI.Point;
 
