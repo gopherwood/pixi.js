@@ -54,11 +54,52 @@ PIXI.MovieClip = function(textures)
 	 * @type Boolean
 	 */
 	this.playing;
+	
+	/**
+	 * This is the MovieClip's target animation rate - the rate at which the animation was created. 
+	 * @property _animFrameRate
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._animFrameRate = 30;
+	
+	/**
+	 * This is the time elapsed in the animation from frame 0 in seconds.
+	 * @property _elapsedTime
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._elapsedTime = 0;
+	
+	/**
+	 * This is the total time for the animation.
+	 * @property _animDuration
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._animDuration = 0;
 }
 
 // constructor
 PIXI.MovieClip.constructor = PIXI.MovieClip;
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
+
+Object.defineProperty(PIXI.MovieClip.prototype, "fps", {
+	get: function() { return this._animFrameRate; },
+	set: function(value) {
+		this._animFrameRate = value;
+		this._elapsedTime = 0;
+		this._duration = value ? this.textures.length / value : 0;
+	}
+})
+
+PIXI.MovieClip.prototype.updateDuration = function()
+{
+	this._duration = this._animFrameRate ? this.textures.length / this._animFrameRate : 0;
+}
 
 /**
  * Stops the MovieClip
@@ -87,8 +128,8 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
 	this.playing = false;
 	this.currentFrame = frameNumber;
-	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	this._elapsedTime = frameNumber / this._animFrameRate;
+	this.setTexture(this.textures[frameNumber % this.textures.length]);
 }
 
 /**
@@ -98,8 +139,19 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
  */
 PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 {
+	this._elapsedTime = frameNumber / this._animFrameRate;
 	this.currentFrame = frameNumber;
 	this.playing = true;
+}
+
+/**
+ * Updates the animation given a delta time.
+ * @method updateAnim
+ * @param deltaSec {Number} The time to advance the animation by in seconds.
+ */
+PIXI.MovieClip.prototype.updateAnim = function(deltaSec)
+{
+	this._elapsedTime += deltaSec * this.animationSpeed;
 }
 
 PIXI.MovieClip.prototype.updateTransform = function()
@@ -108,18 +160,25 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	if(!this.playing)return;
 	
-	this.currentFrame += this.animationSpeed;
-	var round = (this.currentFrame + 0.5) | 0;
-	if(this.loop || round < this.textures.length)
+	var complete = false;
+	if(this._elapsedTime > this._duration)
 	{
-		this.setTexture(this.textures[round % this.textures.length]);
-	}
-	else if(round >= this.textures.length)
-	{
-		this.gotoAndStop(this.textures.length - 1);
-		if(this.onComplete)
+		if(this.loop)
+			this._elapsedTime = this._elapsedTime % this._duration;
+		else
 		{
-			this.onComplete();
+			this._elapsedTime = this._duration;
+			complete = true;
+			this.playing = false;
 		}
+	}
+	this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
+	//sanity check
+	if(this.currentFrame >= this.textures.length)
+		this.currentFrame = this.textures.length - 1;
+	this.setTexture(this.textures[this.currentFrame]);
+	if(complete && this.onComplete)
+	{
+		this.onComplete();
 	}
 }
