@@ -57,6 +57,16 @@ PIXI.Point.prototype.length = function()
 }
 
 /**
+ * Returns the squared length (or magnitude) of this point. This is faster than length().
+ * @method lengthSq
+ * @return The length squared of this point.
+ */
+PIXI.Point.prototype.lengthSq = function()
+{
+	return this.x * this.x + this.y * this.y;
+}
+
+/**
  * Reduces the point to a length of 1.
  * @method normalize
  */

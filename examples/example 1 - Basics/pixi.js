@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-28
+ * Compiled: 2013-07-01
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -82,6 +82,16 @@ PIXI.Point.prototype.dotProd = function(other)
 PIXI.Point.prototype.length = function()
 {
 	return Math.sqrt(this.x * this.x + this.y * this.y);
+}
+
+/**
+ * Returns the squared length (or magnitude) of this point. This is faster than length().
+ * @method lengthSq
+ * @return The length squared of this point.
+ */
+PIXI.Point.prototype.lengthSq = function()
+{
+	return this.x * this.x + this.y * this.y;
 }
 
 /**
