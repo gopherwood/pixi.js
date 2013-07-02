@@ -24,18 +24,6 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
-
-	if(baseTexture instanceof PIXI.Texture)
-		baseTexture = baseTexture.baseTexture;
-	
-	/**
-	 * The base texture of this texture
-	 * @property baseTexture
-	 * @type BaseTexture
-	 */
-	this.baseTexture = baseTexture;
-	
-	
 	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
@@ -43,6 +31,20 @@ PIXI.Texture = function(baseTexture, frame)
 	 * @type #Rectangle
 	 */
 	this.frame = frame;
+	
+	if(baseTexture instanceof PIXI.Texture)
+	{
+		frame.x += baseTexture.frame.x;
+		frame.y += baseTexture.frame.y;
+		baseTexture = baseTexture.baseTexture;
+	}
+	
+	/**
+	 * The base texture of this texture
+	 * @property baseTexture
+	 * @type BaseTexture
+	 */
+	this.baseTexture = baseTexture;
 	
 	this.scope = this;
 	

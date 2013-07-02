@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-01
+ * Compiled: 2013-07-02
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6820,18 +6820,6 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
-
-	if(baseTexture instanceof PIXI.Texture)
-		baseTexture = baseTexture.baseTexture;
-	
-	/**
-	 * The base texture of this texture
-	 * @property baseTexture
-	 * @type BaseTexture
-	 */
-	this.baseTexture = baseTexture;
-	
-	
 	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
@@ -6839,6 +6827,20 @@ PIXI.Texture = function(baseTexture, frame)
 	 * @type #Rectangle
 	 */
 	this.frame = frame;
+	
+	if(baseTexture instanceof PIXI.Texture)
+	{
+		frame.x += baseTexture.frame.x;
+		frame.y += baseTexture.frame.y;
+		baseTexture = baseTexture.baseTexture;
+	}
+	
+	/**
+	 * The base texture of this texture
+	 * @property baseTexture
+	 * @type BaseTexture
+	 */
+	this.baseTexture = baseTexture;
 	
 	this.scope = this;
 	
@@ -7598,7 +7600,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 		{
 			var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
 			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-			this.texture = image.texture.baseTexture;
+			this.texture = image.texture;
 
 			var data = {};
 			var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
@@ -7623,8 +7625,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 					width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
 					height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
 				};
-				PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
-
+				
 				data.chars[charCode] = {
 					xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
 					yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),

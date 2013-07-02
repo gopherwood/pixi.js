@@ -60,7 +60,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 		{
 			var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
 			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-			this.texture = image.texture.baseTexture;
+			this.texture = image.texture;
 
 			var data = {};
 			var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
@@ -85,8 +85,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 					width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
 					height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
 				};
-				PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
-
+				
 				data.chars[charCode] = {
 					xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
 					yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
