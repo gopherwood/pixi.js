@@ -74,7 +74,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 			var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
 
 			var tempAttributes;
-			for (var i = 0; i < letters.length; i++)
+			for (var i = 0, len = letters.length; i < len; i++)
 			{
 				tempAttributes = letters[i].attributes;
 				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
@@ -97,7 +97,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
 			//parse kernings
 			var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
-			for (i = 0; i < kernings.length; i++)
+			for (i = 0, len = kernings.length; i < len; i++)
 			{
 				tempAttributes = kernings[i].attributes;
 				var first = parseInt(tempAttributes.getNamedItem("first").nodeValue, 10);

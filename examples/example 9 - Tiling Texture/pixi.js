@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-02
+ * Compiled: 2013-07-03
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -7317,7 +7317,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 				var frameData = this.json.frames;
 			
-				this.texture = image.texture.baseTexture;
+				this.texture = image.texture;
 				image.addEventListener("loaded", function (event) {
 					scope.onLoaded();
 				});
@@ -7452,24 +7452,25 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 	var frameData = this.json.frames;
 
-	this.texture = image.texture.baseTexture;
+	this.texture = image.texture;
 	image.addEventListener("loaded", function (event) {
 		scope.onLoaded();
 	});
 
 	for (var i in frameData) {
-		var rect = frameData[i].frame;
+		var f = frameData[i];
+		var rect = f.frame;
 		if (rect) {
-			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+			var t = PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
 				x: rect.x,
 				y: rect.y,
 				width: rect.w,
 				height: rect.h
 			});
-			if (frameData[i].trimmed) {
+			if (f.trimmed) {
 				//var realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+				t.realSize = f.spriteSourceSize;
+				t.trim.x = 0; // (realSize.x / rect.w)
 				// calculate the offset!
 			}
 		}
@@ -7614,7 +7615,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 			var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
 
 			var tempAttributes;
-			for (var i = 0; i < letters.length; i++)
+			for (var i = 0, len = letters.length; i < len; i++)
 			{
 				tempAttributes = letters[i].attributes;
 				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
@@ -7637,7 +7638,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
 			//parse kernings
 			var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
-			for (i = 0; i < kernings.length; i++)
+			for (i = 0, len = kernings.length; i < len; i++)
 			{
 				tempAttributes = kernings[i].attributes;
 				var first = parseInt(tempAttributes.getNamedItem("first").nodeValue, 10);

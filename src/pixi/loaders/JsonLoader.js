@@ -63,7 +63,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 				var frameData = this.json.frames;
 			
-				this.texture = image.texture.baseTexture;
+				this.texture = image.texture;
 				image.addEventListener("loaded", function (event) {
 					scope.onLoaded();
 				});
