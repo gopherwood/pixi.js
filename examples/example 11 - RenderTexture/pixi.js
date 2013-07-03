@@ -1858,14 +1858,16 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
-	for (var i=0; i < changedTouches.length; i++) 
+	var targWidthByRectWidth = (this.target.width / rect.width);
+	var targHeightByRectHeight = (this.target.height / rect.height);
+	for (var i=0, len = changedTouches.length; i < len; i++) 
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		
 		// update the touch position
-		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
+		touchData.global.y = (touchEvent.clientY - rect.top)  * targHeightByRectHeight;
 	}
 	
 	var length = this.interactiveItems.length;
@@ -1882,7 +1884,9 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
-	for (var i=0; i < changedTouches.length; i++) 
+	var targWidthByRectWidth = (this.target.width / rect.width);
+	var targHeightByRectHeight = (this.target.height / rect.height);
+	for (var i=0, len = changedTouches.length; i < len; i++) 
 	{
 		var touchEvent = changedTouches[i];
 		
@@ -1890,8 +1894,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		if(!touchData)touchData = new PIXI.InteractionData();
 		
 		this.touchs[touchEvent.identifier] = touchData;
-		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
+		touchData.global.y = (touchEvent.clientY - rect.top)  * targHeightByRectHeight;
 		
 		var length = this.interactiveItems.length;
 		
@@ -1926,14 +1930,15 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
-	for (var i=0; i < changedTouches.length; i++) 
+	var targWidthByRectWidth = (this.target.width / rect.width);
+	var targHeightByRectHeight = (this.target.height / rect.height);
+	for (var i=0, len = changedTouches.length; i < len; i++) 
 	{
-		 
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;
-		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
+		touchData.global.y = (touchEvent.clientY - rect.top)  * targHeightByRectHeight;
 		
 		var length = this.interactiveItems.length;
 		for (var j = 0; j < length; j++)
