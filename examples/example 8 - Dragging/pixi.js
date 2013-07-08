@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-03
+ * Compiled: 2013-07-08
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1944,6 +1944,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+			if(!item) continue;//if for some reason there isn't an item, don't throw an error
 			var itemTouchData = item.__touchData; // <-- Here!
 			item.__hit = this.hitTest(item, touchData);
 		

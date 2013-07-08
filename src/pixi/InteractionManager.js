@@ -471,6 +471,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+			if(!item) continue;//if for some reason there isn't an item, don't throw an error
 			var itemTouchData = item.__touchData; // <-- Here!
 			item.__hit = this.hitTest(item, touchData);
 		
