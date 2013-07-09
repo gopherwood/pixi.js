@@ -70,6 +70,9 @@ PIXI.BaseTexture = function(source)
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
 			}
+			/*this.source.onerror = function()
+			{
+			}*/
 			//	this.image.src = imageUrl;
 		}
 	}

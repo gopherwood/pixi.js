@@ -156,29 +156,29 @@ PIXI.MovieClip.prototype.updateAnim = function(deltaSec)
 
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-	PIXI.Sprite.prototype.updateTransform.call(this);
-	
-	if(!this.playing)return;
-	
-	var complete = false;
-	if(this._elapsedTime > this._duration)
+	if(this.playing)
 	{
-		if(this.loop)
-			this._elapsedTime = this._elapsedTime % this._duration;
-		else
+		var complete = false;
+		if(this._elapsedTime > this._duration)
 		{
-			this._elapsedTime = this._duration;
-			complete = true;
-			this.playing = false;
+			if(this.loop)
+				this._elapsedTime = this._elapsedTime % this._duration;
+			else
+			{
+				this._elapsedTime = this._duration;
+				complete = true;
+				this.playing = false;
+			}
+		}
+		this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
+		//sanity check
+		if(this.currentFrame >= this.textures.length)
+			this.currentFrame = this.textures.length - 1;
+		this.setTexture(this.textures[this.currentFrame]);	
+		if(complete && this.onComplete)
+		{
+			this.onComplete();
 		}
 	}
-	this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
-	//sanity check
-	if(this.currentFrame >= this.textures.length)
-		this.currentFrame = this.textures.length - 1;
-	this.setTexture(this.textures[this.currentFrame]);
-	if(complete && this.onComplete)
-	{
-		this.onComplete();
-	}
+	PIXI.Sprite.prototype.updateTransform.call(this);
 }

@@ -82,20 +82,20 @@ PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 // The width and height now modify the scale (this is what flash does, nice and tidy!)
 Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.texture.frame.width;
+        return this.scale.x * this.texture.width;
     },
     set: function(value) {
-    	this.scale.x = value / this.texture.frame.width
+    	this.scale.x = value / this.texture.width;
         this._width = value;
     }
 });
 
 Object.defineProperty(PIXI.Sprite.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.texture.frame.height;
+        return  this.scale.y * this.texture.height;
     },
     set: function(value) {
-    	this.scale.y = value / this.texture.frame.height
+    	this.scale.y = value / this.texture.height;
         this._height = value;
     }
 });
@@ -109,11 +109,17 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	// stop current texture;
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
-		this.textureChange = true;	
+		this.textureChange = true;
 	}
 	
 	this.texture = texture;
 	this.updateFrame = true;
+	
+	if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}
 }
 
 /**
@@ -123,9 +129,15 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
 	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 	
+	/*if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}*/
+	
 	// so if _width is 0 then width was not set..
-	if(this._width)this.scale.x = this._width / this.texture.frame.width;
-	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	if(this._width)this.scale.x = this._width / this.texture.width;
+	if(this._height)this.scale.y = this._height / this.texture.height;
 	
 	this.updateFrame = true;
 }

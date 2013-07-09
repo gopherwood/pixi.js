@@ -147,13 +147,8 @@ PIXI.Text.prototype.updateText = function()
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-    this.texture.baseTexture.width = this.canvas.width;
-    this.texture.baseTexture.height = this.canvas.height;
-    this.texture.frame.width = this.canvas.width;
-    this.texture.frame.height = this.canvas.height;
-    
-  	this._width = this.canvas.width;
-    this._height = this.canvas.height;
+    this._width = this.texture.width = this.texture.frame.width = this.texture.baseTexture.width = this.canvas.width;
+    this._height = this.texture.height = this.texture.frame.height = this.texture.baseTexture.height = this.canvas.height;
 	
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };

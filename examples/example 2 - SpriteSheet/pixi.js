@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-08
+ * Compiled: 2013-07-09
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -386,10 +386,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var parentTransform = this.parent.worldTransform;
 	var worldTransform = this.worldTransform;
 	//console.log(localTransform)
-	localTransform[0] = this._cr * this.scale.x;
-	localTransform[1] = -this._sr * this.scale.y
-	localTransform[3] = this._sr * this.scale.x;
-	localTransform[4] = this._cr * this.scale.y;
+	var sX = this.scale.x;
+	var sY = this.scale.y;
+	var a00 = localTransform[0] = this._cr * sX;
+	var a01 = localTransform[1] = -this._sr * sY;
+	var a10 = localTransform[3] = this._sr * sX;
+	var a11 = localTransform[4] = this._cr * sY;
 	
 	///AAARR GETTER SETTTER!
 	//localTransform[2] = this.position.x;
@@ -399,12 +401,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var py = this.pivot.y;
    	
    	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - localTransform[0] * px - py * localTransform[1];
-	localTransform[5] = this.position.y - localTransform[4] * py - px * localTransform[3];
+	var a02 = localTransform[2] = this.position.x - a00 * px - py * a01;
+	var a12 = localTransform[5] = this.position.y - a11 * py - px * a10;
 
     // Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    var /*a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],*/
+        /*a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],*/
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
@@ -420,8 +422,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-	
 }
 
 /**
@@ -772,20 +772,20 @@ PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 // The width and height now modify the scale (this is what flash does, nice and tidy!)
 Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.texture.frame.width;
+        return this.scale.x * this.texture.width;
     },
     set: function(value) {
-    	this.scale.x = value / this.texture.frame.width
+    	this.scale.x = value / this.texture.width;
         this._width = value;
     }
 });
 
 Object.defineProperty(PIXI.Sprite.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.texture.frame.height;
+        return  this.scale.y * this.texture.height;
     },
     set: function(value) {
-    	this.scale.y = value / this.texture.frame.height
+    	this.scale.y = value / this.texture.height;
         this._height = value;
     }
 });
@@ -799,11 +799,17 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	// stop current texture;
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
-		this.textureChange = true;	
+		this.textureChange = true;
 	}
 	
 	this.texture = texture;
 	this.updateFrame = true;
+	
+	if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}
 }
 
 /**
@@ -813,9 +819,15 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
 	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 	
+	/*if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}*/
+	
 	// so if _width is 0 then width was not set..
-	if(this._width)this.scale.x = this._width / this.texture.frame.width;
-	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	if(this._width)this.scale.x = this._width / this.texture.width;
+	if(this._height)this.scale.y = this._height / this.texture.height;
 	
 	this.updateFrame = true;
 }
@@ -1012,31 +1024,31 @@ PIXI.MovieClip.prototype.updateAnim = function(deltaSec)
 
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-	PIXI.Sprite.prototype.updateTransform.call(this);
-	
-	if(!this.playing)return;
-	
-	var complete = false;
-	if(this._elapsedTime > this._duration)
+	if(this.playing)
 	{
-		if(this.loop)
-			this._elapsedTime = this._elapsedTime % this._duration;
-		else
+		var complete = false;
+		if(this._elapsedTime > this._duration)
 		{
-			this._elapsedTime = this._duration;
-			complete = true;
-			this.playing = false;
+			if(this.loop)
+				this._elapsedTime = this._elapsedTime % this._duration;
+			else
+			{
+				this._elapsedTime = this._duration;
+				complete = true;
+				this.playing = false;
+			}
+		}
+		this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
+		//sanity check
+		if(this.currentFrame >= this.textures.length)
+			this.currentFrame = this.textures.length - 1;
+		this.setTexture(this.textures[this.currentFrame]);	
+		if(complete && this.onComplete)
+		{
+			this.onComplete();
 		}
 	}
-	this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
-	//sanity check
-	if(this.currentFrame >= this.textures.length)
-		this.currentFrame = this.textures.length - 1;
-	this.setTexture(this.textures[this.currentFrame]);
-	if(complete && this.onComplete)
-	{
-		this.onComplete();
-	}
+	PIXI.Sprite.prototype.updateTransform.call(this);
 }
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -1187,13 +1199,8 @@ PIXI.Text.prototype.updateText = function()
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-    this.texture.baseTexture.width = this.canvas.width;
-    this.texture.baseTexture.height = this.canvas.height;
-    this.texture.frame.width = this.canvas.width;
-    this.texture.frame.height = this.canvas.height;
-    
-  	this._width = this.canvas.width;
-    this._height = this.canvas.height;
+    this._width = this.texture.width = this.texture.frame.width = this.texture.baseTexture.width = this.canvas.width;
+    this._height = this.texture.height = this.texture.frame.height = this.texture.baseTexture.height = this.canvas.height;
 	
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
@@ -4639,12 +4646,12 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
+	if(!displayObject.visible)return;
+	
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
 	//var blit = false;
-	
-	if(!displayObject.visible)return;
 		
 	if(displayObject instanceof PIXI.Sprite)
 	{
@@ -6743,6 +6750,9 @@ PIXI.BaseTexture = function(source)
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
 			}
+			/*this.source.onerror = function()
+			{
+			}*/
 			//	this.image.src = imageUrl;
 		}
 	}
@@ -6825,7 +6835,8 @@ PIXI.Texture = function(baseTexture, frame)
 		frame = new PIXI.Rectangle(0,0,1,1);
 	}
 	
-	this.trim = new PIXI.Point();
+	this.height = 1;
+	this.width = 1;
 	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
@@ -6873,8 +6884,16 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	
 	if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
 	this.noFrame = false;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+	}
 	
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
@@ -6892,8 +6911,16 @@ PIXI.Texture.prototype.destroy = function(destroyBase)
 PIXI.Texture.prototype.setFrame = function(frame)
 {
 	this.frame = frame;
-	this.width = frame.width;
-	this.height = frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = frame.width;
+		this.height = frame.height;
+	}
 	
 	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
 	{
@@ -7343,9 +7370,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 						});
 						if (f.trimmed)
 						{
-							//var realSize = frameData[i].spriteSourceSize;
-							t.realSize = f.spriteSourceSize;
-							t.trim.x = 0; // (realSize.x / rect.w)
+							t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
 							// calculate the offset!
 						}
 					}
@@ -7474,9 +7499,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 				height: rect.h
 			});
 			if (f.trimmed) {
-				//var realSize = frameData[i].spriteSourceSize;
-				t.realSize = f.spriteSourceSize;
-				t.trim.x = 0; // (realSize.x / rect.w)
+				t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
 				// calculate the offset!
 			}
 		}

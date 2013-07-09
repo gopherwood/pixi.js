@@ -218,10 +218,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var parentTransform = this.parent.worldTransform;
 	var worldTransform = this.worldTransform;
 	//console.log(localTransform)
-	localTransform[0] = this._cr * this.scale.x;
-	localTransform[1] = -this._sr * this.scale.y
-	localTransform[3] = this._sr * this.scale.x;
-	localTransform[4] = this._cr * this.scale.y;
+	var sX = this.scale.x;
+	var sY = this.scale.y;
+	var a00 = localTransform[0] = this._cr * sX;
+	var a01 = localTransform[1] = -this._sr * sY;
+	var a10 = localTransform[3] = this._sr * sX;
+	var a11 = localTransform[4] = this._cr * sY;
 	
 	///AAARR GETTER SETTTER!
 	//localTransform[2] = this.position.x;
@@ -231,12 +233,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var py = this.pivot.y;
    	
    	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - localTransform[0] * px - py * localTransform[1];
-	localTransform[5] = this.position.y - localTransform[4] * py - px * localTransform[3];
+	var a02 = localTransform[2] = this.position.x - a00 * px - py * a01;
+	var a12 = localTransform[5] = this.position.y - a11 * py - px * a10;
 
     // Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    var /*a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],*/
+        /*a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],*/
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
@@ -252,6 +254,4 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-	
 }

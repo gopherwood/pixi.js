@@ -83,9 +83,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 						});
 						if (f.trimmed)
 						{
-							//var realSize = frameData[i].spriteSourceSize;
-							t.realSize = f.spriteSourceSize;
-							t.trim.x = 0; // (realSize.x / rect.w)
+							t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
 							// calculate the offset!
 						}
 					}

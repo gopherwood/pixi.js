@@ -23,7 +23,8 @@ PIXI.Texture = function(baseTexture, frame)
 		frame = new PIXI.Rectangle(0,0,1,1);
 	}
 	
-	this.trim = new PIXI.Point();
+	this.height = 1;
+	this.width = 1;
 	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
@@ -71,8 +72,16 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	
 	if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
 	this.noFrame = false;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+	}
 	
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
@@ -90,8 +99,16 @@ PIXI.Texture.prototype.destroy = function(destroyBase)
 PIXI.Texture.prototype.setFrame = function(frame)
 {
 	this.frame = frame;
-	this.width = frame.width;
-	this.height = frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = frame.width;
+		this.height = frame.height;
+	}
 	
 	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
 	{

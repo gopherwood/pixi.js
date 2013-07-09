@@ -138,12 +138,12 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
+	if(!displayObject.visible)return;
+	
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
 	//var blit = false;
-	
-	if(!displayObject.visible)return;
 		
 	if(displayObject instanceof PIXI.Sprite)
 	{
