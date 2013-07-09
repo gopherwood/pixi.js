@@ -465,17 +465,17 @@ PIXI.WebGLBatch.prototype.update = function()
 				var th = texture.baseTexture.height;
 				
 				var uvArray = this.uvs;
-				uvArray[index + 0] = frame.x / tw;
-				uvArray[index + 1] = frame.y / th;
+				var uv0 = uvArray[index + 0] = frame.x / tw;
+				var uv1 = uvArray[index + 1] = frame.y / th;
 				
-				uvArray[index + 2] = (frame.x + frame.width) / tw;
-				uvArray[index + 3] = frame.y / th;
+				var uv2 = uvArray[index + 2] = (frame.x + frame.width) / tw;
+				uvArray[index + 3] = uv1;//frame.y / th;
 				
-				uvArray[index + 4] = (frame.x + frame.width) / tw;
-				uvArray[index + 5] = (frame.y + frame.height) / th; 
+				uvArray[index + 4] = uv2;//(frame.x + frame.width) / tw;
+				var uv5 = uvArray[index + 5] = (frame.y + frame.height) / th; 
 				
-				uvArray[index + 6] = frame.x / tw;
-				uvArray[index + 7] = (frame.y + frame.height) / th;
+				uvArray[index + 6] = uv0;//frame.x / tw;
+				uvArray[index + 7] = uv5;//(frame.y + frame.height) / th;
 				
 				displayObject.updateFrame = false;
 			}
