@@ -90,7 +90,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	stage.updateTransform();
 	
 	// update the background color
-	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
+	if(!this.transparent && this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
 
 	this.context.setTransform(1,0,0,1,0,0);
 	if(this.clearView)
