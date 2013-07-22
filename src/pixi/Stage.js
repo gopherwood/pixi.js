@@ -14,7 +14,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
-	this.worldTransform = PIXI.mat3.create()
+	this.worldTransform = PIXI.mat3.create();
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
@@ -106,7 +106,6 @@ PIXI.Stage.prototype.__addChild = function(child)
 	}
 	
 }
-
 
 PIXI.Stage.prototype.__removeChild = function(child)
 {

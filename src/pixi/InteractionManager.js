@@ -128,6 +128,9 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		//
 	}
 	
+	
+	var length = this.interactiveItems.length;
+	
 	// ok.. so mouse events??
 	// yes for now :)
 	// OPTIMSE - how often to check??
@@ -135,9 +138,7 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	{
 		this.dirty = false;
 		
-		var len = this.interactiveItems.length;
-		
-		for (var i=0; i < this.interactiveItems.length; i++) {
+		for (var i=0; i < length; i++) {
 		  this.interactiveItems[i].interactiveChildren = false;
 		}
 		
@@ -149,10 +150,10 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 			// go through and collect all the objects that are interactive..
 			this.collectInteractiveSprite(this.stage, this.stage);
 		}
+		length = this.interactiveItems.length;//update the length because the list changed
 	}
 	
 	// loop through interactive objects!
-	var length = this.interactiveItems.length;
 	
 	this.target.view.style.cursor = "default";	
 				
@@ -164,7 +165,6 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
 		// hit-test the clip!
-		
 		
 		if(item.mouseover || item.mouseout || item.buttonMode)
 		{
@@ -308,11 +308,34 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
-	var global = interactionData.global;
-	
 	if(!item.visible)return false;
 	
-	if(item instanceof PIXI.Sprite)
+	var global = interactionData.global;
+	
+	if(item.hitArea)
+	{
+		var worldTransform = item.worldTransform;
+		var hitArea = item.hitArea;
+		
+		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+            id = 1 / (a00 * a11 + a01 * -a10);
+		
+		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
+		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+		
+		var x1 = hitArea.x;
+		if(x > x1 && x < x1 + hitArea.width)
+		{
+			var y1 = hitArea.y;
+			
+			if(y > y1 && y < y1 + hitArea.height)
+			{
+				return true;
+			}
+		}
+	}
+	else if(item instanceof PIXI.Sprite)
 	{
 		var worldTransform = item.worldTransform;
 		
@@ -335,30 +358,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			if(y > y1 && y < y1 + height)
 			{
 				// set the target property if a hit is true!
-				interactionData.target = item
-				return true;
-			}
-		}
-	}
-	else if(item.hitArea)
-	{
-		var worldTransform = item.worldTransform;
-		var hitArea = item.hitArea;
-		
-		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
-            id = 1 / (a00 * a11 + a01 * -a10);
-		
-		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
-		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-		
-		var x1 = hitArea.x;
-		if(x > x1 && x < x1 + hitArea.width)
-		{
-			var y1 = hitArea.y;
-			
-			if(y > y1 && y < y1 + hitArea.height)
-			{
+				interactionData.target = item;
 				return true;
 			}
 		}
