@@ -34,6 +34,11 @@ PIXI.Sprite = function(texture)
 	 * @type Texture
 	 */
 	this.texture = texture;
+	if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}
 	
 	/**
 	 * The blend mode of sprite.

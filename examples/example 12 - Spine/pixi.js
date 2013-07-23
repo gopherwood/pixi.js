@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-22
+ * Compiled: 2013-07-23
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -724,6 +724,11 @@ PIXI.Sprite = function(texture)
 	 * @type Texture
 	 */
 	this.texture = texture;
+	if(this.texture.realSize)
+	{
+		this.pivot.x = this.texture.realSize.x;
+		this.pivot.y = this.texture.realSize.y;
+	}
 	
 	/**
 	 * The blend mode of sprite.
