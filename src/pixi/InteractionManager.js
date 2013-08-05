@@ -324,15 +324,23 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
 		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
-		var x1 = hitArea.x;
-		if(x > x1 && x < x1 + hitArea.width)
+		if(item.hitArea instanceof PIXI.Rectangle)
 		{
-			var y1 = hitArea.y;
-			
-			if(y > y1 && y < y1 + hitArea.height)
+			var x1 = hitArea.x;
+			if(x > x1 && x < x1 + hitArea.width)
 			{
-				return true;
+				var y1 = hitArea.y;
+			
+				if(y > y1 && y < y1 + hitArea.height)
+				{
+					return true;
+				}
 			}
+		}
+		else if(item.hitArea instanceof PIXI.Polygon)
+		{
+			if(item.hitArea.containsPoint(x, y))
+				return true;
 		}
 	}
 	else if(item instanceof PIXI.Sprite)
