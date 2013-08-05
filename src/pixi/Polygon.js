@@ -33,12 +33,12 @@ PIXI.Polygon.prototype.containsPoint = function(x, y)
 	Note: left & right are reversed (due to y:0 being at the top of the screen?)
 	*/
 	var points = this.points;
-	for(var i = 0, len = this.points.length - 1; i < len; ++i)
+	for(var i = 0, len = this.points.length; i < len; ++i)
 	{
 		var p = points[i];
 		var x0 = p.x;
 		var y0 = p.y;
-		p = points[i + 1];
+		p = points[i == len - 1 ? 0 : i + 1];
 		var x1 = p.x;
 		var y1 = p.y;
 		if((y - y0) * (x1 - x0) - (x - x0) * (y1 - y0) < 0)
