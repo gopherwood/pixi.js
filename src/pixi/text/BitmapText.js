@@ -7,13 +7,14 @@
  * You can generate the fnt files using 
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
+ *
  * @class BitmapText
  * @extends DisplayObjectContainer
  * @constructor
- * @param {String} text The copy that you would like the text to display
- * @param {Object} style The style parameters
- * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
- * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param text {String} The copy that you would like the text to display
+ * @param style {Object} The style parameters
+ * @param style.font {String} The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
  */
 PIXI.BitmapText = function(text, style)
 {
@@ -27,13 +28,14 @@ PIXI.BitmapText = function(text, style)
 };
 
 // constructor
-PIXI.BitmapText.constructor = PIXI.BitmapText;
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
 /**
  * Set the copy for the text object
+ *
  * @method setText
- * @param {String} text The copy that you would like the text to display
+ * @param text {String} The copy that you would like the text to display
  */
 PIXI.BitmapText.prototype.setText = function(text)
 {
@@ -43,10 +45,11 @@ PIXI.BitmapText.prototype.setText = function(text)
 
 /**
  * Set the style of the text
+ *
  * @method setStyle
- * @param {Object} style The style parameters
- * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
- * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param style {Object} The style parameters
+ * @param style.font {String} The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
@@ -63,6 +66,8 @@ PIXI.BitmapText.prototype.setStyle = function(style)
 
 /**
  * Renders text
+ *
+ * @method updateText
  * @private
  */
 PIXI.BitmapText.prototype.updateText = function()
@@ -126,11 +131,11 @@ PIXI.BitmapText.prototype.updateText = function()
 
     for(i = 0; i < chars.length; i++)
     {
-        var char = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
-        char.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
-        char.position.y = chars[i].position.y * scale;
-        char.scale.x = char.scale.y = scale;
-        this.addChild(char);
+        var c = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
+        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
+        c.position.y = chars[i].position.y * scale;
+        c.scale.x = c.scale.y = scale;
+        this.addChild(c);
     }
 	
     this.width = pos.x * scale;
@@ -154,6 +159,9 @@ PIXI.BitmapText.prototype.forceUpdateText = function()
 }
 
 /**
+ * Updates the transform of this object
+ *
+ * @method updateTransform
  * @private
  */
 PIXI.BitmapText.prototype.updateTransform = function()

@@ -6,19 +6,48 @@
  * The json file loader is used to load in JSON data and parsing it
  * When loaded this class will dispatch a "loaded" event
  * If load failed this class will dispatch a "error" event
+ *
  * @class JsonLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url the url of the JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
-PIXI.JsonLoader = function(url, crossorigin)
-{
+PIXI.JsonLoader = function (url, crossorigin) {
 	PIXI.EventTarget.call(this);
+
+	/**
+	 * The url of the bitmap font data
+	 *
+	 * @property url
+	 * @type String
+	 */
 	this.url = url;
-	this.baseUrl = url.replace(/[^\/]*$/, "");
+
+	/**
+	 * Whether the requests should be treated as cross origin
+	 *
+	 * @property crossorigin
+	 * @type Boolean
+	 */
 	this.crossorigin = crossorigin;
+
+	/**
+	 * [read-only] The base url of the bitmap font data
+	 *
+	 * @property baseUrl
+	 * @type String
+	 * @readOnly
+	 */
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+
+	/**
+	 * [read-only] Whether the data has loaded yet
+	 *
+	 * @property loaded
+	 * @type Boolean
+	 * @readOnly
+	 */
 	this.loaded = false;
 	this.versioning = null;
 	if(url.indexOf("?") != -1)
@@ -26,10 +55,12 @@ PIXI.JsonLoader = function(url, crossorigin)
 };
 
 // constructor
-PIXI.JsonLoader.constructor = PIXI.JsonLoader;
+PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
 /**
- * This will begin loading the JSON file
+ * Loads the JSON data
+ *
+ * @method load
  */
 PIXI.JsonLoader.prototype.load = function()
 {
@@ -46,6 +77,8 @@ PIXI.JsonLoader.prototype.load = function()
 
 /**
  * Invoke when JSON file is loaded
+ *
+ * @method onJSONLoaded
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function()
@@ -112,6 +145,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 
 /**
  * Invoke when json file loaded
+ *
+ * @method onLoaded
  * @private
  */
 PIXI.JsonLoader.prototype.onLoaded = function()
@@ -125,6 +160,8 @@ PIXI.JsonLoader.prototype.onLoaded = function()
 
 /**
  * Invoke when error occured
+ *
+ * @method onError
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function()

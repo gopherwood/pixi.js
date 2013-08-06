@@ -10,12 +10,12 @@
 /**
  * A class that enables the you to import and run your spine animations in pixi.
  * Spine animation data needs to be loaded using the PIXI.AssetLoader or PIXI.SpineLoader before it can be used by this class
- * Also due to a clash of names  You will need to change the extension of the spine file from *.json to *.anim for it to load
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
+ *
  * @class Spine
+ * @extends DisplayObjectContainer
  * @constructor
- * @extends 
- * @param {String} url the url of the spine anim file to be used
+ * @param url {String} The url of the spine anim file to be used
  */
 PIXI.Spine = function(url)
 {
@@ -58,8 +58,8 @@ PIXI.Spine = function(url)
 	};
 }
 
-PIXI.Spine.constructor = PIXI.Spine;
 PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Spine.prototype.constructor = PIXI.Spine;
 
 PIXI.Spine.prototype.updateAnim = function(deltaSec)
 {
@@ -67,6 +67,12 @@ PIXI.Spine.prototype.updateAnim = function(deltaSec)
 	this.state.apply(this.skeleton);
 };
 
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.Spine.prototype.updateTransform = function()
 {
 	this.skeleton.updateWorldTransform();

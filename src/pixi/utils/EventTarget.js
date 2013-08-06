@@ -3,8 +3,20 @@
  * THankS mr DOob!
  */
 
-PIXI.EventTarget = function ()
-{
+/**
+ * Adds event emitter functionality to a class
+ *
+ * @class EventTarget
+ * @example
+ *		function MyEmitter() {
+ *			PIXI.EventTarget.call(this); //mixes in event target stuff
+ *		}
+ *
+ *		var em = new MyEmitter();
+ *		em.emit({ type: 'eventName', data: 'some data' });
+ */
+PIXI.EventTarget = function () {
+
 	var listeners = {};
 	
 	this.addEventListener = this.on = function ( type, listener )
