@@ -534,9 +534,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
-
-	localTransform[2] = a02
-	localTransform[5] = a12
 	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;

@@ -1271,9 +1271,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
-
-	localTransform[2] = a02
-	localTransform[5] = a12
 	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
@@ -1814,6 +1811,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
  */
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
+	if(texture === this.texture) return;
 	// stop current texture;
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
@@ -1827,6 +1825,10 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	{
 		this.pivot.x = this.texture.realSize.x;
 		this.pivot.y = this.texture.realSize.y;
+	}
+	else
+	{
+		this.pivot.x = this.pivot.y = 0;
 	}
 }
 
@@ -3295,7 +3297,12 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
  */
 PIXI.Stage.prototype.updateTransform = function()
 {
-	this.worldAlpha = 1;		
+	//update the interaction manager first, so it detects stuff based on the frame that was just shown
+	//this also fixes issues when it triggers changes to sprite pivot points, as opposed to updating 
+	//the interaction manager after updating tranforms on all children
+	if(this.interactive)this.interactionManager.update();
+	
+	this.worldAlpha = 1;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -3308,8 +3315,6 @@ PIXI.Stage.prototype.updateTransform = function()
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
-	if(this.interactive)this.interactionManager.update();
 }
 
 /**

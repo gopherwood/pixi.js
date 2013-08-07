@@ -76,7 +76,12 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
  */
 PIXI.Stage.prototype.updateTransform = function()
 {
-	this.worldAlpha = 1;		
+	//update the interaction manager first, so it detects stuff based on the frame that was just shown
+	//this also fixes issues when it triggers changes to sprite pivot points, as opposed to updating 
+	//the interaction manager after updating tranforms on all children
+	if(this.interactive)this.interactionManager.update();
+	
+	this.worldAlpha = 1;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -89,8 +94,6 @@ PIXI.Stage.prototype.updateTransform = function()
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
-	if(this.interactive)this.interactionManager.update();
 }
 
 /**

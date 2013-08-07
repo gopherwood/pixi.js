@@ -128,6 +128,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
  */
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
+	if(texture === this.texture) return;
 	// stop current texture;
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
@@ -141,6 +142,10 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	{
 		this.pivot.x = this.texture.realSize.x;
 		this.pivot.y = this.texture.realSize.y;
+	}
+	else
+	{
+		this.pivot.x = this.pivot.y = 0;
 	}
 }
 
