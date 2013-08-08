@@ -360,19 +360,33 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
 {
 	if(this.children.length == 0) return;
 	
-	if(typeof leave == "undefined")
+	/*if(typeof leave == "undefined")
 		leave = 0;
 	for(var i = this.children.length - 1; i >= leave; --i)
 	{
 		var child = this.children[i];
+		// update the stage reference..
 		if(this.stage)
-			this.stage.__removeChild(child);
+		{
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = null;
+				tmpChild = tmpChild._iNext;
+			}	
+			while(tmpChild)
+		}
 		// webGL trim
 		if(child.__renderGroup)
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		child.parent = undefined;
 	}
-	this.children.length = leave;
+	this.children.length = leave;*/
+	while(this.children.length)
+	{
+		this.removeChild(this.children[0]);
+	}
 }
 
 

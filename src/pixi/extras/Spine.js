@@ -16,8 +16,9 @@
  * @extends DisplayObjectContainer
  * @constructor
  * @param url {String} The url of the spine anim file to be used
+ * @param textureScale {Number} (CloudKid change) The scale to apply to all textures to size them properly for the animation.
  */
-PIXI.Spine = function(url)
+PIXI.Spine = function(url, textureScale)
 {
 	PIXI.DisplayObjectContainer.call(this);
 	
@@ -28,6 +29,8 @@ PIXI.Spine = function(url)
 		throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
 		return;
 	}
+	
+	this.textureScale = textureScale || 1;//CLOUDKID CHANGE
 	
 	this.count = 0;
 	
@@ -55,6 +58,7 @@ PIXI.Spine = function(url)
 		sprite.anchor.x = sprite.anchor.y = 0.5;
 		this.addChild(sprite);
 		this.sprites.push(sprite);
+		sprite.scale.x = sprite.scale.y = this.textureScale;//CLOUDKID CHANGE
 	};
 }
 
@@ -77,6 +81,7 @@ PIXI.Spine.prototype.updateTransform = function()
 {
 	this.skeleton.updateWorldTransform();
 	
+	var PI_OVER_180 = Math.PI_OVER_180;
 	for (var i = 0, len = this.skeleton.drawOrder.length; i < len; i++) 
 	{
 		var slot = this.skeleton.drawOrder[i];
@@ -108,7 +113,7 @@ PIXI.Spine.prototype.updateTransform = function()
 		
 		sprite.position.x = x;
 		sprite.position.y = y;
-		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * Math.PI_OVER_180;
+		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * PI_OVER_180;
 	}
 	
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);

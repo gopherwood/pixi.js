@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-06
+ * Compiled: 2013-08-08
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1647,19 +1647,33 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
 {
 	if(this.children.length == 0) return;
 	
-	if(typeof leave == "undefined")
+	/*if(typeof leave == "undefined")
 		leave = 0;
 	for(var i = this.children.length - 1; i >= leave; --i)
 	{
 		var child = this.children[i];
+		// update the stage reference..
 		if(this.stage)
-			this.stage.__removeChild(child);
+		{
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = null;
+				tmpChild = tmpChild._iNext;
+			}	
+			while(tmpChild)
+		}
 		// webGL trim
 		if(child.__renderGroup)
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		child.parent = undefined;
 	}
-	this.children.length = leave;
+	this.children.length = leave;*/
+	while(this.children.length)
+	{
+		this.removeChild(this.children[0]);
+	}
 }
 
 
@@ -7791,8 +7805,9 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
  * @extends DisplayObjectContainer
  * @constructor
  * @param url {String} The url of the spine anim file to be used
+ * @param textureScale {Number} (CloudKid change) The scale to apply to all textures to size them properly for the animation.
  */
-PIXI.Spine = function(url)
+PIXI.Spine = function(url, textureScale)
 {
 	PIXI.DisplayObjectContainer.call(this);
 	
@@ -7803,6 +7818,8 @@ PIXI.Spine = function(url)
 		throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
 		return;
 	}
+	
+	this.textureScale = textureScale || 1;//CLOUDKID CHANGE
 	
 	this.count = 0;
 	
@@ -7830,6 +7847,7 @@ PIXI.Spine = function(url)
 		sprite.anchor.x = sprite.anchor.y = 0.5;
 		this.addChild(sprite);
 		this.sprites.push(sprite);
+		sprite.scale.x = sprite.scale.y = this.textureScale;//CLOUDKID CHANGE
 	};
 }
 
@@ -7852,6 +7870,7 @@ PIXI.Spine.prototype.updateTransform = function()
 {
 	this.skeleton.updateWorldTransform();
 	
+	var PI_OVER_180 = Math.PI_OVER_180;
 	for (var i = 0, len = this.skeleton.drawOrder.length; i < len; i++) 
 	{
 		var slot = this.skeleton.drawOrder[i];
@@ -7883,7 +7902,7 @@ PIXI.Spine.prototype.updateTransform = function()
 		
 		sprite.position.x = x;
 		sprite.position.y = y;
-		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * Math.PI_OVER_180;
+		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * PI_OVER_180;
 	}
 	
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
