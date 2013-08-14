@@ -48,13 +48,13 @@ PIXI.Spine = function(url, textureScale)
 		var attachmentName = this.skeleton.drawOrder[i].data.attachmentName;
 		
 		// kind of an assumtion here. that its a png
-		if(!PIXI.TextureCache[attachmentName])
+		if(!PIXI.TextureCache[filenameFromUrl(attachmentName)])
 		{
 			attachmentName += ".png";
 		}
 		
 		
-		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(attachmentName));
+		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(attachmentName)));
 		sprite.anchor.x = sprite.anchor.y = 0.5;
 		this.addChild(sprite);
 		this.sprites.push(sprite);
@@ -88,6 +88,8 @@ PIXI.Spine.prototype.updateTransform = function()
 		var sprite = this.sprites[i];
 		var bone = slot.bone;
 		var attach = slot.attachment;
+		if(!attach)
+			Debug.log("attach is null on slot " + slot.slotData.name);
 
 		var x = bone.worldX + attach.x * bone.m00 + attach.y * bone.m01 + attach.width * 0.5;
 		var y = bone.worldY + attach.x * bone.m10 + attach.y * bone.m11 + attach.height * 0.5;
@@ -96,12 +98,12 @@ PIXI.Spine.prototype.updateTransform = function()
 		{
 			var attachmentName = attach.name;
 	
-			if(!PIXI.TextureCache[attachmentName])
+			if(!PIXI.TextureCache[filenameFromUrl(attachmentName)])
 			{
 				attachmentName += ".png";
 			}
 			
-			sprite.setTexture(PIXI.TextureCache[attachmentName]);
+			sprite.setTexture(PIXI.TextureCache[filenameFromUrl(attachmentName)]);
 			
 			slot.cacheName = attach.name;
 		}
@@ -676,6 +678,8 @@ spine.Skeleton = function (skeletonData) {
 	for (var i = 0, n = skeletonData.slots.length; i < n; i++) {
 		var slotData = skeletonData.slots[i];
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
+		if(!slotData)
+			Debug.log("no slot data for slot " + i);
 		var slot = new spine.Slot(slotData, this, bone);
 		this.slots.push(slot);
 		this.drawOrder.push(slot);
