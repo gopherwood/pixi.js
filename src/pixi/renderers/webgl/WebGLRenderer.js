@@ -221,12 +221,9 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  */
 PIXI.WebGLRenderer.updateTextures = function()
 {
-	var t = PIXI.texturesToUpdate;
-	var len = t.length;
-	for (var i=0; i < len; i++) this.updateTexture(t[i]);
-	t = PIXI.texturesToDestroy;
-	len = t.length;
-	for (var i=0; i < len; i++) this.destroyTexture(t[i]);
+	//TODO break this out into a texture manager...
+	for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 }
@@ -241,6 +238,7 @@ PIXI.WebGLRenderer.updateTextures = function()
  */
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
+	//TODO break this out into a texture manager...
 	var gl = PIXI.gl;
 	
 	if(!texture._glTexture)
@@ -281,9 +279,10 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
  * @param texture {Texture} The texture to update
  * @private
  */
-PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+PIXI.WebGLRenderer.destroyTexture = function(texture)
 {
-	var gl = this.gl;
+	//TODO break this out into a texture manager...
+	var gl = PIXI.gl;
 
 	if(texture._glTexture)
 	{

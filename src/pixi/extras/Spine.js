@@ -1,10 +1,10 @@
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  * based on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi
- * 
+ *
  * Awesome JS run time provided by EsotericSoftware
  * https://github.com/EsotericSoftware/spine-runtimes
- * 
+ *
  */
 
 /**
@@ -27,42 +27,35 @@ PIXI.Spine = function(url, textureScale)
 	if(!this.spineData)
 	{
 		throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
-		return;
 	}
 	
 	this.textureScale = textureScale || 1;//CLOUDKID CHANGE
 	
-	this.count = 0;
-	
-	this.sprites = [];
-	
 	this.skeleton = new spine.Skeleton(this.spineData);
 	this.skeleton.updateWorldTransform();
 
-	this.stateData = new spine.AnimationStateData(this.spineData);	
+	this.stateData = new spine.AnimationStateData(this.spineData);
 	this.state = new spine.AnimationState(this.stateData);
-	
-	// add the sprites..
-	for (var i = 0; i < this.skeleton.drawOrder.length; i++) {
-		
-		var attachmentName = this.skeleton.drawOrder[i].data.attachmentName;
-		
-		// kind of an assumtion here. that its a png
-		if(!PIXI.TextureCache[filenameFromUrl(attachmentName)])
-		{
-			attachmentName += ".png";
-		}
-		
-		
-		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(attachmentName)));
-		sprite.anchor.x = sprite.anchor.y = 0.5;
-		this.addChild(sprite);
-		this.sprites.push(sprite);
-		sprite.scale.x = sprite.scale.y = this.textureScale;//CLOUDKID CHANGE
-	};
-}
 
-PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+	this.slotContainers = [];
+
+	for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
+		var slot = this.skeleton.drawOrder[i];
+		var attachment = slot.attachment;
+		var slotContainer = new PIXI.DisplayObjectContainer();
+		this.slotContainers.push(slotContainer);
+		this.addChild(slotContainer);
+		if (!(attachment instanceof spine.RegionAttachment)) {
+			continue;
+		}
+		var spriteName = attachment.rendererObject.name;
+		var sprite = this.createSprite(slot, attachment.rendererObject);
+		slot.currentSprite = sprite;
+		slotContainer.addChild(sprite);
+	}
+};
+
+PIXI.Spine.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.Spine.prototype.constructor = PIXI.Spine;
 
 PIXI.Spine.prototype.updateAnim = function(deltaSec)
@@ -77,49 +70,63 @@ PIXI.Spine.prototype.updateAnim = function(deltaSec)
  * @method updateTransform
  * @private
  */
-PIXI.Spine.prototype.updateTransform = function()
-{
+PIXI.Spine.prototype.updateTransform = function () {
 	this.skeleton.updateWorldTransform();
-	
-	var PI_OVER_180 = Math.PI_OVER_180;
-	for (var i = 0, len = this.skeleton.drawOrder.length; i < len; i++) 
-	{
-		var slot = this.skeleton.drawOrder[i];
-		var sprite = this.sprites[i];
-		var bone = slot.bone;
-		var attach = slot.attachment;
-		if(!attach)
-			Debug.log("attach is null on slot " + slot.slotData.name);
 
-		var x = bone.worldX + attach.x * bone.m00 + attach.y * bone.m01 + attach.width * 0.5;
-		var y = bone.worldY + attach.x * bone.m10 + attach.y * bone.m11 + attach.height * 0.5;
-		
-		if(slot.cacheName != attach.name)
-		{
-			var attachmentName = attach.name;
-	
-			if(!PIXI.TextureCache[filenameFromUrl(attachmentName)])
-			{
-				attachmentName += ".png";
-			}
-			
-			sprite.setTexture(PIXI.TextureCache[filenameFromUrl(attachmentName)]);
-			
-			slot.cacheName = attach.name;
+	var drawOrder = this.skeleton.drawOrder;
+	for (var i = 0, n = drawOrder.length; i < n; i++) {
+		var slot = drawOrder[i];
+		var attachment = slot.attachment;
+		var slotContainer = this.slotContainers[i];
+		if (!(attachment instanceof spine.RegionAttachment)) {
+			slotContainer.visible = false;
+			continue;
 		}
-		
-		x += -((attach.width * (bone.worldScaleX + attach.scaleX - 1))>>1);
-		y += -((attach.height * (bone.worldScaleY + attach.scaleY - 1))>>1);
-		
-		sprite.alpha = slot.a;
-		
-		sprite.position.x = x;
-		sprite.position.y = y;
-		sprite.rotation = (-(bone.worldRotation + attach.rotation)) * PI_OVER_180;
+
+		if (attachment.rendererObject) {
+			if (!slot.data.attachmentName || attachment.rendererObject.name != slot.data.attachmentName) {
+				var spriteName = attachment.rendererObject.name;
+				if (slot.currentSprite !== undefined) {
+					slot.currentSprite.visible = false;
+				}
+				slot.sprites = slot.sprites || {};
+				if (slot.sprites[spriteName] !== undefined) {
+					slot.sprites[spriteName].visible = true;
+				} else {
+					var sprite = this.createSprite(slot, attachment.rendererObject);
+					slotContainer.addChild(sprite);
+				}
+				slot.data.attachmentName = attachment.rendererObject.name;
+				slot.currentSprite = slot.sprites[spriteName];
+			}
+		}
+		slotContainer.visible = true;
+
+		var bone = slot.bone;
+
+		slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
+		slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
+		slotContainer.scale.x = bone.worldScaleX;
+		slotContainer.scale.y = bone.worldScaleY;
+
+		slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
 	}
-	
+
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
-}
+};
+
+
+PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
+	var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
+	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(name));
+	sprite.scale = descriptor.scale;
+	sprite.rotation = descriptor.rotation;
+	sprite.anchor.x = sprite.anchor.y = 0.5;
+
+	slot.sprites = slot.sprites || {};
+	slot.sprites[descriptor.name] = sprite;
+	return sprite;
+};
 
 /*
  * Awesome JS run time provided by EsotericSoftware
@@ -235,7 +242,7 @@ spine.Slot.prototype = {
 		this.g = data.g;
 		this.b = data.b;
 		this.a = data.a;
-		
+
 		var slotDatas = this.skeleton.data.slots;
 		for (var i = 0, n = slotDatas.length; i < n; i++) {
 			if (slotDatas[i] == data) {
@@ -466,6 +473,7 @@ spine.TranslateTimeline.prototype = {
 		var frameTime = frames[frameIndex];
 		var percent = 1 - (time - frameTime) / (frames[frameIndex + -3/*LAST_FRAME_TIME*/] - frameTime);
 		percent = this.curves.getCurvePercent(frameIndex / 3 - 1, percent);
+
 		bone.x += (bone.data.x + lastFrameX + (frames[frameIndex + 1/*FRAME_X*/] - lastFrameX) * percent - bone.x) * alpha;
 		bone.y += (bone.data.y + lastFrameY + (frames[frameIndex + 2/*FRAME_Y*/] - lastFrameY) * percent - bone.y) * alpha;
 	}
@@ -490,14 +498,12 @@ spine.ScaleTimeline.prototype = {
 	apply: function (skeleton, time, alpha) {
 		var frames = this.frames;
 		if (time < frames[0]) return; // Time is before first frame.
-		
+
 		var bone = skeleton.bones[this.boneIndex];
 
 		if (time >= frames[frames.length - 3]) { // Time is after last frame.
 			bone.scaleX += (bone.data.scaleX - 1 + frames[frames.length - 2] - bone.scaleX) * alpha;
 			bone.scaleY += (bone.data.scaleY - 1 + frames[frames.length - 1] - bone.scaleY) * alpha;
-			
-			
 			return;
 		}
 
@@ -535,6 +541,7 @@ spine.ColorTimeline.prototype = {
 	apply: function (skeleton, time, alpha) {
 		var frames = this.frames;
 		if (time < frames[0]) return; // Time is before first frame.
+
 		var slot = skeleton.slots[this.slotIndex];
 
 		if (time >= frames[frames.length - 5]) { // Time is after last frame.
@@ -601,11 +608,6 @@ spine.AttachmentTimeline.prototype = {
 			frameIndex = spine.binarySearch(frames, time, 1) - 1;
 
 		var attachmentName = this.attachmentNames[frameIndex];
-		//console.log(skeleton.slots[this.slotIndex])
-		
-		// change the name!
-	//	skeleton.slots[this.slotIndex].attachmentName = attachmentName;
-		
 		skeleton.slots[this.slotIndex].setAttachment(!attachmentName ? null : skeleton.getAttachmentBySlotIndex(this.slotIndex, attachmentName));
 	}
 };
@@ -779,11 +781,9 @@ spine.Skeleton.prototype = {
 			if (slot.data.name == slotName) {
 				var attachment = null;
 				if (attachmentName) {
-					
 					attachment = this.getAttachment(i, attachmentName);
 					if (attachment == null) throw "Attachment not found: " + attachmentName + ", for slot: " + slotName;
 				}
-				
 				slot.setAttachment(attachment);
 				return;
 			}
@@ -865,7 +865,6 @@ spine.RegionAttachment.prototype = {
 		offset[7/*Y4*/] = localYCos + localX2Sin;
 	},
 	computeVertices: function (x, y, bone, vertices) {
-		
 		x += bone.worldX;
 		y += bone.worldY;
 		var m00 = bone.m00;
@@ -889,6 +888,7 @@ spine.AnimationStateData = function (skeletonData) {
 	this.animationToMixTime = {};
 };
 spine.AnimationStateData.prototype = {
+        defaultMix: 0,
 	setMixByName: function (fromName, toName, duration) {
 		var from = this.skeletonData.findAnimation(fromName);
 		if (!from) throw "Animation not found: " + fromName;
@@ -901,7 +901,7 @@ spine.AnimationStateData.prototype = {
 	},
 	getMix: function (from, to) {
 		var time = this.animationToMixTime[from.name + ":" + to.name];
-		return time ? time : 0;
+            return time ? time : this.defaultMix;
 	}
 };
 
@@ -941,7 +941,7 @@ spine.AnimationState.prototype = {
 				this.previous = null;
 			}
 			this.current.mix(skeleton, this.currentTime, this.currentLoop, alpha);
-		} else 
+		} else
 			this.current.apply(skeleton, this.currentTime, this.currentLoop);
 	},
 	clearAnimation: function () {
@@ -1087,16 +1087,9 @@ spine.SkeletonJson.prototype = {
 		name = map["name"] || name;
 
 		var type = spine.AttachmentType[map["type"] || "region"];
-		
-		// @ekelokorpi
-		// var attachment = this.attachmentLoader.newAttachment(skin, type, name);
-		var attachment = new spine.RegionAttachment();
-		
-		// @Doormat23
-		// add the name of the attachment
-		attachment.name = name;
-		
+
 		if (type == spine.AttachmentType.region) {
+			var attachment = new spine.RegionAttachment();
 			attachment.x = (map["x"] || 0) * this.scale;
 			attachment.y = (map["y"] || 0) * this.scale;
 			attachment.scaleX = map["scaleX"] || 1;
@@ -1105,10 +1098,19 @@ spine.SkeletonJson.prototype = {
 			attachment.width = (map["width"] || 32) * this.scale;
 			attachment.height = (map["height"] || 32) * this.scale;
 			attachment.updateOffset();
+
+			attachment.rendererObject = {};
+			attachment.rendererObject.name = name;
+			attachment.rendererObject.scale = {};
+			attachment.rendererObject.scale.x = attachment.scaleX;
+			attachment.rendererObject.scale.y = attachment.scaleY;
+			attachment.rendererObject.rotation = -attachment.rotation * Math.PI / 180;
+			return attachment;
 		}
 
-		return attachment;
+            throw "Unknown attachment type: " + type;
 	},
+
 	readAnimation: function (name, map, skeletonData) {
 		var timelines = [];
 		var duration = 0;
@@ -1159,7 +1161,7 @@ spine.SkeletonJson.prototype = {
 					}
 					timelines.push(timeline);
 					duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 3 - 3]);
-					
+
 				} else
 					throw "Invalid timeline type for a bone: " + timelineName + " (" + boneName + ")";
 			}
@@ -1201,8 +1203,8 @@ spine.SkeletonJson.prototype = {
 						timeline.setFrame(frameIndex++, valueMap["time"], valueMap["name"]);
 					}
 					timelines.push(timeline);
-					// PIXI FIX
-					duration = Math.max(duration, timeline.frames[Math.floor(timeline.getFrameCount()) - 1]);
+                        duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
+
 				} else
 					throw "Invalid timeline type for a slot: " + timelineName + " (" + slotName + ")";
 			}
