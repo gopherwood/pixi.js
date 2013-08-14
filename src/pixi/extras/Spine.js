@@ -49,7 +49,7 @@ PIXI.Spine = function(url, textureScale)
 			continue;
 		}
 		var spriteName = attachment.rendererObject.name;
-		var sprite = this.createSprite(slot, attachment.rendererObject);
+		var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
 		slot.currentSprite = sprite;
 		slotContainer.addChild(sprite);
 	}
@@ -116,10 +116,12 @@ PIXI.Spine.prototype.updateTransform = function () {
 };
 
 
-PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
+PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
 	var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
-	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(name));
+	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(name)));
 	sprite.scale = descriptor.scale;
+	sprite.scale.x *= textureScale;
+	sprite.scale.y *= textureScale;
 	sprite.rotation = descriptor.rotation;
 	sprite.anchor.x = sprite.anchor.y = 0.5;
 
