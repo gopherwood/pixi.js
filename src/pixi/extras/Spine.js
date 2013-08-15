@@ -73,6 +73,7 @@ PIXI.Spine.prototype.updateAnim = function(deltaSec)
 PIXI.Spine.prototype.updateTransform = function () {
 	this.skeleton.updateWorldTransform();
 
+	var PI_OVER_180 = Math.PI_OVER_180;
 	var drawOrder = this.skeleton.drawOrder;
 	for (var i = 0, n = drawOrder.length; i < n; i++) {
 		var slot = drawOrder[i];
@@ -109,7 +110,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.scale.x = bone.worldScaleX;
 		slotContainer.scale.y = bone.worldScaleY;
 
-		slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+		slotContainer.rotation = -(slot.bone.worldRotation * PI_OVER_180);
 	}
 
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
@@ -682,8 +683,6 @@ spine.Skeleton = function (skeletonData) {
 	for (var i = 0, n = skeletonData.slots.length; i < n; i++) {
 		var slotData = skeletonData.slots[i];
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
-		if(!slotData)
-			Debug.log("no slot data for slot " + i);
 		var slot = new spine.Slot(slotData, this, bone);
 		this.slots.push(slot);
 		this.drawOrder.push(slot);

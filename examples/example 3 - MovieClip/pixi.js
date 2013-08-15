@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-14
+ * Compiled: 2013-08-15
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -7850,6 +7850,7 @@ PIXI.Spine.prototype.updateAnim = function(deltaSec)
 PIXI.Spine.prototype.updateTransform = function () {
 	this.skeleton.updateWorldTransform();
 
+	var PI_OVER_180 = Math.PI_OVER_180;
 	var drawOrder = this.skeleton.drawOrder;
 	for (var i = 0, n = drawOrder.length; i < n; i++) {
 		var slot = drawOrder[i];
@@ -7886,7 +7887,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.scale.x = bone.worldScaleX;
 		slotContainer.scale.y = bone.worldScaleY;
 
-		slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+		slotContainer.rotation = -(slot.bone.worldRotation * PI_OVER_180);
 	}
 
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
@@ -8459,8 +8460,6 @@ spine.Skeleton = function (skeletonData) {
 	for (var i = 0, n = skeletonData.slots.length; i < n; i++) {
 		var slotData = skeletonData.slots[i];
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
-		if(!slotData)
-			Debug.log("no slot data for slot " + i);
 		var slot = new spine.Slot(slotData, this, bone);
 		this.slots.push(slot);
 		this.drawOrder.push(slot);
@@ -10173,7 +10172,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 					var rect = f.frame;
 					if (rect)
 					{
-						var t = PIXI.TextureCache[i] = new PIXI.Texture(this.texture,
+						var t = PIXI.TextureCache[filenameFromUrl(i)] = new PIXI.Texture(this.texture,
 						{
 							x: rect.x,
 							y: rect.y,
@@ -10349,7 +10348,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 		var f = frameData[i];
 		var rect = f.frame;
 		if (rect) {
-			var t = PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+			var t = PIXI.TextureCache[filenameFromUrl(i)] = new PIXI.Texture(this.texture, {
 				x: rect.x,
 				y: rect.y,
 				width: rect.w,

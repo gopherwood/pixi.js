@@ -109,7 +109,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 		var f = frameData[i];
 		var rect = f.frame;
 		if (rect) {
-			var t = PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+			var t = PIXI.TextureCache[filenameFromUrl(i)] = new PIXI.Texture(this.texture, {
 				x: rect.x,
 				y: rect.y,
 				width: rect.w,
