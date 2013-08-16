@@ -185,13 +185,20 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 				var w = frame.width;
 				var h = frame.height;
+				var aX = displayObject.anchor.x;
+				var aY = displayObject.anchor.y;
+				if(displayObject.texture.realSize)
+				{
+					aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
+					aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+				}
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   w,
 								   h,
-								   (displayObject.anchor.x) * -w, 
-								   (displayObject.anchor.y) * -h,
+								   aX * -w, 
+								   aY * -h,
 								   w,
 								   h);
 			}					   

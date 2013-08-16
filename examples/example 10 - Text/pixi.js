@@ -1725,11 +1725,6 @@ PIXI.Sprite = function(texture)
 	 * @type Texture
 	 */
 	this.texture = texture;
-	if(this.texture.realSize)
-	{
-		this.pivot.x = this.texture.realSize.x;
-		this.pivot.y = this.texture.realSize.y;
-	}
 	
 	/**
 	 * The blend mode of sprite.
@@ -1824,16 +1819,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	
 	this.texture = texture;
 	this.updateFrame = true;
-	
-	if(this.texture.realSize)
-	{
-		this.pivot.x = this.texture.realSize.x;
-		this.pivot.y = this.texture.realSize.y;
-	}
-	else
-	{
-		this.pivot.x = this.pivot.y = 0;
-	}
 }
 
 /**
@@ -5333,6 +5318,11 @@ PIXI.WebGLBatch.prototype.update = function()
 			// TODO trim??
 			aX = displayObject.anchor.x;// - displayObject.texture.trim.x
 			aY = displayObject.anchor.y; //- displayObject.texture.trim.y
+			if(displayObject.texture.realSize)
+			{
+				aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
+				aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+			}
 			w0 = width * (1-aX);
 			w1 = width * -aX;
 
@@ -6736,13 +6726,20 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 				var w = frame.width;
 				var h = frame.height;
+				var aX = displayObject.anchor.x;
+				var aY = displayObject.anchor.y;
+				if(displayObject.texture.realSize)
+				{
+					aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
+					aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+				}
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   w,
 								   h,
-								   (displayObject.anchor.x) * -w, 
-								   (displayObject.anchor.y) * -h,
+								   aX * -w, 
+								   aY * -h,
 								   w,
 								   h);
 			}					   
@@ -7871,7 +7868,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 				if (slot.sprites[spriteName] !== undefined) {
 					slot.sprites[spriteName].visible = true;
 				} else {
-					var sprite = this.createSprite(slot, attachment.rendererObject);
+					var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
 					slotContainer.addChild(sprite);
 				}
 				slot.data.attachmentName = attachment.rendererObject.name;
@@ -8621,7 +8618,7 @@ spine.RegionAttachment.prototype = {
 		var localY = -this.height / 2 * this.scaleY + this.regionOffsetY * regionScaleY;
 		var localX2 = localX + this.regionWidth * regionScaleX;
 		var localY2 = localY + this.regionHeight * regionScaleY;
-		var radians = this.rotation * Math.PI / 180;
+		var radians = this.rotation * Math.PI_OVER_180;
 		var cos = Math.cos(radians);
 		var sin = Math.sin(radians);
 		var localXCos = localX * cos + this.x;
@@ -8882,7 +8879,7 @@ spine.SkeletonJson.prototype = {
 			attachment.rendererObject.scale = {};
 			attachment.rendererObject.scale.x = attachment.scaleX;
 			attachment.rendererObject.scale.y = attachment.scaleY;
-			attachment.rendererObject.rotation = -attachment.rotation * Math.PI / 180;
+			attachment.rendererObject.rotation = -attachment.rotation * Math.PI_OVER_180;
 			return attachment;
 		}
 

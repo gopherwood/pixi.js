@@ -38,11 +38,6 @@ PIXI.Sprite = function(texture)
 	 * @type Texture
 	 */
 	this.texture = texture;
-	if(this.texture.realSize)
-	{
-		this.pivot.x = this.texture.realSize.x;
-		this.pivot.y = this.texture.realSize.y;
-	}
 	
 	/**
 	 * The blend mode of sprite.
@@ -137,16 +132,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	
 	this.texture = texture;
 	this.updateFrame = true;
-	
-	if(this.texture.realSize)
-	{
-		this.pivot.x = this.texture.realSize.x;
-		this.pivot.y = this.texture.realSize.y;
-	}
-	else
-	{
-		this.pivot.x = this.pivot.y = 0;
-	}
 }
 
 /**

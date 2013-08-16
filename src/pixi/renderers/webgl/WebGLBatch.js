@@ -431,6 +431,11 @@ PIXI.WebGLBatch.prototype.update = function()
 			// TODO trim??
 			aX = displayObject.anchor.x;// - displayObject.texture.trim.x
 			aY = displayObject.anchor.y; //- displayObject.texture.trim.y
+			if(displayObject.texture.realSize)
+			{
+				aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
+				aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+			}
 			w0 = width * (1-aX);
 			w1 = width * -aX;
 

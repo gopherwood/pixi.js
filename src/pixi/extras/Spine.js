@@ -94,7 +94,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 				if (slot.sprites[spriteName] !== undefined) {
 					slot.sprites[spriteName].visible = true;
 				} else {
-					var sprite = this.createSprite(slot, attachment.rendererObject);
+					var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
 					slotContainer.addChild(sprite);
 				}
 				slot.data.attachmentName = attachment.rendererObject.name;
@@ -844,7 +844,7 @@ spine.RegionAttachment.prototype = {
 		var localY = -this.height / 2 * this.scaleY + this.regionOffsetY * regionScaleY;
 		var localX2 = localX + this.regionWidth * regionScaleX;
 		var localY2 = localY + this.regionHeight * regionScaleY;
-		var radians = this.rotation * Math.PI / 180;
+		var radians = this.rotation * Math.PI_OVER_180;
 		var cos = Math.cos(radians);
 		var sin = Math.sin(radians);
 		var localXCos = localX * cos + this.x;
@@ -1105,7 +1105,7 @@ spine.SkeletonJson.prototype = {
 			attachment.rendererObject.scale = {};
 			attachment.rendererObject.scale.x = attachment.scaleX;
 			attachment.rendererObject.scale.y = attachment.scaleY;
-			attachment.rendererObject.rotation = -attachment.rotation * Math.PI / 180;
+			attachment.rendererObject.rotation = -attachment.rotation * Math.PI_OVER_180;
 			return attachment;
 		}
 
