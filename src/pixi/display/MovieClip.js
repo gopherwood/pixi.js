@@ -104,7 +104,10 @@ Object.defineProperty(PIXI.MovieClip.prototype, "fps", {
 	set: function(value) {
 		this._animFrameRate = value;
 		this._elapsedTime = 0;
-		this._duration = value ? this.textures.length / value : 0;
+		if(this.textures)
+			this._duration = value ? this.textures.length / value : 0;
+		else
+			this._duration = 0;
 	}
 })
 

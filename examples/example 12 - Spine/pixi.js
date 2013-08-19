@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-15
+ * Compiled: 2013-08-19
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1987,7 +1987,10 @@ Object.defineProperty(PIXI.MovieClip.prototype, "fps", {
 	set: function(value) {
 		this._animFrameRate = value;
 		this._elapsedTime = 0;
-		this._duration = value ? this.textures.length / value : 0;
+		if(this.textures)
+			this._duration = value ? this.textures.length / value : 0;
+		else
+			this._duration = 0;
 	}
 })
 
