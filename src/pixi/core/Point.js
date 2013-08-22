@@ -80,6 +80,55 @@ PIXI.Point.prototype.normalize = function()
 	this.y *= oneOverLen;
 }
 
+/**
+ * Subtracts the x and y values of a point from this point.
+ * @method subtract 
+ * @param other {Point} The point to subtract from this one
+ */
+PIXI.Point.prototype.subtract = function(other)
+{
+	this.x -= other.x;
+	this.y -= other.y;
+}
+
+/**
+ * Adds the x and y values of a point to this point.
+ * @method add 
+ * @param other {Point} The point to add to this one
+ */
+PIXI.Point.prototype.add = function(other)
+{
+	this.x += other.x;
+	this.y += other.y;
+}
+
+/**
+ * Truncate the length of the point to a maximum.
+ * @method truncate 
+ * @param maxLength {Number} The maximum length to allow in this point.
+ */
+PIXI.Point.prototype.truncate = function(maxLength)
+{
+	var l = this.length();
+	if(l > maxLength)
+	{
+		var maxOverLen = maxLength / l;
+		this.x *= maxOverLen;
+		this.y *= maxOverLen;	
+	}
+}
+
+/**
+ * Multiplies the x and y values of this point by a value.
+ * @method scaleBy 
+ * @param value {Number} The value to scale by.
+ */
+PIXI.Point.prototype.scaleBy = function(value)
+{
+	this.x *= value;
+	this.y *= value;
+}
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
 
