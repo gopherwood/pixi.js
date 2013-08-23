@@ -112,21 +112,22 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 				tempAttributes = letters[i].attributes;
 				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
 
-				var textureRect = {
-					x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
-					y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
-					width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
-					height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
-				};
-				
-				data.chars[charCode] = {
-					xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
-					yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
-					xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
-					kerning: {},
-					texture:new PIXI.Texture(this.texture, textureRect)
-				};
-			}
+                var textureRect = new PIXI.Rectangle(
+                    x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
+                    y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
+                    width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
+                    height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
+                );
+
+                data.chars[charCode] = {
+                    xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
+                    yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
+                    xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
+                    kerning: {},
+                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
+
+                };
+            }
 
 			//parse kernings
 			var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");

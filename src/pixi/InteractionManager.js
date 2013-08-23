@@ -38,6 +38,8 @@ PIXI.InteractionManager = function(stage)
 	 */
 	this.touchs = {};
 
+
+	
 	// helpers
 	this.tempPoint = new PIXI.Point();
 	//this.tempMatrix =  mat3.create();
@@ -48,7 +50,8 @@ PIXI.InteractionManager = function(stage)
 	this.pool = [];
 
 	this.interactiveItems = [];
-
+	
+	
 	this.last = 0;
 }
 
@@ -73,7 +76,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(child.visible) {
+//		if(child.visible) {
 			// push all interactive bits
 			if(child.interactive)
 			{
@@ -95,7 +98,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 					this.collectInteractiveSprite(child, iParent);
 				}
 			}
-		}
+//		}
 	}
 }
 
@@ -121,7 +124,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
 	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
  	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
 	
 	// aint no multi touch just yet!
 	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
@@ -181,7 +184,9 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		if(!item.visible)continue;
+		
+		
+		//if(!item.visible)continue;
 		
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
@@ -261,7 +266,6 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	event.preventDefault();
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
@@ -294,6 +298,26 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 				// just the one!
 				if(!item.interactiveChildren)break;
 			}
+		}
+	}
+}
+
+
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
+{
+	var length = this.interactiveItems.length;
+	
+	this.target.view.style.cursor = "default";	
+				
+	for (var i = 0; i < length; i++)
+	{
+		var item = this.interactiveItems[i];
+		
+		if(item.__isOver)
+		{
+			this.mouse.target = item;
+			if(item.mouseout)item.mouseout(this.mouse);
+			item.__isOver = false;	
 		}
 	}
 }
@@ -360,7 +384,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
-	if(!item.visible)return false;
+	if(item.vcount !== PIXI.visibleCount)return false;
 	
 	var global = interactionData.global;
 
@@ -432,7 +456,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -442,6 +465,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
+		touchData.originalEvent =  event || window.event;
 		
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
@@ -465,9 +489,6 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	event.preventDefault();
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
-	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -479,6 +500,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;
 		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
@@ -517,7 +540,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
+	//this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -542,7 +565,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 			if(itemTouchData == touchData)
 			{
 				// so this one WAS down...
-				
+				touchData.originalEvent =  event || window.event;
 				// hitTest??
 				
 				if(item.touchend || item.tap)

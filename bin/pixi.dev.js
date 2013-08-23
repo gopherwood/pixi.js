@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-22
+ * Compiled: 2013-08-23
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -172,7 +172,7 @@ PIXI.Point.prototype.constructor = PIXI.Point;
  * @constructor 
  * @param x {Number} The X coord of the upper-left corner of the rectangle
  * @param y {Number} The Y coord of the upper-left corner of the rectangle
- * @param width {Number} The overall wisth of this rectangle
+ * @param width {Number} The overall width of this rectangle
  * @param height {Number} The overall height of this rectangle
  */
 PIXI.Rectangle = function(x, y, width, height)
@@ -399,6 +399,7 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 }
 
+// constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
 
 
@@ -413,8 +414,8 @@ PIXI.Circle.prototype.constructor = PIXI.Circle;
  * @constructor
  * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this ellipse
  * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The overall height of this ellipse
- * @param height {Number} The overall width of this ellipse
+ * @param width {Number} The overall width of this ellipse
+ * @param height {Number} The overall height of this ellipse
  */
 PIXI.Ellipse = function(x, y, width, height)
 {
@@ -487,8 +488,8 @@ PIXI.Ellipse.getBounds = function()
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
 
+// constructor
 PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
-
 
 
 
@@ -873,15 +874,6 @@ PIXI.DisplayObject = function()
 	this.renderable = false;
 
 	/**
-	 * [read-only] The visibility of the object based on world (parent) factors.
-	 *
-	 * @property worldVisible
-	 * @type Boolean
-	 * @readOnly
-	 */	
-	this.worldVisible = false;
-
-	/**
 	 * [read-only] The display object container that contains this display object.
 	 *
 	 * @property parent
@@ -1037,17 +1029,6 @@ PIXI.DisplayObject = function()
 // constructor
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
-//TODO make visible a getter setter
-/*
-Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-    }
-});*/
-
 /**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
  * Instead of using this function you can now simply set the interactive property to true or false
@@ -1120,11 +1101,9 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	if(this.filter)return;
 	this.filter = true;
 	
-	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
-	
 	
 	start.mask = mask;
 	end.mask = mask;
@@ -1135,9 +1114,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	start.open = true;
 	
 	/*
-	 * 
 	 * insert start
-	 * 
 	 */
 	
 	var childFirst = start
@@ -1168,9 +1145,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	// now insert the end filter block..
 	
 	/*
-	 * 
 	 * insert end filter
-	 * 
 	 */
 	var childFirst = end
 	var childLast = end
@@ -1246,8 +1221,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	previousObject._iNext = nextObject;		
 	
 	// this is always true too!
-//	if(this.last == lastBlock)
-	//{
 	var tempLast =  lastBlock._iPrev;	
 	// need to make sure the parents last is updated too
 	var updateLast = this;
@@ -1266,7 +1239,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	{
 		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
 	}
-	//}
 }
 
 /*
@@ -1278,7 +1250,7 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 PIXI.DisplayObject.prototype.updateTransform = function()
 {
 	// TODO OPTIMIZE THIS!! with dirty
-	if(this.rotation != this.rotationCache)
+	if(this.rotation !== this.rotationCache)
 	{
 		this.rotationCache = this.rotation;
 		this._sr =  Math.sin(this.rotation);
@@ -1323,7 +1295,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
+	
+	this.vcount = PIXI.visibleCount;
+
 }
+
+PIXI.visibleCount = 0;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -1388,7 +1365,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	
 	this.children.push(child);	
 	
-	// updae the stage refference..
+	// update the stage refference..
 	
 	if(this.stage)
 	{
@@ -1423,7 +1400,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	nextObject = previousObject._iNext;
 	
 	// always true in this case
-	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
 	var prevLast = previousObject;
@@ -1487,7 +1463,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		var nextObject;
 		var previousObject;
@@ -1495,7 +1471,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			var updateLast = this;//.parent;
+			var updateLast = this;
 			var prevLast = this.last;
 			while(updateLast)
 			{
@@ -1624,7 +1600,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	{
 		// unlink //
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		
 		var nextObject = childLast._iNext;
@@ -1863,10 +1839,19 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	// stop current texture;
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
-		this.textureChange = true;
+		this.textureChange = true;	
+		this.texture = texture;
+		
+		if(this.__renderGroup)
+		{
+			this.__renderGroup.updateTexture(this);
+		}
+	}
+	else
+	{
+		this.texture = texture;
 	}
 	
-	this.texture = texture;
 	this.updateFrame = true;
 }
 
@@ -2656,6 +2641,8 @@ PIXI.InteractionManager = function(stage)
 	 */
 	this.touchs = {};
 
+
+	
 	// helpers
 	this.tempPoint = new PIXI.Point();
 	//this.tempMatrix =  mat3.create();
@@ -2666,7 +2653,8 @@ PIXI.InteractionManager = function(stage)
 	this.pool = [];
 
 	this.interactiveItems = [];
-
+	
+	
 	this.last = 0;
 }
 
@@ -2691,7 +2679,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(child.visible) {
+//		if(child.visible) {
 			// push all interactive bits
 			if(child.interactive)
 			{
@@ -2713,7 +2701,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 					this.collectInteractiveSprite(child, iParent);
 				}
 			}
-		}
+//		}
 	}
 }
 
@@ -2739,7 +2727,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
 	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
  	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
 	
 	// aint no multi touch just yet!
 	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
@@ -2799,7 +2787,9 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		if(!item.visible)continue;
+		
+		
+		//if(!item.visible)continue;
 		
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
@@ -2879,7 +2869,6 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	event.preventDefault();
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
@@ -2912,6 +2901,26 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 				// just the one!
 				if(!item.interactiveChildren)break;
 			}
+		}
+	}
+}
+
+
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
+{
+	var length = this.interactiveItems.length;
+	
+	this.target.view.style.cursor = "default";	
+				
+	for (var i = 0; i < length; i++)
+	{
+		var item = this.interactiveItems[i];
+		
+		if(item.__isOver)
+		{
+			this.mouse.target = item;
+			if(item.mouseout)item.mouseout(this.mouse);
+			item.__isOver = false;	
 		}
 	}
 }
@@ -2978,7 +2987,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
-	if(!item.visible)return false;
+	if(item.vcount !== PIXI.visibleCount)return false;
 	
 	var global = interactionData.global;
 
@@ -3050,7 +3059,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -3060,6 +3068,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
+		touchData.originalEvent =  event || window.event;
 		
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
@@ -3083,9 +3092,6 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	event.preventDefault();
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
-	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -3097,6 +3103,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;
 		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
@@ -3135,7 +3143,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
+	//this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -3160,7 +3168,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 			if(itemTouchData == touchData)
 			{
 				// so this one WAS down...
-				
+				touchData.originalEvent =  event || window.event;
 				// hitTest??
 				
 				if(item.touchend || item.tap)
@@ -3394,37 +3402,6 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-/*
-PIXI.Stage.prototype.__addChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = this;
-	
-	if(child.children)
-	{
-		for (var i=0; i < child.children.length; i++) 
-		{
-		  	this.__addChild(child.children[i]);
-		};
-	}
-	
-}
-
-PIXI.Stage.prototype.__removeChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = undefined;
-	
-	if(child.children)
-	{
-		for(var i=0,j=child.children.length; i<j; i++)
-		{
-		  	this.__removeChild(child.children[i]);
-		}
-	}
-}*/
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -3514,7 +3491,7 @@ if (typeof Function.prototype.bind != 'function') {
  */
 var AjaxRequest = PIXI.AjaxRequest = function()
 {
-	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
+	var activexmodes = ["Msxml2.XMLHTTP.6.0", "Msxml2.XMLHTTP.3.0", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
 	
 	if (window.ActiveXObject)
 	{ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
@@ -3617,12 +3594,20 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.dispatchEvent = this.emit = function ( event )
-	{
-		for ( var listener in listeners[ event.type ] )
-		{
-			listeners[ event.type ][ listener ]( event );	
+	this.dispatchEvent = this.emit = function ( event ) {
+
+		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
+
+			return;
+			
 		}
+		
+		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
+
+			listeners[ event.type ][ i ]( event );
+			
+		}
+
 	};
 
 	this.removeEventListener = this.off = function ( type, listener )
@@ -3650,8 +3635,11 @@ PIXI.EventTarget = function () {
  * @param height {Number} the height of the renderers view
  * @param view {Canvas} the canvas to use as a view, optional
  * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param antialias=false {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ * 
+ * antialias
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -3662,7 +3650,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent);
+		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
 	}
 
 	return	new PIXI.CanvasRenderer(width, height, view, transparent);
@@ -4476,7 +4464,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 			verts.push(px , py);
 			verts.push(r, g, b, alpha);
 			
-			verts.push(p2x - (px-p2x), p2y - (py - p2y));//, 4);
+			verts.push(p2x - (px-p2x), p2y - (py - p2y));
 			verts.push(r, g, b, alpha);
 		}
 	}
@@ -4589,9 +4577,10 @@ PIXI.gl;
  * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
  * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -4623,7 +4612,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
  	{
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
-    		 antialias:true, // SPEED UP??
+    		 antialias:!!antialias, // SPEED UP??
     		 premultipliedAlpha:false,
     		 stencil:true
         });
@@ -4710,8 +4699,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
-		//if(this.__stage)this.checkVisibility(this.__stage, false)
-		
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
@@ -4728,10 +4715,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
 		
-	// recursivly loop through all items!
-	//this.checkVisibility(stage, true);
-	
 	// update the scene graph	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	var gl = this.gl;
@@ -4740,18 +4725,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.colorMask(true, true, true, this.transparent); 
 	gl.viewport(0, 0, this.width, this.height);	
 	
-	// set the correct matrix..	
-   //	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
-   
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	
-	if(this.clearView)
-	{
-		var bcs = stage.backgroundColorSplit;
-		gl.clearColor(bcs[0], bcs[1], bcs[2], !this.transparent);     
-		gl.clear(gl.COLOR_BUFFER_BIT);
-	}
+		
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+	gl.clear(gl.COLOR_BUFFER_BIT);
 
+	// HACK TO TEST
+	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 	this.stageRenderGroup.render(PIXI.projection);
 	
@@ -5018,7 +4998,6 @@ PIXI.WebGLBatch.prototype.clean = function()
 	this.uvs = [];
 	this.indices = [];
 	this.colors = [];
-	//this.sprites = [];
 	this.dynamicSize = 1;
 	this.texture = null;
 	this.last = null;
@@ -5055,7 +5034,6 @@ PIXI.WebGLBatch.prototype.init = function(sprite)
 	this.dirty = true;
 	this.blendMode = sprite.blendMode;
 	this.texture = sprite.texture.baseTexture;
-//	this.sprites.push(sprite);
 	this.head = sprite;
 	this.tail = sprite;
 	this.size = 1;
@@ -5088,7 +5066,6 @@ PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
 	else
 	{
 		this.head = sprite;
-		//this.head.__prev = null
 	}
 }
 
@@ -5176,7 +5153,7 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
 {
 	this.dirty = true;
 
-	var batch = new PIXI.WebGLBatch(this.gl);//PIXI._getBatch(this.gl);
+	var batch = new PIXI.WebGLBatch(this.gl);
 	batch.init(sprite);
 	batch.texture = this.texture;
 	batch.tail = this.tail;
@@ -5186,8 +5163,6 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
 
 	sprite.__prev = null;
 	// return a splite batch!
-	//sprite.__prev.__next = null;
-	//sprite.__prev = null;
 
 	// TODO this size is wrong!
 	// need to recalculate :/ problem with a linked list!
@@ -5257,13 +5232,13 @@ PIXI.WebGLBatch.prototype.growBatch = function()
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER,this.verticies , gl.DYNAMIC_DRAW);
 
-	this.uvs  = new Float32Array( this.dynamicSize * 8 )  
+	this.uvs  = new Float32Array( this.dynamicSize * 8 );
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, this.uvs , gl.DYNAMIC_DRAW);
 
 	this.dirtyUVS = true;
 
-	this.colors  = new Float32Array( this.dynamicSize * 4 )  
+	this.colors  = new Float32Array( this.dynamicSize * 4 );
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, this.colors , gl.DYNAMIC_DRAW);
 
@@ -5362,7 +5337,7 @@ PIXI.WebGLBatch.prototype.update = function()
 
 	while(displayObject)
 	{
-		if(displayObject.worldVisible)
+		if(displayObject.vcount === PIXI.visibleCount)
 		{
 			width = displayObject.texture.frame.width;
 			height = displayObject.texture.frame.height;
@@ -5473,7 +5448,7 @@ PIXI.WebGLBatch.prototype.update = function()
 PIXI.WebGLBatch.prototype.render = function(start, end)
 {
 	start = start || 0;
-	//end = end || this.size;
+
 	if(end == undefined)end = this.size;
 	
 	if(this.dirty)
@@ -5528,9 +5503,8 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	// dont need to upload!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-	//var startIndex = 0//1;
 	var len = end - start;
-	// console.log(this.size)
+
     // DRAW THAT this!
     gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
@@ -5603,32 +5577,33 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
-	// TODO remove this by replacing visible with getter setters..	
-	this.checkVisibility(this.root, this.root.visible);
-	
 	// will render all the elements in the group
 	var renderable;
 	
-	var batches = this.batchs;
-	var len = batches.length;
-	for (var i=0; i < len; i++) 
+	
+	for (var i=0; i < this.batchs.length; i++) 
 	{
-		renderable = batches[i];
+		renderable = this.batchs[i];
 		if(renderable instanceof PIXI.WebGLBatch)
 		{
 			renderable.render();
+			continue;
 		}
-		else if(renderable instanceof PIXI.TilingSprite)
+		
+		// non sprite batch..
+		var worldVisible = renderable.vcount === PIXI.visibleCount;
+
+		if(renderable instanceof PIXI.TilingSprite)
 		{
-			if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
+			if(worldVisible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
 		{
-			if(renderable.worldVisible)this.renderStrip(renderable, projection);
+			if(worldVisible)this.renderStrip(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
@@ -5683,9 +5658,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	this.checkVisibility(displayObject, displayObject.visible);
-	
-//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
 	// to do!
@@ -5840,21 +5813,23 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
  */
 PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
+	var worldVisible = renderable.vcount === PIXI.visibleCount
+
 	if(renderable instanceof PIXI.TilingSprite)
 	{
-		if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
+		if(worldVisible)this.renderTilingSprite(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.Strip)
 	{
-		if(renderable.worldVisible)this.renderStrip(renderable, projection);
+		if(worldVisible)this.renderStrip(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.CustomRenderable)
 	{
-		if(renderable.worldVisible) renderable.renderWebGL(this, projection);
+		if(worldVisible) renderable.renderWebGL(this, projection);
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
+		if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.FilterBlock)
 	{
@@ -5884,42 +5859,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 			gl.disable(gl.STENCIL_TEST);
 		}
 	}
-}
-
-/**
- * Checks the visibility of a displayObject
- *
- * @method checkVisibility
- * @param displayObject {DisplayObject}
- * @param globalVisible {Boolean}
- * @private
- */
-PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
-{
-	// give the dp a reference to its renderGroup...
-	var children = displayObject.children;
-	//displayObject.worldVisible = globalVisible;
-	for (var i=0, len=children.length; i < len; i++) 
-	{
-		var child = children[i];
-		
-		// TODO optimize... should'nt need to loop through everything all the time
-		child.worldVisible = child.visible && globalVisible;
-		
-		// everything should have a batch!
-		// time to see whats new!
-		if(child.textureChange)
-		{
-			child.textureChange = false;
-			if(child.worldVisible)this.updateTexture(child);
-			// update texture!!
-		}
-		
-		if(child.children.length > 0)
-		{
-			this.checkVisibility(child, child.worldVisible);
-		}
-	};
 }
 
 /**
@@ -6672,7 +6611,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];
@@ -6681,6 +6619,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color
@@ -6770,7 +6709,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 			var frame = displayObject.texture.frame;
 			
-			if(frame)
+			if(frame && frame.width && frame.height)
 			{
 				context.globalAlpha = displayObject.worldAlpha;
 				
@@ -6831,16 +6770,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				context.worldAlpha = 0;
 				
 				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
-		//		context.fillStyle = 0xFF0000;
-			//	context.fillRect(0, 0, 200, 200);
 				context.clip();
 				
 				displayObject.mask.worldAlpha = cacheAlpha;
-				//context.globalCompositeOperation = 'lighter';
 			}
 			else
 			{
-				//context.globalCompositeOperation = 'source-over';
 				context.restore();
 			}
 		}
@@ -6932,7 +6867,7 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
-	//context.globalCompositeOperation = 'lighter';
+
 	// draw triangles!!
 	var verticies = strip.verticies;
 	var uvs = strip.uvs;
@@ -6959,8 +6894,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		context.lineTo(x2, y2);
 		context.closePath();
 		
-	//	context.fillStyle = "white"//rgb(1, 1, 1,1));
-	//	context.fill();
 		context.clip();
 		
 		
@@ -6984,7 +6917,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	  	context.restore();
 	};
 	
-//	context.globalCompositeOperation = 'source-over';	
 }
 
 /**
@@ -7027,8 +6959,6 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			//if(data.lineWidth <= 0)continue;
-			
 			context.beginPath();
 			
 			context.moveTo(points[0], points[1]);
@@ -7167,8 +7097,6 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			//if(data.lineWidth <= 0)continue;
-			
 			context.beginPath();
 			context.moveTo(points[0], points[1]);
 			
@@ -7877,6 +7805,7 @@ PIXI.Spine = function(url, textureScale)
 		var spriteName = attachment.rendererObject.name;
 		var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
 		slot.currentSprite = sprite;
+		slot.currentSpriteName = spriteName;
 		slotContainer.addChild(sprite);
 	}
 };
@@ -7911,7 +7840,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		}
 
 		if (attachment.rendererObject) {
-			if (!slot.data.attachmentName || attachment.rendererObject.name != slot.data.attachmentName) {
+			if (!slot.currentSpriteName || slot.currentSpriteName != attachment.name) {
 				var spriteName = attachment.rendererObject.name;
 				if (slot.currentSprite !== undefined) {
 					slot.currentSprite.visible = false;
@@ -7923,8 +7852,8 @@ PIXI.Spine.prototype.updateTransform = function () {
 					var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
 					slotContainer.addChild(sprite);
 				}
-				slot.data.attachmentName = attachment.rendererObject.name;
 				slot.currentSprite = slot.sprites[spriteName];
+				slot.currentSpriteName = spriteName;
 			}
 		}
 		slotContainer.visible = true;
@@ -9817,15 +9746,7 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	// create a projection matrix..
 	this.projection = new PIXI.Point(this.width/2 , this.height/2);
-/*
-	this.projectionMatrix =  PIXI.mat4.create();
 
-	this.projectionMatrix[5] = 2/this.height// * 0.5;
-	this.projectionMatrix[13] = -1;
-
-	this.projectionMatrix[0] = 2/this.width;
-	this.projectionMatrix[12] = -1;
-*/
 	// set the correct render function..
 	this.render = this.renderWebGL;
 
@@ -9838,10 +9759,6 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
 
 	this.width = width;
 	this.height = height;
-	
-	//this.frame.width = this.width
-	//this.frame.height = this.height;
-		
 	
 	if(PIXI.gl)
 	{
@@ -9919,8 +9836,9 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 		displayObject.worldTransform[5] -= position.y;
 	}
 	
-
-
+	PIXI.visibleCount++;
+	displayObject.vcount = PIXI.visibleCount;
+	
 	for(var i=0,j=children.length; i<j; i++)
 	{
 		children[i].updateTransform();	
@@ -10602,21 +10520,22 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 				tempAttributes = letters[i].attributes;
 				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
 
-				var textureRect = {
-					x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
-					y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
-					width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
-					height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
-				};
-				
-				data.chars[charCode] = {
-					xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
-					yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
-					xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
-					kerning: {},
-					texture:new PIXI.Texture(this.texture, textureRect)
-				};
-			}
+                var textureRect = new PIXI.Rectangle(
+                    x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
+                    y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
+                    width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
+                    height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
+                );
+
+                data.chars[charCode] = {
+                    xOffset: parseInt(tempAttributes.getNamedItem("xoffset").nodeValue, 10),
+                    yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
+                    xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
+                    kerning: {},
+                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
+
+                };
+            }
 
 			//parse kernings
 			var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
@@ -10754,14 +10673,14 @@ PIXI.SpineLoader.prototype.onLoaded = function () {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
- if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = PIXI;
+    if (typeof exports !== 'undefined') {
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = PIXI;
+        }
+        exports.PIXI = PIXI;
+    } else if (typeof define !== 'undefined' && define.amd) {
+        define(PIXI);
+    } else {
+        root.PIXI = PIXI;
     }
-    exports.PIXI = PIXI;
-  } else {
-    root.PIXI = PIXI;
-  }
-
-
 }).call(this);

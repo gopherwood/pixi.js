@@ -66,32 +66,33 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
-	// TODO remove this by replacing visible with getter setters..	
-	this.checkVisibility(this.root, this.root.visible);
-	
 	// will render all the elements in the group
 	var renderable;
 	
-	var batches = this.batchs;
-	var len = batches.length;
-	for (var i=0; i < len; i++) 
+	
+	for (var i=0; i < this.batchs.length; i++) 
 	{
-		renderable = batches[i];
+		renderable = this.batchs[i];
 		if(renderable instanceof PIXI.WebGLBatch)
 		{
 			renderable.render();
+			continue;
 		}
-		else if(renderable instanceof PIXI.TilingSprite)
+		
+		// non sprite batch..
+		var worldVisible = renderable.vcount === PIXI.visibleCount;
+
+		if(renderable instanceof PIXI.TilingSprite)
 		{
-			if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
+			if(worldVisible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
 		{
-			if(renderable.worldVisible)this.renderStrip(renderable, projection);
+			if(worldVisible)this.renderStrip(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
@@ -146,9 +147,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	this.checkVisibility(displayObject, displayObject.visible);
-	
-//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
 	// to do!
@@ -303,21 +302,23 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
  */
 PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
+	var worldVisible = renderable.vcount === PIXI.visibleCount
+
 	if(renderable instanceof PIXI.TilingSprite)
 	{
-		if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
+		if(worldVisible)this.renderTilingSprite(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.Strip)
 	{
-		if(renderable.worldVisible)this.renderStrip(renderable, projection);
+		if(worldVisible)this.renderStrip(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.CustomRenderable)
 	{
-		if(renderable.worldVisible) renderable.renderWebGL(this, projection);
+		if(worldVisible) renderable.renderWebGL(this, projection);
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
+		if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.FilterBlock)
 	{
@@ -347,42 +348,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 			gl.disable(gl.STENCIL_TEST);
 		}
 	}
-}
-
-/**
- * Checks the visibility of a displayObject
- *
- * @method checkVisibility
- * @param displayObject {DisplayObject}
- * @param globalVisible {Boolean}
- * @private
- */
-PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
-{
-	// give the dp a reference to its renderGroup...
-	var children = displayObject.children;
-	//displayObject.worldVisible = globalVisible;
-	for (var i=0, len=children.length; i < len; i++) 
-	{
-		var child = children[i];
-		
-		// TODO optimize... should'nt need to loop through everything all the time
-		child.worldVisible = child.visible && globalVisible;
-		
-		// everything should have a batch!
-		// time to see whats new!
-		if(child.textureChange)
-		{
-			child.textureChange = false;
-			if(child.worldVisible)this.updateTexture(child);
-			// update texture!!
-		}
-		
-		if(child.children.length > 0)
-		{
-			this.checkVisibility(child, child.worldVisible);
-		}
-	};
 }
 
 /**

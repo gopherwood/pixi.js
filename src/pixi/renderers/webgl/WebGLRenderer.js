@@ -20,9 +20,10 @@ PIXI.gl;
  * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
  * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -54,7 +55,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
  	{
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
-    		 antialias:true, // SPEED UP??
+    		 antialias:!!antialias, // SPEED UP??
     		 premultipliedAlpha:false,
     		 stencil:true
         });
@@ -141,8 +142,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
-		//if(this.__stage)this.checkVisibility(this.__stage, false)
-		
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
@@ -159,10 +158,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
 		
-	// recursivly loop through all items!
-	//this.checkVisibility(stage, true);
-	
 	// update the scene graph	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	var gl = this.gl;
@@ -171,18 +168,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.colorMask(true, true, true, this.transparent); 
 	gl.viewport(0, 0, this.width, this.height);	
 	
-	// set the correct matrix..	
-   //	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
-   
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	
-	if(this.clearView)
-	{
-		var bcs = stage.backgroundColorSplit;
-		gl.clearColor(bcs[0], bcs[1], bcs[2], !this.transparent);     
-		gl.clear(gl.COLOR_BUFFER_BIT);
-	}
+		
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+	gl.clear(gl.COLOR_BUFFER_BIT);
 
+	// HACK TO TEST
+	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 	this.stageRenderGroup.render(PIXI.projection);
 	

@@ -79,7 +79,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];
@@ -88,6 +87,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color
@@ -177,7 +177,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 			var frame = displayObject.texture.frame;
 			
-			if(frame)
+			if(frame && frame.width && frame.height)
 			{
 				context.globalAlpha = displayObject.worldAlpha;
 				
@@ -238,16 +238,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				context.worldAlpha = 0;
 				
 				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
-		//		context.fillStyle = 0xFF0000;
-			//	context.fillRect(0, 0, 200, 200);
 				context.clip();
 				
 				displayObject.mask.worldAlpha = cacheAlpha;
-				//context.globalCompositeOperation = 'lighter';
 			}
 			else
 			{
-				//context.globalCompositeOperation = 'source-over';
 				context.restore();
 			}
 		}
@@ -339,7 +335,7 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
-	//context.globalCompositeOperation = 'lighter';
+
 	// draw triangles!!
 	var verticies = strip.verticies;
 	var uvs = strip.uvs;
@@ -366,8 +362,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		context.lineTo(x2, y2);
 		context.closePath();
 		
-	//	context.fillStyle = "white"//rgb(1, 1, 1,1));
-	//	context.fill();
 		context.clip();
 		
 		
@@ -391,5 +385,4 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	  	context.restore();
 	};
 	
-//	context.globalCompositeOperation = 'source-over';	
 }
