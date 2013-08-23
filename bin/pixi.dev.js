@@ -10521,10 +10521,10 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 				var charCode = parseInt(tempAttributes.getNamedItem("id").nodeValue, 10);
 
                 var textureRect = new PIXI.Rectangle(
-                    x: parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
-                    y: parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
-                    width: parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
-                    height: parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
+                    parseInt(tempAttributes.getNamedItem("x").nodeValue, 10),
+                    parseInt(tempAttributes.getNamedItem("y").nodeValue, 10),
+                    parseInt(tempAttributes.getNamedItem("width").nodeValue, 10),
+                    parseInt(tempAttributes.getNamedItem("height").nodeValue, 10)
                 );
 
                 data.chars[charCode] = {
