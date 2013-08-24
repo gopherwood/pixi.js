@@ -2679,29 +2679,29 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-//		if(child.visible) {
-			// push all interactive bits
-			if(child.interactive)
-			{
-				iParent.interactiveChildren = true;
-				//child.__iParent = iParent;
-				this.interactiveItems.push(child);
+		if(!child.visible) continue;
+		
+		// push all interactive bits
+		if(child.interactive)
+		{
+			iParent.interactiveChildren = true;
+			//child.__iParent = iParent;
+			this.interactiveItems.push(child);
 
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, child);
-				}
-			}
-			else
+			if(child.children.length > 0)
 			{
-				child.__iParent = null;
-
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, iParent);
-				}
+				this.collectInteractiveSprite(child, child);
 			}
-//		}
+		}
+		else
+		{
+			child.__iParent = null;
+
+			if(child.children.length > 0)
+			{
+				this.collectInteractiveSprite(child, iParent);
+			}
+		}
 	}
 }
 
@@ -2798,7 +2798,7 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		if(item.mouseover || item.mouseout || item.buttonMode)
 		{
 			// ok so there are some functions so lets hit test it..
-			item.__hit = this.hitTest(item, this.mouse);
+			item.__hit = this.hitTest(item, this.mouse, 1);
 			this.mouse.target = item;
 			// ok so deal with interactions..
 			// loks like there was a hit!
@@ -2985,9 +2985,11 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  * @param interactionData {InteractionData} The interactiondata object to update in the case of a hit
  * @private
  */
-PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
+PIXI.InteractionManager.prototype.hitTest = function(item, interactionData, vcountOffset)
 {
-	if(item.vcount !== PIXI.visibleCount)return false;
+	//I changed the interaction manager to run before the display objects get updated, so here the vcount will always be off by one during update()
+	vcountOffset = vcountOffset || 0;
+	if(item.vcount + vcountOffset !== PIXI.visibleCount)return false;
 	
 	var global = interactionData.global;
 
@@ -3038,7 +3040,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	for (var i = 0; i < length; i++)
 	{
 		var tempItem = item.children[i];
-		var hit = this.hitTest(tempItem, interactionData);
+		var hit = this.hitTest(tempItem, interactionData, vcountOffset);
 		if(hit)
 		{
 			// hmm.. TODO SET CORRECT TARGET?
@@ -3068,7 +3070,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
-		touchData.originalEvent =  event || window.event;
+		touchData.originalEvent = event || window.event;
 		
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * targWidthByRectWidth;
@@ -3347,7 +3349,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 PIXI.Stage.prototype.updateTransform = function()
 {
 	//update the interaction manager first, so it detects stuff based on the frame that was just shown
-	//this also fixes issues when it triggers changes to sprite pivot points, as opposed to updating 
+	//this also fixes issues when it triggers changes to sprite anchor points, as opposed to updating 
 	//the interaction manager after updating tranforms on all children
 	if(this.interactive)this.interactionManager.update();
 	
@@ -4727,8 +4729,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	if(this.clearView)
+	{
+		var bcs = stage.backgroundColorSplit;
+		gl.clearColor(bcs[0], bcs[1], bcs[2], !this.transparent);     
+		gl.clear(gl.COLOR_BUFFER_BIT);
+	}
 
 	// HACK TO TEST
 	

@@ -170,8 +170,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	if(this.clearView)
+	{
+		var bcs = stage.backgroundColorSplit;
+		gl.clearColor(bcs[0], bcs[1], bcs[2], !this.transparent);     
+		gl.clear(gl.COLOR_BUFFER_BIT);
+	}
 
 	// HACK TO TEST
 	
