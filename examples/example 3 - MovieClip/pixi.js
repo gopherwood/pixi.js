@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-23
+ * Compiled: 2013-08-25
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -7899,7 +7899,7 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
  * 
  */
 
-var spine = {};
+var spine = PIXI.spine = {};
 
 spine.BoneData = function (name, parent) {
 	this.name = name;

@@ -139,7 +139,7 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
  * 
  */
 
-var spine = {};
+var spine = PIXI.spine = {};
 
 spine.BoneData = function (name, parent) {
 	this.name = name;
