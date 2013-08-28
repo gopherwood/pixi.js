@@ -110,6 +110,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
 		slotContainer.scale.x = bone.worldScaleX;
 		slotContainer.scale.y = bone.worldScaleY;
+		slotContainer.alpha = slot.a;//actually apply alpha to things?
 
 		slotContainer.rotation = -(slot.bone.worldRotation * PI_OVER_180);
 	}
@@ -121,9 +122,11 @@ PIXI.Spine.prototype.updateTransform = function () {
 PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
 	var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
 	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(name)));
-	sprite.scale = descriptor.scale;
+	sprite.scale.x = descriptor.scale.x * textureScale;
+	sprite.scale.y = descriptor.scale.y * textureScale;
+	/*sprite.scale = descriptor.scale;
 	sprite.scale.x *= textureScale;
-	sprite.scale.y *= textureScale;
+	sprite.scale.y *= textureScale;*/
 	sprite.rotation = descriptor.rotation;
 	sprite.anchor.x = sprite.anchor.y = 0.5;
 
@@ -190,7 +193,7 @@ spine.Bone.prototype = {
 			this.worldScaleY = this.scaleY;
 			this.worldRotation = this.rotation;
 		}
-		var radians = this.worldRotation * Math.PI / 180;
+		var radians = this.worldRotation * Math.PI_OVER_180;
 		var cos = Math.cos(radians);
 		var sin = Math.sin(radians);
 		this.m00 = cos * this.worldScaleX;
