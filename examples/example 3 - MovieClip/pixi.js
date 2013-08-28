@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-27
+ * Compiled: 2013-08-28
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -256,7 +256,7 @@ PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
  * @class Polygon
  * @constructor
  * @param points* {Array<Point>|Array<Number>|Point...|Number...} This can be an array of Points that form the polygon,
- *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arugments passed can be
+ *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
  *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new PIXI.Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
@@ -325,8 +325,8 @@ PIXI.Polygon.prototype.contains = function(x, y)
     return inside;
 }
 
+// constructor
 PIXI.Polygon.prototype.constructor = PIXI.Polygon;
-
 
 /**
  * @author Chad Engler <chad@pantherdev.com>
@@ -3354,6 +3354,7 @@ PIXI.Stage.prototype.updateTransform = function()
 	if(this.interactive)this.interactionManager.update();
 	
 	this.worldAlpha = 1;
+	this.vcount = PIXI.visibleCount;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -5626,7 +5627,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
   
 				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
   					
-				gl.colorMask(true, true, true, false);
+				gl.colorMask(true, true, true, true);
 				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
 				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 			}
@@ -6994,9 +6995,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
-				
-			// TODO - need to be Undefined!
-			if(data.fillColor)
+
+			if(data.fillColor || data.fillColor === 0)
 			{
 				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
