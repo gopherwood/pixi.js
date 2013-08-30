@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-28
+ * Compiled: 2013-08-30
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -5354,8 +5354,9 @@ PIXI.WebGLBatch.prototype.update = function()
 			aY = displayObject.anchor.y; //- displayObject.texture.trim.y
 			if(displayObject.texture.realSize)
 			{
-				aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
-				aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+				var rs = displayObject.texture.realSize;
+				aX = (rs.width * aX + rs.x) / width;
+				aY = (rs.height * aY + rs.y) / height;
 			}
 			w0 = width * (1-aX);
 			w1 = width * -aX;
@@ -6728,8 +6729,9 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				var aY = displayObject.anchor.y;
 				if(displayObject.texture.realSize)
 				{
-					aX = (displayObject.texture.width * aX + displayObject.texture.realSize.x) / displayObject.texture.frame.width;
-					aY = (displayObject.texture.height * aY + displayObject.texture.realSize.y) / displayObject.texture.frame.height;
+					var rs = displayObject.texture.realSize;
+					aX = (rs.width * aX + rs.x) / width;
+					aY = (rs.height * aY + rs.y) / height;
 				}
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
@@ -7865,7 +7867,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.visible = true;
 
 		var bone = slot.bone;
-
+		
 		slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
 		slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
 		slotContainer.scale.x = bone.worldScaleX;
@@ -10144,6 +10146,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 			
 				for (var i in frameData)
 				{
+					if(PIXI.TextureCache[filenameFromUrl(i)])
+						continue;
 					var f = frameData[i];
 					var rect = f.frame;
 					if (rect)
@@ -10158,7 +10162,9 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 						if (f.trimmed)
 						{
 							t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
-							// calculate the offset!
+							//update these in case the base texture was already loaded for some reason
+							t.width = t.realSize.width;
+							t.height = t.realSize.height;
 						}
 					}
 				}
@@ -10321,6 +10327,8 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 	});
 
 	for (var i in frameData) {
+		if(PIXI.TextureCache[filenameFromUrl(i)])
+			continue;
 		var f = frameData[i];
 		var rect = f.frame;
 		if (rect) {
@@ -10332,7 +10340,9 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 			});
 			if (f.trimmed) {
 				t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
-				// calculate the offset!
+				//update these in case the base texture was already loaded for some reason
+				t.width = t.realSize.width;
+				t.height = t.realSize.height;
 			}
 		}
 	}

@@ -105,7 +105,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.visible = true;
 
 		var bone = slot.bone;
-
+		
 		slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
 		slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
 		slotContainer.scale.x = bone.worldScaleX;

@@ -106,6 +106,8 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 	});
 
 	for (var i in frameData) {
+		if(PIXI.TextureCache[filenameFromUrl(i)])
+			continue;
 		var f = frameData[i];
 		var rect = f.frame;
 		if (rect) {
@@ -117,7 +119,9 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 			});
 			if (f.trimmed) {
 				t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
-				// calculate the offset!
+				//update these in case the base texture was already loaded for some reason
+				t.width = t.realSize.width;
+				t.height = t.realSize.height;
 			}
 		}
 	}
