@@ -55,6 +55,11 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * @type String
      */
     this.texture = null;
+
+	
+	this.versioning = null;
+	if(url.indexOf("?") != -1)
+		this.versioning = url.substring(url.indexOf("?"));
 };
 
 // constructor
@@ -91,7 +96,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 	{
 		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
 		{
-			var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
+			var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
 			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 			this.texture = image.texture;
 
