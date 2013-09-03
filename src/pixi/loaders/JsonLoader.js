@@ -64,7 +64,7 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  */
 PIXI.JsonLoader.prototype.load = function()
 {
-	this.ajaxRequest = new AjaxRequest();
+	/*this.ajaxRequest = new AjaxRequest();
 	var scope = this;
 	this.ajaxRequest.onreadystatechange = function() {
 		scope.onJSONLoaded();
@@ -72,7 +72,52 @@ PIXI.JsonLoader.prototype.load = function()
 
 	this.ajaxRequest.open("GET", this.url, true);
 	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null);
+	this.ajaxRequest.send(null);*/
+	
+	// Create the request. Fall back to whatever support we have.
+	var req = null;
+	if (this.crossorigin && window.XDomainRequest) {
+		req = new XDomainRequest(); // Note: IE9 will fail if this is not actually cross-domain.
+	} else if (window.XMLHttpRequest) { // Old IE versions use a different approach
+		req = new XMLHttpRequest();
+	} else {
+		try {
+			req = new ActiveXObject("Msxml2.XMLHTTP.6.0");
+		} catch (e) {
+			try {
+				req = new ActiveXObject("Msxml2.XMLHTTP.3.0");
+			} catch (e) {
+				try {
+					req = new ActiveXObject("Msxml2.XMLHTTP");
+					console.log("Created ActiveXObject - Msxml2.XMLHTTP");
+				} catch (e) {
+					return;
+				}
+			}
+		}
+	}
+	if(req.overrideMimeType)
+		req.overrideMimeType("application/json");
+	// Determine the XHR level
+	var xhrLevel = (typeof req.responseType === "string") ? 2 : 1;
+
+	var src = this.url;
+
+	// Open the request.  Set cross-domain flags if it is supported (XHR level 1 only)
+	req.open("GET", src, true);
+
+	if (this.crossorigin && req instanceof XMLHttpRequest && xhrLevel == 1) {
+		req.setRequestHeader("Origin", location.origin);
+	}
+
+	this._request = req;
+	
+	this._request.onabort = function(){if(window.console)console.log("load of json " + src + " aborted");};
+	this._request.onerror = function(){if(window.console)console.log("load of json " + src + " had an error!");};
+	this._request.onload = this.onJSONLoaded.bind(this);
+	this._request.onreadystatechange = this.onJSONLoaded.bind(this);
+	
+	this._request.send();
 };
 
 /**
@@ -83,10 +128,15 @@ PIXI.JsonLoader.prototype.load = function()
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function()
 {
-	if (this.ajaxRequest.readyState == 4) {
-		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+	var isLoaded = this._request.readyState == undefined;//newer versions of IE don't do the readyState thing, apparently
+	if (isLoaded || this._request.readyState == 4) {
+		if (isLoaded || this._request.status == 200 || window.location.href.indexOf("http") == -1)
 		{
-			this.json = JSON.parse(this.ajaxRequest.responseText);
+			this._request.onabort = this._request.onerror = this._request.onload = this._request.onreadystatechange = null;
+			if(this._request.response)
+				this.json = JSON.parse(this._request.response);
+			else
+				this.json = JSON.parse(this._request.responseText);
 			
 			if(this.json.frames)
 			{
