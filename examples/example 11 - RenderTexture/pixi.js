@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-31
+ * Compiled: 2013-09-03
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6730,8 +6730,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				if(displayObject.texture.realSize)
 				{
 					var rs = displayObject.texture.realSize;
-					aX = (rs.width * aX + rs.x) / width;
-					aY = (rs.height * aY + rs.y) / height;
+					aX = (rs.width * aX + rs.x) / w;
+					aY = (rs.height * aY + rs.y) / h;
 				}
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
