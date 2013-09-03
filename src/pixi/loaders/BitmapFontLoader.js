@@ -143,7 +143,22 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 		if (isLoaded || this._request.status == 200 || window.location.href.indexOf("http") == -1)
 		{
 			this._request.onabort = this._request.onerror = this._request.onload = this._request.onreadystatechange = null;
-			var xml = this._request.responseXML || this._request.response;
+			var xml = this._request.responseXML || this._request.response || this._request.responseText;
+			if(typeof xml == "string")
+			{
+				var text = xml;
+				if (window.DOMParser)
+				{
+					parser=new DOMParser();
+					xml = parser.parseFromString(text,"text/xml");
+				}
+				else // Internet Explorer
+				{
+					xml = new ActiveXObject("Microsoft.XMLDOM");
+					xml.async=false;
+					xml.loadXML(text);
+				}
+			}
 			var textureUrl = this.baseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
 			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 			this.texture = image.texture;
