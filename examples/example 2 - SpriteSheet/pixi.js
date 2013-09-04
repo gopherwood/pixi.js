@@ -10155,12 +10155,51 @@ PIXI.JsonLoader.prototype.load = function()
 
 	this._request = req;
 	
-	this._request.onabort = function(){if(window.console)console.log("load of json " + src + " aborted");};
-	this._request.onerror = function(){if(window.console)console.log("load of json " + src + " had an error!");};
+	if(this._loadTimeout)
+	{
+		clearTimeout(this._loadTimeout);
+		this._loadTimeout = 0;
+	}
+	var scope = this;
+	this._request.onloadstart = function(){};
+	this._request.onprogress = function(){};
+	var timeoutFunc = function(){
+		if(window.console)console.error("load of json " + src + " timeout");
+		if(++scope._loadFails <= 3)
+			scope.load();//try loading again
+	};
+	this._request.ontimeout = timeoutFunc
+	// Set up a timeout if we don't have XHR2
+	if (xhrLevel == 1) {
+		this._loadTimeout = setTimeout(timeoutFunc, 8000);
+	}
+	this._request.onabort = function(){
+		if(window.console)console.log("load of json " + src + " aborted");
+		if(++scope._loadFails <= 3)
+			scope.load();
+	};
+	this._request.onerror = function(){
+		if(window.console)console.log("load of json " + src + " had an error!");
+		if(++scope._loadFails <= 3)
+			scope.load();
+	};
 	this._request.onload = this.onJSONLoaded.bind(this);
 	this._request.onreadystatechange = this.onJSONLoaded.bind(this);
 	
-	this._request.send();
+	try
+	{
+		setTimeout(function(){req.send();}, 0);
+	}
+	catch(e)
+	{
+		if(window.console)
+			console.error("Error in trying to send load request of " + src + ": " + e);
+		setTimeout(function(){
+			if(++scope._loadFails <= 3)
+				scope.load();
+			},
+			10);
+	}
 };
 
 /**
@@ -10173,8 +10212,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 {
 	var isLoaded = this._request.readyState == undefined;//newer versions of IE don't do the readyState thing, apparently
 	if (isLoaded || this._request.readyState == 4) {
-		if (isLoaded || this._request.status == 200 || window.location.href.indexOf("http") == -1)
+		if (isLoaded || this._request.status == 200 || this._request.status == 304 || window.location.href.indexOf("http") == -1)
 		{
+			if(this._loadTimeout)
+				clearTimeout(this._loadTimeout);
 			this._request.onabort = this._request.onerror = this._request.onload = this._request.onreadystatechange = null;
 			if(this._request.response)
 				this.json = JSON.parse(this._request.response);
@@ -10537,6 +10578,8 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 	this.versioning = null;
 	if(url.indexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
+	
+	this._loadFails = 0;
 };
 
 // constructor
@@ -10598,12 +10641,51 @@ PIXI.BitmapFontLoader.prototype.load = function()
 
 	this._request = req;
 	
-	this._request.onabort = function(){if(window.console)console.log("load of bitmap font " + src + " aborted");};
-	this._request.onerror = function(){if(window.console)console.log("load of bitmap font " + src + " had an error!");};
+	if(this._loadTimeout)
+	{
+		clearTimeout(this._loadTimeout);
+		this._loadTimeout = 0;
+	}
+	var scope = this;
+	this._request.onloadstart = function(){};
+	this._request.onprogress = function(){};
+	var timeoutFunc = function(){
+		if(window.console)console.error("load of bitmap font " + src + " timeout");
+		if(++scope._loadFails <= 3)
+			scope.load();//try loading again
+	};
+	this._request.ontimeout = timeoutFunc
+	// Set up a timeout if we don't have XHR2
+	if (xhrLevel == 1) {
+		this._loadTimeout = setTimeout(timeoutFunc, 8000);
+	}
+	this._request.onabort = function(){
+		if(window.console)console.log("load of bitmap font " + src + " aborted");
+		if(++scope._loadFails <= 3)
+			scope.load();
+	};
+	this._request.onerror = function(){
+		if(window.console)console.log("load of bitmap font " + src + " had an error!");
+		if(++scope._loadFails <= 3)
+			scope.load();
+	};
 	this._request.onload = this.onXMLLoaded.bind(this);
 	this._request.onreadystatechange = this.onXMLLoaded.bind(this);
 	
-	this._request.send();
+	try
+	{
+		setTimeout(function(){req.send();}, 0);
+	}
+	catch(e)
+	{
+		if(window.console)
+			console.error("Error in trying to send load request of " + src + ": " + e);
+		setTimeout(function(){
+			if(++scope._loadFails <= 3)
+				scope.load();
+			},
+			10);
+	}
 };
 
 /**
@@ -10617,23 +10699,30 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 	var isLoaded = this._request.readyState == undefined;//newer versions of IE don't do the readyState thing, apparently
 	if (isLoaded || this._request.readyState == 4)
 	{
-		if (isLoaded || this._request.status == 200 || window.location.href.indexOf("http") == -1)
+		if (isLoaded || this._request.status == 200 || this._request.status == 304 || window.location.href.indexOf("http") == -1)
 		{
+			if(this._loadTimeout)
+				clearTimeout(this._loadTimeout);
 			this._request.onabort = this._request.onerror = this._request.onload = this._request.onreadystatechange = null;
 			var xml = this._request.responseXML || this._request.response || this._request.responseText;
 			if(typeof xml == "string")
 			{
-				var text = xml;
-				if (window.DOMParser)
+				if(xml.xml)
+					xml = xml.xml;
+				else
 				{
-					parser=new DOMParser();
-					xml = parser.parseFromString(text,"text/xml");
-				}
-				else // Internet Explorer
-				{
-					xml = new ActiveXObject("Microsoft.XMLDOM");
-					xml.async=false;
-					xml.loadXML(text);
+					var text = xml;
+					if (window.DOMParser)
+					{
+						parser=new DOMParser();
+						xml = parser.parseFromString(text,"text/xml");
+					}
+					else // Internet Explorer
+					{
+						xml = new ActiveXObject("Microsoft.XMLDOM");
+						xml.async=false;
+						xml.loadXML(text);
+					}
 				}
 			}
 			var textureUrl = this.baseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
