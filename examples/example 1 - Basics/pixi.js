@@ -9409,7 +9409,6 @@ PIXI.BaseTexture.prototype.destroy = function()
 	
 	if(this.source instanceof Image)
 	{
-		Debug.log("setting image src to null for " + this.source.src);
 		this.source.src = null;
 	}
 	this.source = null;
@@ -9441,7 +9440,6 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 		{
 			image.crossOrigin = '';
 		}
-		Debug.debug("creating base texture for " + imageUrl);
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
 		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
@@ -10111,7 +10109,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  */
 PIXI.JsonLoader = function (url, crossorigin) {
 	PIXI.EventTarget.call(this);
-	Debug.log("created json loader for " + url);
+
 	/**
 	 * The url of the bitmap font data
 	 *
@@ -10524,7 +10522,6 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
 PIXI.ImageLoader = function(url, crossorigin)
 {
     PIXI.EventTarget.call(this);
-	Debug.log("created image loader for " + url);
 
     /**
      * The texture being loaded
