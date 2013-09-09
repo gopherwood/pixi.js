@@ -104,6 +104,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
 	if(destroyBase)this.baseTexture.destroy();
+	this.baseTexture = null;
+	this.removeAllListeners(true);
 }
 
 /**
@@ -172,8 +174,9 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
  */
 PIXI.Texture.fromFrame = function(frameId)
 {
-	var texture = PIXI.TextureCache[frameId];
-	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
+	var id = filenameFromUrl(frameId);
+	var texture = PIXI.TextureCache[id];
+	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache - id was converted to " + id);
 	return texture;
 }
 
@@ -216,9 +219,43 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-	var texture = PIXI.TextureCache[id]
+	var texture = PIXI.TextureCache[id];
 	PIXI.TextureCache[id] = null;
 	return texture;
+}
+
+PIXI.Texture.destroyTexture = function(id)
+{
+	id = filenameFromUrl(id);
+	var tc = PIXI.TextureCache;
+	var texture = tc[id];
+	if(!texture) return;
+	var base = texture.baseTexture;
+	delete tc[id];
+	if(texture)
+		texture.destroy(true);
+	for(id in tc)
+	{
+		texture = tc[id];
+		if(texture.baseTexture == base)
+		{
+			delete tc[id];
+			texture.destroy();
+		}
+	}
+}
+
+PIXI.Texture.destroyAllTextures = function()
+{
+	var tc = PIXI.TextureCache;
+	for(var id in tc)
+	{
+		var texture = tc[id];
+		if(!texture) return;
+		delete tc[id];
+		if(texture)
+			texture.destroy(true);
+	}
 }
 
 // this is more for webGL.. it contains updated frames..

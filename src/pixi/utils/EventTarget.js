@@ -24,36 +24,41 @@ PIXI.EventTarget = function () {
 		if ( listeners[ type ] === undefined ) {
 			listeners[ type ] = [listener];	
 		}
-		else if ( listeners[ type ].indexOf( listener ) === - 1 )
+		else if ( listeners[ type ].indexOf( listener ) === -1 )
 		{
-
 			listeners[ type ].push( listener );
 		}
-
 	};
 
 	this.dispatchEvent = this.emit = function ( event ) {
-
-		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
-
+		var t = event.type;
+		if ( !listeners[ t ] || !listeners[ t ].length )
+		{
 			return;
-			
 		}
 		
-		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
-
-			listeners[ event.type ][ i ]( event );
-			
+		var arr = listeners[t];
+		for(var i = 0, l = arr.length; i < l; i++)
+		{
+			arr[ i ]( event );
 		}
-
 	};
 
 	this.removeEventListener = this.off = function ( type, listener )
 	{
+		if(listeners[type] === undefined) return;
 		var index = listeners[ type ].indexOf( listener );
 		if ( index !== - 1 )
 		{
 			listeners[ type ].splice( index, 1 );
 		}
+	};
+	
+	this.removeAllListeners = function(destroy)
+	{
+		if(destroy)
+			listeners = null;
+		else
+			listeners = {};
 	};
 };

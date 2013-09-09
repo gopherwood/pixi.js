@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-03
+ * Compiled: 2013-09-09
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3521,13 +3521,14 @@ var AjaxRequest = PIXI.AjaxRequest = function()
 /**
  * @method filenameFromUrl
  * @param {String} url The url to pull the filename from.
- * @return {String} The filename (including extension).
+ * @return {String} The filename (excluding extension).
  */
 function filenameFromUrl(url)
 {
 	var name = url.substring(url.lastIndexOf("/") + 1);
-	if(name.indexOf("?") != -1)
-		name = name.substring(0, name.indexOf("?"));
+	var i = name.lastIndexOf(".");
+	if(i != -1)
+		name = name.substring(0, i);
 	return name;
 }
 
@@ -3589,37 +3590,42 @@ PIXI.EventTarget = function () {
 		if ( listeners[ type ] === undefined ) {
 			listeners[ type ] = [listener];	
 		}
-		else if ( listeners[ type ].indexOf( listener ) === - 1 )
+		else if ( listeners[ type ].indexOf( listener ) === -1 )
 		{
-
 			listeners[ type ].push( listener );
 		}
-
 	};
 
 	this.dispatchEvent = this.emit = function ( event ) {
-
-		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
-
+		var t = event.type;
+		if ( !listeners[ t ] || !listeners[ t ].length )
+		{
 			return;
-			
 		}
 		
-		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
-
-			listeners[ event.type ][ i ]( event );
-			
+		var arr = listeners[t];
+		for(var i = 0, l = arr.length; i < l; i++)
+		{
+			arr[ i ]( event );
 		}
-
 	};
 
 	this.removeEventListener = this.off = function ( type, listener )
 	{
+		if(listeners[type] === undefined) return;
 		var index = listeners[ type ].indexOf( listener );
 		if ( index !== - 1 )
 		{
 			listeners[ type ].splice( index, 1 );
 		}
+	};
+	
+	this.removeAllListeners = function(destroy)
+	{
+		if(destroy)
+			listeners = null;
+		else
+			listeners = {};
 	};
 };
 
@@ -4778,10 +4784,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.updateTextures = function()
 {
 	//TODO break this out into a texture manager...
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	var arr = PIXI.texturesToUpdate;
+	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.updateTexture(arr[i]);
+	arr = PIXI.texturesToDestroy;
+	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.destroyTexture(arr[i]);
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 }
 
 /**
@@ -4843,7 +4851,8 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
 	if(texture._glTexture)
 	{
 		//texture._glTexture = gl.createTexture();//why would we want to create a texture in order to destroy it?
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+		gl.deleteTexture(texture._glTexture);
+		texture._glTexture = null;
 	}
 }
 
@@ -4905,9 +4914,9 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 
 	for(var key in PIXI.TextureCache) 
 	{
-        	var texture = PIXI.TextureCache[key].baseTexture;
-        	texture._glTexture = null;
-        	PIXI.WebGLRenderer.updateTexture(texture);
+        var texture = PIXI.TextureCache[key].baseTexture;
+        texture._glTexture = null;
+        PIXI.WebGLRenderer.updateTexture(texture);
 	};
 	
 	array = this.batches;
@@ -6624,8 +6633,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	//stage.__childrenRemoved = [];
 	
 	// update textures if need be
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 	
 	PIXI.visibleCount++;
 	stage.updateTransform();
@@ -6655,7 +6664,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// remove frame updates..
 	if(PIXI.Texture.frameUpdates.length > 0)
 	{
-		PIXI.Texture.frameUpdates = [];
+		PIXI.Texture.frameUpdates.length = 0;
 	}
 	
 	
@@ -6714,7 +6723,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
-				
 			var frame = displayObject.texture.frame;
 			
 			if(frame && frame.width && frame.height)
@@ -6790,8 +6798,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 	//	count++
 		displayObject = displayObject._iNext;
-		
-		
 	}
 	while(displayObject != testObject)
 }
@@ -9386,6 +9392,8 @@ PIXI.BaseTexture = function(source)
 	}
 
 	this._powerOf2 = false;
+	
+	this.destroyed = false;
 }
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
@@ -9397,12 +9405,18 @@ PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
  */
 PIXI.BaseTexture.prototype.destroy = function()
 {
+	if(this.destroyed) return;
+	
 	if(this.source instanceof Image)
 	{
+		Debug.log("setting image src to null for " + this.source.src);
 		this.source.src = null;
 	}
 	this.source = null;
 	PIXI.texturesToDestroy.push(this);
+	this.destroyed = true;
+	this.removeAllListeners(true);
+	delete PIXI.BaseTextureCache[this._id];
 }
 
 /**
@@ -9427,10 +9441,12 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 		{
 			image.crossOrigin = '';
 		}
+		Debug.debug("creating base texture for " + imageUrl);
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
 		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
 		PIXI.BaseTextureCache[id] = baseTexture;
+		baseTexture._id = id;
 	}
 
 	return baseTexture;
@@ -9542,6 +9558,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
 	if(destroyBase)this.baseTexture.destroy();
+	this.baseTexture = null;
+	this.removeAllListeners(true);
 }
 
 /**
@@ -9610,8 +9628,9 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
  */
 PIXI.Texture.fromFrame = function(frameId)
 {
-	var texture = PIXI.TextureCache[frameId];
-	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
+	var id = filenameFromUrl(frameId);
+	var texture = PIXI.TextureCache[id];
+	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache - id was converted to " + id);
 	return texture;
 }
 
@@ -9654,9 +9673,43 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-	var texture = PIXI.TextureCache[id]
+	var texture = PIXI.TextureCache[id];
 	PIXI.TextureCache[id] = null;
 	return texture;
+}
+
+PIXI.Texture.destroyTexture = function(id)
+{
+	id = filenameFromUrl(id);
+	var tc = PIXI.TextureCache;
+	var texture = tc[id];
+	if(!texture) return;
+	var base = texture.baseTexture;
+	delete tc[id];
+	if(texture)
+		texture.destroy(true);
+	for(id in tc)
+	{
+		texture = tc[id];
+		if(texture.baseTexture == base)
+		{
+			delete tc[id];
+			texture.destroy();
+		}
+	}
+}
+
+PIXI.Texture.destroyAllTextures = function()
+{
+	var tc = PIXI.TextureCache;
+	for(var id in tc)
+	{
+		var texture = tc[id];
+		if(!texture) return;
+		delete tc[id];
+		if(texture)
+			texture.destroy(true);
+	}
 }
 
 // this is more for webGL.. it contains updated frames..
@@ -10058,7 +10111,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  */
 PIXI.JsonLoader = function (url, crossorigin) {
 	PIXI.EventTarget.call(this);
-
+	Debug.log("created json loader for " + url);
 	/**
 	 * The url of the bitmap font data
 	 *
@@ -10471,6 +10524,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
 PIXI.ImageLoader = function(url, crossorigin)
 {
     PIXI.EventTarget.call(this);
+	Debug.log("created image loader for " + url);
 
     /**
      * The texture being loaded

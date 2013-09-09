@@ -218,10 +218,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.updateTextures = function()
 {
 	//TODO break this out into a texture manager...
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	var arr = PIXI.texturesToUpdate;
+	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.updateTexture(arr[i]);
+	arr = PIXI.texturesToDestroy;
+	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.destroyTexture(arr[i]);
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 }
 
 /**
@@ -283,7 +285,8 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
 	if(texture._glTexture)
 	{
 		//texture._glTexture = gl.createTexture();//why would we want to create a texture in order to destroy it?
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+		gl.deleteTexture(texture._glTexture);
+		texture._glTexture = null;
 	}
 }
 
@@ -345,9 +348,9 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 
 	for(var key in PIXI.TextureCache) 
 	{
-        	var texture = PIXI.TextureCache[key].baseTexture;
-        	texture._glTexture = null;
-        	PIXI.WebGLRenderer.updateTexture(texture);
+        var texture = PIXI.TextureCache[key].baseTexture;
+        texture._glTexture = null;
+        PIXI.WebGLRenderer.updateTexture(texture);
 	};
 	
 	array = this.batches;

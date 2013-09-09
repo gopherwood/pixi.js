@@ -84,8 +84,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	//stage.__childrenRemoved = [];
 	
 	// update textures if need be
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 	
 	PIXI.visibleCount++;
 	stage.updateTransform();
@@ -115,7 +115,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// remove frame updates..
 	if(PIXI.Texture.frameUpdates.length > 0)
 	{
-		PIXI.Texture.frameUpdates = [];
+		PIXI.Texture.frameUpdates.length = 0;
 	}
 	
 	
@@ -174,7 +174,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
-				
 			var frame = displayObject.texture.frame;
 			
 			if(frame && frame.width && frame.height)
@@ -250,8 +249,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 	//	count++
 		displayObject = displayObject._iNext;
-		
-		
 	}
 	while(displayObject != testObject)
 }
