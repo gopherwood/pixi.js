@@ -229,3 +229,11 @@ PIXI.activatePrimitiveShader = function()
 	gl.enableVertexAttribArray(PIXI.primitiveProgram.colorAttribute);
 } 
 
+PIXI.deleteShaders = function()
+{
+	var gl = PIXI.gl;
+	if(!gl) return;
+	gl.deleteProgram(PIXI.primitiveProgram);
+	gl.deleteProgram(PIXI.shaderProgram);
+	gl.deleteProgram(PIXI.stripShaderProgram);
+}

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-09
+ * Compiled: 2013-09-10
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4048,7 +4048,14 @@ PIXI.activatePrimitiveShader = function()
 	gl.enableVertexAttribArray(PIXI.primitiveProgram.colorAttribute);
 } 
 
-
+PIXI.deleteShaders = function()
+{
+	var gl = PIXI.gl;
+	if(!gl) return;
+	gl.deleteProgram(PIXI.primitiveProgram);
+	gl.deleteProgram(PIXI.shaderProgram);
+	gl.deleteProgram(PIXI.stripShaderProgram);
+}
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
