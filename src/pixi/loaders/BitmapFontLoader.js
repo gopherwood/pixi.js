@@ -240,7 +240,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                     yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
                     xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
                     kerning: {},
-                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
+                    texture: new PIXI.Texture(this.texture, textureRect)
 
                 };
             }

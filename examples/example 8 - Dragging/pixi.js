@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-11
+ * Compiled: 2013-09-12
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -10848,7 +10848,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                     yOffset: parseInt(tempAttributes.getNamedItem("yoffset").nodeValue, 10),
                     xAdvance: parseInt(tempAttributes.getNamedItem("xadvance").nodeValue, 10),
                     kerning: {},
-                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
+                    texture: new PIXI.Texture(this.texture, textureRect)
 
                 };
             }
