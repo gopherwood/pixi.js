@@ -14,7 +14,7 @@ PIXI.texturesToDestroy = [];
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(source)
+PIXI.BaseTexture = function(source, generateCanvas)
 {
 	PIXI.EventTarget.call( this );
 
@@ -63,6 +63,21 @@ PIXI.BaseTexture = function(source)
 			this.width = this.source.width;
 			this.height = this.source.height;
 			
+			if(generateCanvas)
+			{
+				this.canvas = document.createElement("canvas");
+			    this.context = this.canvas.getContext("2d");
+				this.context.webkitImageSmoothingEnabled = false;
+				this.context.imageSmoothingEnabled = false;
+				this.context.mozImageSmoothingEnabled = false;
+				this.context.oImageSmoothingEnabled = false;
+				this.canvas.width = this.width;
+				this.canvas.height = this.height;
+				this.context.drawImage(this.source, 0, 0);
+				this.source.src = null;
+				this.source = this.canvas;
+			}
+			
 			PIXI.texturesToUpdate.push(this);
 		}
 		else
@@ -74,6 +89,21 @@ PIXI.BaseTexture = function(source)
 				scope.hasLoaded = true;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
+				
+				if(generateCanvas)
+				{
+					scope.canvas = document.createElement("canvas");
+				    scope.context = scope.canvas.getContext("2d");
+					scope.canvas.width = scope.width;
+					scope.canvas.height = scope.height;
+					scope.context.webkitImageSmoothingEnabled = false;
+					scope.context.imageSmoothingEnabled = false;
+					scope.context.mozImageSmoothingEnabled = false;
+					scope.context.oImageSmoothingEnabled = false;
+					scope.context.drawImage(scope.source, 0, 0);
+					scope.source.src = null;
+					scope.source = scope.canvas;
+				}
 			
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
@@ -130,7 +160,7 @@ PIXI.BaseTexture.prototype.destroy = function()
  * @param imageUrl {String} The image url of the texture
  * @return BaseTexture
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
 	var id = filenameFromUrl(imageUrl);
 	var baseTexture = PIXI.BaseTextureCache[id];
@@ -144,7 +174,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture = new PIXI.BaseTexture(image, generateCanvas);
 		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
 		PIXI.BaseTextureCache[id] = baseTexture;
 		baseTexture._id = id;

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-10
+ * Compiled: 2013-09-11
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6718,7 +6718,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(!displayObject.visible)
 		{
-			displayObject = displayObject.last._iNext;
+			displayObject = (displayObject.last !== displayObject && displayObject.last instanceof PIXI.FilterBlock) ? displayObject.last : displayObject.last._iNext;
 			continue;
 		}
 		
@@ -9318,7 +9318,7 @@ PIXI.texturesToDestroy = [];
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(source)
+PIXI.BaseTexture = function(source, generateCanvas)
 {
 	PIXI.EventTarget.call( this );
 
@@ -9367,6 +9367,21 @@ PIXI.BaseTexture = function(source)
 			this.width = this.source.width;
 			this.height = this.source.height;
 			
+			if(generateCanvas)
+			{
+				this.canvas = document.createElement("canvas");
+			    this.context = this.canvas.getContext("2d");
+				this.context.webkitImageSmoothingEnabled = false;
+				this.context.imageSmoothingEnabled = false;
+				this.context.mozImageSmoothingEnabled = false;
+				this.context.oImageSmoothingEnabled = false;
+				this.canvas.width = this.width;
+				this.canvas.height = this.height;
+				this.context.drawImage(this.source, 0, 0);
+				this.source.src = null;
+				this.source = this.canvas;
+			}
+			
 			PIXI.texturesToUpdate.push(this);
 		}
 		else
@@ -9378,6 +9393,21 @@ PIXI.BaseTexture = function(source)
 				scope.hasLoaded = true;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
+				
+				if(generateCanvas)
+				{
+					scope.canvas = document.createElement("canvas");
+				    scope.context = scope.canvas.getContext("2d");
+					scope.canvas.width = scope.width;
+					scope.canvas.height = scope.height;
+					scope.context.webkitImageSmoothingEnabled = false;
+					scope.context.imageSmoothingEnabled = false;
+					scope.context.mozImageSmoothingEnabled = false;
+					scope.context.oImageSmoothingEnabled = false;
+					scope.context.drawImage(scope.source, 0, 0);
+					scope.source.src = null;
+					scope.source = scope.canvas;
+				}
 			
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
@@ -9434,7 +9464,7 @@ PIXI.BaseTexture.prototype.destroy = function()
  * @param imageUrl {String} The image url of the texture
  * @return BaseTexture
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
 	var id = filenameFromUrl(imageUrl);
 	var baseTexture = PIXI.BaseTextureCache[id];
@@ -9448,7 +9478,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture = new PIXI.BaseTexture(image, generateCanvas);
 		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
 		PIXI.BaseTextureCache[id] = baseTexture;
 		baseTexture._id = id;
@@ -9608,14 +9638,14 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
 	var id = filenameFromUrl(imageUrl);
 	var texture = PIXI.TextureCache[id];
 	
 	if(!texture)
 	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, generateCanvas));
 		PIXI.TextureCache[id] = texture;
 	}
 	
@@ -10155,6 +10185,8 @@ PIXI.JsonLoader = function (url, crossorigin) {
 		this.versioning = url.substring(url.indexOf("?"));
 };
 
+PIXI.JsonLoader.generateCanvasFromTextures = false;
+
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
@@ -10285,7 +10317,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				// sprite sheet
 				var scope = this;
 				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
-				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, PIXI.JsonLoader.generateCanvasFromTextures);
 				var frameData = this.json.frames;
 			
 				this.texture = image.texture;
@@ -10526,7 +10558,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
  * @param url {String} The url of the image
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.ImageLoader = function(url, crossorigin)
+PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
 {
     PIXI.EventTarget.call(this);
 
@@ -10536,7 +10568,7 @@ PIXI.ImageLoader = function(url, crossorigin)
      * @property texture
      * @type Texture
      */
-    this.texture = PIXI.Texture.fromImage(url, crossorigin);
+    this.texture = PIXI.Texture.fromImage(url, crossorigin, generateCanvas);
 };
 
 // constructor

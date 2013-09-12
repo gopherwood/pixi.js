@@ -149,14 +149,14 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
 	var id = filenameFromUrl(imageUrl);
 	var texture = PIXI.TextureCache[id];
 	
 	if(!texture)
 	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, generateCanvas));
 		PIXI.TextureCache[id] = texture;
 	}
 	

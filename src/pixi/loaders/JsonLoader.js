@@ -54,6 +54,8 @@ PIXI.JsonLoader = function (url, crossorigin) {
 		this.versioning = url.substring(url.indexOf("?"));
 };
 
+PIXI.JsonLoader.generateCanvasFromTextures = false;
+
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
@@ -184,7 +186,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				// sprite sheet
 				var scope = this;
 				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
-				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, PIXI.JsonLoader.generateCanvasFromTextures);
 				var frameData = this.json.frames;
 			
 				this.texture = image.texture;
