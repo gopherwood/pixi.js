@@ -648,9 +648,10 @@ PIXI.InteractionData = function()
  *
  * @method getLocalPosition
  * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
+ * @param outPoint {Point} An optional point to use instead of creating a new point
  * @return {Point} A point containing the coords of the InteractionData position relative to the DisplayObject
  */
-PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
+PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, outPoint)
 {
 	var worldTransform = displayObject.worldTransform;
 	var global = this.global;
@@ -660,8 +661,16 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
         a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
         id = 1 / (a00 * a11 + a01 * -a10);
 	// set the mouse coords...
-	return new PIXI.Point(a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
-							   a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id)
+	var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id;
+	var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+	if(outPoint)
+	{
+		outPoint.x = x;
+		outPoint.y = y;
+		return outPoint;
+	}
+	else
+		return new PIXI.Point(x, y);
 }
 
 // constructor
