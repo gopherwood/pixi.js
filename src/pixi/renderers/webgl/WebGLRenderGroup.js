@@ -327,6 +327,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 		 */
 
 		var gl = PIXI.gl;
+		var KEEP = gl.KEEP;
 
 		if(renderable.open)
 		{
@@ -334,14 +335,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 				
 			gl.colorMask(false, false, false, false);
 			gl.stencilFunc(gl.ALWAYS,1,0xff);
-			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+			gl.stencilOp(KEEP,KEEP,gl.REPLACE);
   
 			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
 			
 			// we know this is a render texture so enable alpha too..
 			gl.colorMask(true, true, true, true);
 			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
-			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			gl.stencilOp(KEEP,KEEP,KEEP);
 		}
 		else
 		{

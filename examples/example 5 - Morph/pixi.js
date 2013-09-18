@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-17
+ * Compiled: 2013-09-18
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4720,12 +4720,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	
 	// if rendering a new stage clear the batchs..
+	var renderGroup = this.stageRenderGroup;
 	if(this.__stage !== stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
 		this.__stage = stage;
-		this.stageRenderGroup.setRenderable(stage);
+		renderGroup.setRenderable(stage);
 	}
 	
 	// TODO not needed now... 
@@ -4761,8 +4762,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// HACK TO TEST
 	
-	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
-	this.stageRenderGroup.render(PIXI.projection);
+	renderGroup.backgroundColor = stage.backgroundColorSplit;
+	renderGroup.render(PIXI.projection);
 	
 	// interaction
 	// run interaction!
@@ -4777,16 +4778,15 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}
 	
 	// after rendering lets confirm all frames that have been uodated..
-	var len = PIXI.Texture.frameUpdates.length;
+	var updates = PIXI.Texture.frameUpdates;
+	var len = updates.length;
 	if(len > 0)
 	{
-		var updates = PIXI.Texture.frameUpdates;
 		for (var i=0; i < len; i++) 
 		{
 		  	updates[i].updateFrame = false;
 		};
-		
-		PIXI.Texture.frameUpdates = [];
+		updates.length = 0;
 	}
 }
 
@@ -4800,12 +4800,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.updateTextures = function()
 {
 	//TODO break this out into a texture manager...
+	var renderer = PIXI.WebGLRenderer;
 	var arr = PIXI.texturesToUpdate;
-	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.updateTexture(arr[i]);
+	for (var i=0, len = arr.length; i < len; i++) renderer.updateTexture(arr[i]);
+	arr.length = 0;
 	arr = PIXI.texturesToDestroy;
-	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.destroyTexture(arr[i]);
-	PIXI.texturesToUpdate.length = 0;
-	PIXI.texturesToDestroy.length = 0;
+	for (var i=0, len = arr.length; i < len; i++) renderer.destroyTexture(arr[i]);
+	arr.length = 0;
 }
 
 /**
@@ -4828,27 +4829,28 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
 
 	if(texture.hasLoaded)
 	{
-		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
+		var TEX_2D = gl.TEXTURE_2D;
+		gl.bindTexture(TEX_2D, texture._glTexture);
 	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texImage2D(TEX_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+		gl.texParameteri(TEX_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(TEX_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
 		// reguler...
 
 		if(!texture._powerOf2)
 		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		}
 		else
 		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		}
 
-		gl.bindTexture(gl.TEXTURE_2D, null);
+		gl.bindTexture(TEX_2D, null);
 	}
 }
 
@@ -5871,6 +5873,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 		 */
 
 		var gl = PIXI.gl;
+		var KEEP = gl.KEEP;
 
 		if(renderable.open)
 		{
@@ -5878,14 +5881,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 				
 			gl.colorMask(false, false, false, false);
 			gl.stencilFunc(gl.ALWAYS,1,0xff);
-			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+			gl.stencilOp(KEEP,KEEP,gl.REPLACE);
   
 			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
 			
 			// we know this is a render texture so enable alpha too..
 			gl.colorMask(true, true, true, true);
 			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
-			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			gl.stencilOp(KEEP,KEEP,KEEP);
 		}
 		else
 		{
@@ -6739,7 +6742,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
-			var frame = displayObject.texture.frame;
+			var texture = displayObject.texture;
+			var frame = texture.frame;
 			
 			if(frame && frame.width && frame.height)
 			{
@@ -6751,13 +6755,13 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				var h = frame.height;
 				var aX = displayObject.anchor.x;
 				var aY = displayObject.anchor.y;
-				if(displayObject.texture.realSize)
+				if(texture.realSize)
 				{
-					var rs = displayObject.texture.realSize;
+					var rs = texture.realSize;
 					aX = (rs.width * aX + rs.x) / w;
 					aY = (rs.height * aY + rs.y) / h;
 				}
-				context.drawImage(displayObject.texture.baseTexture.source, 
+				context.drawImage(texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   w,

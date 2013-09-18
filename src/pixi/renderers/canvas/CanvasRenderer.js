@@ -174,7 +174,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
-			var frame = displayObject.texture.frame;
+			var texture = displayObject.texture;
+			var frame = texture.frame;
 			
 			if(frame && frame.width && frame.height)
 			{
@@ -186,13 +187,13 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				var h = frame.height;
 				var aX = displayObject.anchor.x;
 				var aY = displayObject.anchor.y;
-				if(displayObject.texture.realSize)
+				if(texture.realSize)
 				{
-					var rs = displayObject.texture.realSize;
+					var rs = texture.realSize;
 					aX = (rs.width * aX + rs.x) / w;
 					aY = (rs.height * aY + rs.y) / h;
 				}
-				context.drawImage(displayObject.texture.baseTexture.source, 
+				context.drawImage(texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   w,

@@ -138,12 +138,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	
 	// if rendering a new stage clear the batchs..
+	var renderGroup = this.stageRenderGroup;
 	if(this.__stage !== stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
 		this.__stage = stage;
-		this.stageRenderGroup.setRenderable(stage);
+		renderGroup.setRenderable(stage);
 	}
 	
 	// TODO not needed now... 
@@ -179,8 +180,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// HACK TO TEST
 	
-	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
-	this.stageRenderGroup.render(PIXI.projection);
+	renderGroup.backgroundColor = stage.backgroundColorSplit;
+	renderGroup.render(PIXI.projection);
 	
 	// interaction
 	// run interaction!
@@ -195,16 +196,15 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}
 	
 	// after rendering lets confirm all frames that have been uodated..
-	var len = PIXI.Texture.frameUpdates.length;
+	var updates = PIXI.Texture.frameUpdates;
+	var len = updates.length;
 	if(len > 0)
 	{
-		var updates = PIXI.Texture.frameUpdates;
 		for (var i=0; i < len; i++) 
 		{
 		  	updates[i].updateFrame = false;
 		};
-		
-		PIXI.Texture.frameUpdates = [];
+		updates.length = 0;
 	}
 }
 
@@ -218,12 +218,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.updateTextures = function()
 {
 	//TODO break this out into a texture manager...
+	var renderer = PIXI.WebGLRenderer;
 	var arr = PIXI.texturesToUpdate;
-	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.updateTexture(arr[i]);
+	for (var i=0, len = arr.length; i < len; i++) renderer.updateTexture(arr[i]);
+	arr.length = 0;
 	arr = PIXI.texturesToDestroy;
-	for (var i=0, len = arr.length; i < len; i++) PIXI.WebGLRenderer.destroyTexture(arr[i]);
-	PIXI.texturesToUpdate.length = 0;
-	PIXI.texturesToDestroy.length = 0;
+	for (var i=0, len = arr.length; i < len; i++) renderer.destroyTexture(arr[i]);
+	arr.length = 0;
 }
 
 /**
@@ -246,27 +247,28 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
 
 	if(texture.hasLoaded)
 	{
-		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
+		var TEX_2D = gl.TEXTURE_2D;
+		gl.bindTexture(TEX_2D, texture._glTexture);
 	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texImage2D(TEX_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+		gl.texParameteri(TEX_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(TEX_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
 		// reguler...
 
 		if(!texture._powerOf2)
 		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		}
 		else
 		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(TEX_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		}
 
-		gl.bindTexture(gl.TEXTURE_2D, null);
+		gl.bindTexture(TEX_2D, null);
 	}
 }
 
