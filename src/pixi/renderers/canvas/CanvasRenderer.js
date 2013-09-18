@@ -71,6 +71,12 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 // constructor
 PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
 
+PIXI.CanvasRenderer.prototype.destroy = function()
+{
+	this.view = null;
+	this.context = null;
+}
+
 /**
  * Renders the stage to its canvas view
  *

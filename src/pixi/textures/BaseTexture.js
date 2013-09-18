@@ -87,6 +87,7 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			this.source.onload = function(){
 				
 				scope.hasLoaded = true;
+				scope.source.onload = null;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
 				

@@ -46,8 +46,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	// deal with losing context..	
     var scope = this;
-	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
-	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+	this.onContextLost = function(event) { scope.handleContextLost(event); };
+	this.onContextRestored = function(event) { scope.handleContextRestored(event); };
+	this.view.addEventListener('webglcontextlost', this.onContextLost, false);
+	this.view.addEventListener('webglcontextrestored', this.onContextRestored, false);
 
 	this.batchs = [];
 
@@ -124,6 +126,15 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 {
 	batch.clean();	
 	PIXI._batchs.push(batch);
+}
+
+PIXI.WebGLRenderer.prototype.destroy = function()
+{
+	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
+	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
+	this.view = null;
+	this.gl = PIXI.gl = null;
+	PIXI.deleteShaders();
 }
 
 /**

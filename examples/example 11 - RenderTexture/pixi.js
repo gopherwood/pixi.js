@@ -2641,7 +2641,13 @@ PIXI.InteractionManager = function(stage)
 	 */
 	this.touchs = {};
 
-
+	this.onMouseMove = this.onMouseMove.bind(this);
+	this.onMouseDown = this.onMouseDown.bind(this);
+	this.onMouseUp = this.onMouseUp.bind(this);
+	this.onMouseOut = this.onMouseOut.bind(this);
+	this.onTouchStart = this.onTouchStart.bind(this);
+	this.onTouchMove = this.onTouchMove.bind(this);
+	this.onTouchEnd = this.onTouchEnd.bind(this);
 	
 	// helpers
 	this.tempPoint = new PIXI.Point();
@@ -2724,15 +2730,31 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	}
 	
 	this.target = target;
-	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
-	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
- 	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
+	var v = target.view;
+	v.addEventListener('mousemove',  this.onMouseMove, true);
+	v.addEventListener('mousedown',  this.onMouseDown, true);
+ 	document.body.addEventListener('mouseup',  this.onMouseUp, true);
+ 	v.addEventListener('mouseout',   this.onMouseOut, true);
 	
 	// aint no multi touch just yet!
-	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
-	target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
-	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+	v.addEventListener("touchstart", this.onTouchStart, true);
+	v.addEventListener("touchend", this.onTouchEnd, true);
+	v.addEventListener("touchmove", this.onTouchMove, true);
+}
+
+PIXI.InteractionManager.prototype.cleanup = function()
+{
+	if(!this.target) return;
+	var v = this.target.view;
+	v.removeEventListener('mousemove',  this.onMouseMove, true);
+	v.removeEventListener('mousedown',  this.onMouseDown, true);
+ 	document.body.removeEventListener('mouseup',  this.onMouseUp, true);
+ 	v.removeEventListener('mouseout',   this.onMouseOut, true);
+	
+	// aint no multi touch just yet!
+	v.removeEventListener("touchstart", this.onTouchStart, true);
+	v.removeEventListener("touchend", this.onTouchEnd, true);
+	v.removeEventListener("touchmove", this.onTouchMove, true);
 }
 
 /**
@@ -4628,8 +4650,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	// deal with losing context..	
     var scope = this;
-	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
-	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+	this.onContextLost = function(event) { scope.handleContextLost(event); };
+	this.onContextRestored = function(event) { scope.handleContextRestored(event); };
+	this.view.addEventListener('webglcontextlost', this.onContextLost, false);
+	this.view.addEventListener('webglcontextrestored', this.onContextRestored, false);
 
 	this.batchs = [];
 
@@ -4706,6 +4730,15 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 {
 	batch.clean();	
 	PIXI._batchs.push(batch);
+}
+
+PIXI.WebGLRenderer.prototype.destroy = function()
+{
+	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
+	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
+	this.view = null;
+	this.gl = PIXI.gl = null;
+	PIXI.deleteShaders();
 }
 
 /**
@@ -6638,6 +6671,12 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
+
+PIXI.CanvasRenderer.prototype.destroy = function()
+{
+	this.view = null;
+	this.context = null;
+}
 
 /**
  * Renders the stage to its canvas view
@@ -9404,6 +9443,7 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			this.source.onload = function(){
 				
 				scope.hasLoaded = true;
+				scope.source.onload = null;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
 				
