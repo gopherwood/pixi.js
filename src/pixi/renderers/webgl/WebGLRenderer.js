@@ -133,7 +133,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
 	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
 	this.view = null;
-	this.gl = PIXI.gl = null;
+	PIXI.WebGLRenderer.gl = this.gl = PIXI.gl = null;
 	PIXI.deleteShaders();
 }
 

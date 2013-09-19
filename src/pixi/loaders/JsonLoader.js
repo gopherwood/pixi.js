@@ -13,7 +13,7 @@
  * @param url {String} The url of the JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.JsonLoader = function (url, crossorigin) {
+PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 	PIXI.EventTarget.call(this);
 
 	/**
@@ -52,9 +52,9 @@ PIXI.JsonLoader = function (url, crossorigin) {
 	this.versioning = null;
 	if(url.indexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
+	
+	this.generateCanvas = generateCanvasFromTexture || false;
 };
-
-PIXI.JsonLoader.generateCanvasFromTextures = false;
 
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
@@ -186,7 +186,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				// sprite sheet
 				var scope = this;
 				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
-				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, PIXI.JsonLoader.generateCanvasFromTextures);
+				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas);
 				var frameData = this.json.frames;
 			
 				this.texture = image.texture;

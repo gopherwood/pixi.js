@@ -18,7 +18,7 @@
  *      data formats include "xml" and "fnt".
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin)
+PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
 {
 	PIXI.EventTarget.call(this);
 
@@ -37,25 +37,28 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * @type Boolean
      */
 	this.crossorigin = crossorigin;
-
-    /**
-     * Maps file extension to loader types
-     *
-     * @property loadersByType
-     * @type Object
-     */
-    this.loadersByType = {
-        "jpg":  PIXI.ImageLoader,
-        "jpeg": PIXI.ImageLoader,
-        "png":  PIXI.ImageLoader,
-        "gif":  PIXI.ImageLoader,
-        "json": PIXI.JsonLoader,
-        "anim": PIXI.SpineLoader,
-        "xml":  PIXI.BitmapFontLoader,
-        "fnt":  PIXI.BitmapFontLoader
-    };
-    
-    
+	
+	this.generateCanvas = generateCanvasFromTexture || false;
+	
+	/**
+	 * Maps file extension to loader types
+	 *
+	 * @property loadersByType
+	 * @type Object
+	 */
+	if(!PIXI.AssetLoader.loadersByType)
+	{
+		PIXI.AssetLoader.loadersByType = {
+		    "jpg":  PIXI.ImageLoader,
+		    "jpeg": PIXI.ImageLoader,
+		    "png":  PIXI.ImageLoader,
+		    "gif":  PIXI.ImageLoader,
+		    "json": PIXI.JsonLoader,
+		    "anim": PIXI.SpineLoader,
+		    "xml":  PIXI.BitmapFontLoader,
+		    "fnt":  PIXI.BitmapFontLoader
+		};
+	}
 };
 
 /**
@@ -89,11 +92,11 @@ PIXI.AssetLoader.prototype.load = function()
 		if(fileType.indexOf("?") != -1)
 			fileType = fileType.substring(0, fileType.indexOf("?"));
 
-        var loaderClass = this.loadersByType[fileType];
+        var loaderClass = PIXI.AssetLoader.loadersByType[fileType];
         if(!loaderClass)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
 
         loader.addEventListener("loaded", function()
         {

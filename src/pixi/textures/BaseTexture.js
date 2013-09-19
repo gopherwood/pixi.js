@@ -65,17 +65,17 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			
 			if(generateCanvas)
 			{
-				this.canvas = document.createElement("canvas");
-			    this.context = this.canvas.getContext("2d");
-				this.context.webkitImageSmoothingEnabled = false;
-				this.context.imageSmoothingEnabled = false;
-				this.context.mozImageSmoothingEnabled = false;
-				this.context.oImageSmoothingEnabled = false;
-				this.canvas.width = this.width;
-				this.canvas.height = this.height;
-				this.context.drawImage(this.source, 0, 0);
+				var canvas = document.createElement("canvas");
+				canvas.width = this.width;
+				canvas.height = this.height;
+			    var context = canvas.getContext("2d");
+				context.webkitImageSmoothingEnabled = false;
+				context.imageSmoothingEnabled = false;
+				context.mozImageSmoothingEnabled = false;
+				context.oImageSmoothingEnabled = false;
+				context.drawImage(this.source, 0, 0);
 				this.source.src = null;
-				this.source = this.canvas;
+				this.source = canvas;
 			}
 			
 			PIXI.texturesToUpdate.push(this);
@@ -93,17 +93,17 @@ PIXI.BaseTexture = function(source, generateCanvas)
 				
 				if(generateCanvas)
 				{
-					scope.canvas = document.createElement("canvas");
-				    scope.context = scope.canvas.getContext("2d");
-					scope.canvas.width = scope.width;
-					scope.canvas.height = scope.height;
-					scope.context.webkitImageSmoothingEnabled = false;
-					scope.context.imageSmoothingEnabled = false;
-					scope.context.mozImageSmoothingEnabled = false;
-					scope.context.oImageSmoothingEnabled = false;
-					scope.context.drawImage(scope.source, 0, 0);
+					var canvas = document.createElement("canvas");
+					canvas.width = scope.width;
+					canvas.height = scope.height;
+				    var context = canvas.getContext("2d");
+					context.webkitImageSmoothingEnabled = false;
+					context.imageSmoothingEnabled = false;
+					context.mozImageSmoothingEnabled = false;
+					context.oImageSmoothingEnabled = false;
+					context.drawImage(scope.source, 0, 0);
 					scope.source.src = null;
-					scope.source = scope.canvas;
+					scope.source = canvas;
 				}
 			
 				// add it to somewhere...

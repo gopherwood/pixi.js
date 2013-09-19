@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-18
+ * Compiled: 2013-09-19
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4737,7 +4737,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
 	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
 	this.view = null;
-	this.gl = PIXI.gl = null;
+	PIXI.WebGLRenderer.gl = this.gl = PIXI.gl = null;
 	PIXI.deleteShaders();
 }
 
@@ -9421,17 +9421,17 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			
 			if(generateCanvas)
 			{
-				this.canvas = document.createElement("canvas");
-			    this.context = this.canvas.getContext("2d");
-				this.context.webkitImageSmoothingEnabled = false;
-				this.context.imageSmoothingEnabled = false;
-				this.context.mozImageSmoothingEnabled = false;
-				this.context.oImageSmoothingEnabled = false;
-				this.canvas.width = this.width;
-				this.canvas.height = this.height;
-				this.context.drawImage(this.source, 0, 0);
+				var canvas = document.createElement("canvas");
+				canvas.width = this.width;
+				canvas.height = this.height;
+			    var context = canvas.getContext("2d");
+				context.webkitImageSmoothingEnabled = false;
+				context.imageSmoothingEnabled = false;
+				context.mozImageSmoothingEnabled = false;
+				context.oImageSmoothingEnabled = false;
+				context.drawImage(this.source, 0, 0);
 				this.source.src = null;
-				this.source = this.canvas;
+				this.source = canvas;
 			}
 			
 			PIXI.texturesToUpdate.push(this);
@@ -9449,17 +9449,17 @@ PIXI.BaseTexture = function(source, generateCanvas)
 				
 				if(generateCanvas)
 				{
-					scope.canvas = document.createElement("canvas");
-				    scope.context = scope.canvas.getContext("2d");
-					scope.canvas.width = scope.width;
-					scope.canvas.height = scope.height;
-					scope.context.webkitImageSmoothingEnabled = false;
-					scope.context.imageSmoothingEnabled = false;
-					scope.context.mozImageSmoothingEnabled = false;
-					scope.context.oImageSmoothingEnabled = false;
-					scope.context.drawImage(scope.source, 0, 0);
+					var canvas = document.createElement("canvas");
+					canvas.width = scope.width;
+					canvas.height = scope.height;
+				    var context = canvas.getContext("2d");
+					context.webkitImageSmoothingEnabled = false;
+					context.imageSmoothingEnabled = false;
+					context.mozImageSmoothingEnabled = false;
+					context.oImageSmoothingEnabled = false;
+					context.drawImage(scope.source, 0, 0);
 					scope.source.src = null;
-					scope.source = scope.canvas;
+					scope.source = canvas;
 				}
 			
 				// add it to somewhere...
@@ -10077,7 +10077,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
  *      data formats include "xml" and "fnt".
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin)
+PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
 {
 	PIXI.EventTarget.call(this);
 
@@ -10096,25 +10096,28 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * @type Boolean
      */
 	this.crossorigin = crossorigin;
-
-    /**
-     * Maps file extension to loader types
-     *
-     * @property loadersByType
-     * @type Object
-     */
-    this.loadersByType = {
-        "jpg":  PIXI.ImageLoader,
-        "jpeg": PIXI.ImageLoader,
-        "png":  PIXI.ImageLoader,
-        "gif":  PIXI.ImageLoader,
-        "json": PIXI.JsonLoader,
-        "anim": PIXI.SpineLoader,
-        "xml":  PIXI.BitmapFontLoader,
-        "fnt":  PIXI.BitmapFontLoader
-    };
-    
-    
+	
+	this.generateCanvas = generateCanvasFromTexture || false;
+	
+	/**
+	 * Maps file extension to loader types
+	 *
+	 * @property loadersByType
+	 * @type Object
+	 */
+	if(!PIXI.AssetLoader.loadersByType)
+	{
+		PIXI.AssetLoader.loadersByType = {
+		    "jpg":  PIXI.ImageLoader,
+		    "jpeg": PIXI.ImageLoader,
+		    "png":  PIXI.ImageLoader,
+		    "gif":  PIXI.ImageLoader,
+		    "json": PIXI.JsonLoader,
+		    "anim": PIXI.SpineLoader,
+		    "xml":  PIXI.BitmapFontLoader,
+		    "fnt":  PIXI.BitmapFontLoader
+		};
+	}
 };
 
 /**
@@ -10148,11 +10151,11 @@ PIXI.AssetLoader.prototype.load = function()
 		if(fileType.indexOf("?") != -1)
 			fileType = fileType.substring(0, fileType.indexOf("?"));
 
-        var loaderClass = this.loadersByType[fileType];
+        var loaderClass = PIXI.AssetLoader.loadersByType[fileType];
         if(!loaderClass)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
 
         loader.addEventListener("loaded", function()
         {
@@ -10197,7 +10200,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  * @param url {String} The url of the JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.JsonLoader = function (url, crossorigin) {
+PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 	PIXI.EventTarget.call(this);
 
 	/**
@@ -10236,9 +10239,9 @@ PIXI.JsonLoader = function (url, crossorigin) {
 	this.versioning = null;
 	if(url.indexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
+	
+	this.generateCanvas = generateCanvasFromTexture || false;
 };
-
-PIXI.JsonLoader.generateCanvasFromTextures = false;
 
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
@@ -10370,7 +10373,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 				// sprite sheet
 				var scope = this;
 				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
-				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, PIXI.JsonLoader.generateCanvasFromTextures);
+				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas);
 				var frameData = this.json.frames;
 			
 				this.texture = image.texture;
