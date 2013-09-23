@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-19
+ * Compiled: 2013-09-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3463,6 +3463,7 @@ for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
 }
 
 if (!window.requestAnimationFrame)
+{
     window.requestAnimationFrame = function(callback, element) {
         var currTime = new Date().getTime();
         var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -3472,11 +3473,11 @@ if (!window.requestAnimationFrame)
         return id;
     };
 
-if (!window.cancelAnimationFrame)
-    window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-    };
-
+	if (!window.cancelAnimationFrame)//only set this up if the corresponding requestAnimationFrame was set up
+	    window.cancelAnimationFrame = function(id) {
+	        clearTimeout(id);
+	    };
+}
 window.requestAnimFrame = window.requestAnimationFrame;
 
 /**
