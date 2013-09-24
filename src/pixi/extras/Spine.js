@@ -124,9 +124,6 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
 	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(name)));
 	sprite.scale.x = descriptor.scale.x * textureScale;
 	sprite.scale.y = descriptor.scale.y * textureScale;
-	/*sprite.scale = descriptor.scale;
-	sprite.scale.x *= textureScale;
-	sprite.scale.y *= textureScale;*/
 	sprite.rotation = descriptor.rotation;
 	sprite.anchor.x = sprite.anchor.y = 0.5;
 
