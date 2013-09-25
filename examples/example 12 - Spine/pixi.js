@@ -1658,7 +1658,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  * @method removeChildren
  * @param  leave=0 {Number} The number of children at the back to leave. Default is 0.
  */
-PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave, recurse)
 {
 	if(this.children.length == 0) return;
 	
@@ -1687,7 +1687,10 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
 	this.children.length = leave;*/
 	while(this.children.length)
 	{
-		this.removeChild(this.children[0]);
+		var c = this.children[0];
+		this.removeChild(c);
+		if(recurse && c.removeChildren)
+			c.removeChildren(0, recurse);
 	}
 }
 
