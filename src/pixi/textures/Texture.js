@@ -48,8 +48,6 @@ PIXI.Texture = function(baseTexture, frame)
 	 * @type Rectangle
 	 */
 	this.frame = frame;
-	
-	this.scope = this;
 
 	if(baseTexture.hasLoaded)
 	{
@@ -92,7 +90,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 		this.height = this.frame.height;
 	}
 	
-	this.scope.dispatchEvent( { type: 'update', content: this } );
+	if(this.hasEventListener("update"))
+		this.dispatchEvent( { type: 'update', content: this } );
 }
 
 /**
@@ -105,6 +104,8 @@ PIXI.Texture.prototype.destroy = function(destroyBase)
 {
 	if(destroyBase)this.baseTexture.destroy();
 	this.baseTexture = null;
+	this.frame = null;
+	this.realSize = null;
 	this.removeAllListeners(true);
 }
 
