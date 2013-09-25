@@ -133,3 +133,14 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
+
+PIXI.Stage.prototype.destroy = function()
+{
+	this.removeChildren(true);
+	this.__childrenAdded = null;
+	this.__childrenRemoved = null;
+	this.stage = null;
+	this.hitArea = null;
+	this.interactionManager.cleanup();
+	this.interactionManager = null;
+}

@@ -130,6 +130,13 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 
 PIXI.WebGLRenderer.prototype.destroy = function()
 {
+	if(this.stageRenderGroup.root)
+		this.stageRenderGroup.removeDisplayObjectAndChildren(this.stageRenderGroup.root);
+	this.stageRenderGroup.root = null;
+	this.stageRenderGroup.gl = null;
+	this.stageRenderGroup.batchs= null;
+	this.stageRenderGroup.toRemove = null;
+	this.stageRenderGroup = null;
 	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
 	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
 	this.view = null;

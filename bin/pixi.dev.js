@@ -3440,6 +3440,17 @@ PIXI.Stage.prototype.getMousePosition = function()
 	return this.interactionManager.mouse.global;
 }
 
+PIXI.Stage.prototype.destroy = function()
+{
+	this.removeChildren(true);
+	this.__childrenAdded = null;
+	this.__childrenRemoved = null;
+	this.stage = null;
+	this.hitArea = null;
+	this.interactionManager.cleanup();
+	this.interactionManager = null;
+}
+
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 
@@ -4743,6 +4754,13 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 
 PIXI.WebGLRenderer.prototype.destroy = function()
 {
+	if(this.stageRenderGroup.root)
+		this.stageRenderGroup.removeDisplayObjectAndChildren(this.stageRenderGroup.root);
+	this.stageRenderGroup.root = null;
+	this.stageRenderGroup.gl = null;
+	this.stageRenderGroup.batchs= null;
+	this.stageRenderGroup.toRemove = null;
+	this.stageRenderGroup = null;
 	this.view.removeEventListener('webglcontextlost', this.onContextLost, false);
 	this.view.removeEventListener('webglcontextrestored', this.onContextRestored, false);
 	this.view = null;
