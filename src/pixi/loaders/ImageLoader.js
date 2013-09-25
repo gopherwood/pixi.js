@@ -41,6 +41,7 @@ PIXI.ImageLoader.prototype.load = function()
         var scope = this;
         this.texture.baseTexture.addEventListener("loaded", function()
         {
+			scope.texture.baseTexture.removeAllListeners();
             scope.onLoaded();
         });
     }
@@ -58,5 +59,6 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: "loaded", content: this});
+	if(this.hasEventListener("loaded"))
+    	this.dispatchEvent({type: "loaded", content: this});
 };

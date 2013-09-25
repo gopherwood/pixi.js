@@ -261,6 +261,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
 			var scope = this;
 			image.addEventListener("loaded", function() {
+				image.removeAllListeners();
 				scope.onLoaded();
 			});
 			image.load();
@@ -276,5 +277,6 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-	this.dispatchEvent({type: "loaded", content: this});
+	if(this.hasEventListener("loaded"))
+		this.dispatchEvent({type: "loaded", content: this});
 };

@@ -108,7 +108,8 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: 'loaded', content: scope } );
+				if(scope.hasEventListener("loaded"))
+					scope.dispatchEvent( { type: 'loaded', content: scope } );
 			}
 			/*this.source.onerror = function()
 			{

@@ -54,6 +54,11 @@ PIXI.EventTarget = function () {
 		}
 	};
 	
+	this.hasEventListener = function(type)
+	{
+		return listeners[type] ? listeners[type].length > 0 : false;
+	};
+	
 	this.removeAllListeners = function(destroy)
 	{
 		if(destroy)

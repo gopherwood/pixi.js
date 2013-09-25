@@ -191,6 +191,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 			
 				this.texture = image.texture;
 				image.addEventListener("loaded", function (event) {
+					image.removeAllListeners();
 					scope.onLoaded();
 				});
 			
@@ -249,10 +250,13 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 PIXI.JsonLoader.prototype.onLoaded = function()
 {
 	this.loaded = true;
-	this.dispatchEvent({
-		type: "loaded",
-		content: this
-	});
+	if(this.hasEventListener("loaded"))
+	{
+		this.dispatchEvent({
+			type: "loaded",
+			content: this
+		});
+	}
 };
 
 /**
@@ -263,8 +267,11 @@ PIXI.JsonLoader.prototype.onLoaded = function()
  */
 PIXI.JsonLoader.prototype.onError = function()
 {
-	this.dispatchEvent({
-		type: "error",
-		content: this
-	});
+	if(this.hasEventListener("error"))
+	{
+		this.dispatchEvent({
+			type: "error",
+			content: this
+		});
+	}
 };

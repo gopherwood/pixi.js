@@ -84,6 +84,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
 	jsonLoader.addEventListener("loaded", function (event) {
 		scope.json = event.content.json;
 		scope.onJSONLoaded();
+		jsonLoader.removeAllListeners();
 	});
 	jsonLoader.load();
 };
@@ -102,6 +103,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 
 	this.texture = image.texture;
 	image.addEventListener("loaded", function (event) {
+		image.removeAllListeners();
 		scope.onLoaded();
 	});
 
@@ -135,8 +137,11 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-	this.dispatchEvent({
-		type: "loaded",
-		content: this
-	});
+	if(this.hasEventListener("loaded"))
+	{
+		this.dispatchEvent({
+			type: "loaded",
+			content: this
+		});
+	}
 };

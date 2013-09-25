@@ -81,10 +81,13 @@ PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-    var scope = this;
-
 	this.loadCount = this.assetURLs.length;
-
+	
+	var loadCallback = function(load)
+    {
+        this.onAssetLoaded();
+		load.removeAllListeners();
+    };
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
@@ -98,10 +101,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
 
-        loader.addEventListener("loaded", function()
-        {
-            scope.onAssetLoaded();
-        });
+        loader.addEventListener("loaded", loadCallback.bind(this, loader));
         loader.load();
 	}
 };
@@ -115,12 +115,14 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: "onProgress", content: this});
+	if(this.hasEventListener("onProgress"))
+		this.dispatchEvent({type: "onProgress", content: this});
 	if(this.onProgress) this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent({type: "onComplete", content: this});
+		if(this.hasEventListener("onComplete"))
+			this.dispatchEvent({type: "onComplete", content: this});
 		if(this.onComplete) this.onComplete();
 	}
 };

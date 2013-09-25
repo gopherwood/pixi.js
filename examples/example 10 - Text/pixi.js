@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-09-20
+ * Compiled: 2013-09-25
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3650,6 +3650,11 @@ PIXI.EventTarget = function () {
 		{
 			listeners[ type ].splice( index, 1 );
 		}
+	};
+	
+	this.hasEventListener = function(type)
+	{
+		return listeners[type] ? listeners[type].length > 0 : false;
 	};
 	
 	this.removeAllListeners = function(destroy)
@@ -7952,9 +7957,6 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
 	var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(filenameFromUrl(name)));
 	sprite.scale.x = descriptor.scale.x * textureScale;
 	sprite.scale.y = descriptor.scale.y * textureScale;
-	/*sprite.scale = descriptor.scale;
-	sprite.scale.x *= textureScale;
-	sprite.scale.y *= textureScale;*/
 	sprite.rotation = descriptor.rotation;
 	sprite.anchor.x = sprite.anchor.y = 0.5;
 
@@ -9465,7 +9467,8 @@ PIXI.BaseTexture = function(source, generateCanvas)
 			
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: 'loaded', content: scope } );
+				if(scope.hasEventListener("loaded"))
+					scope.dispatchEvent( { type: 'loaded', content: scope } );
 			}
 			/*this.source.onerror = function()
 			{
@@ -10141,10 +10144,13 @@ PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-    var scope = this;
-
 	this.loadCount = this.assetURLs.length;
-
+	
+	var loadCallback = function(load)
+    {
+        this.onAssetLoaded();
+		load.removeAllListeners();
+    };
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
@@ -10158,10 +10164,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
 
-        loader.addEventListener("loaded", function()
-        {
-            scope.onAssetLoaded();
-        });
+        loader.addEventListener("loaded", loadCallback.bind(this, loader));
         loader.load();
 	}
 };
@@ -10175,12 +10178,14 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: "onProgress", content: this});
+	if(this.hasEventListener("onProgress"))
+		this.dispatchEvent({type: "onProgress", content: this});
 	if(this.onProgress) this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent({type: "onComplete", content: this});
+		if(this.hasEventListener("onComplete"))
+			this.dispatchEvent({type: "onComplete", content: this});
 		if(this.onComplete) this.onComplete();
 	}
 };
@@ -10379,6 +10384,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 			
 				this.texture = image.texture;
 				image.addEventListener("loaded", function (event) {
+					image.removeAllListeners();
 					scope.onLoaded();
 				});
 			
@@ -10437,10 +10443,13 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 PIXI.JsonLoader.prototype.onLoaded = function()
 {
 	this.loaded = true;
-	this.dispatchEvent({
-		type: "loaded",
-		content: this
-	});
+	if(this.hasEventListener("loaded"))
+	{
+		this.dispatchEvent({
+			type: "loaded",
+			content: this
+		});
+	}
 };
 
 /**
@@ -10451,10 +10460,13 @@ PIXI.JsonLoader.prototype.onLoaded = function()
  */
 PIXI.JsonLoader.prototype.onError = function()
 {
-	this.dispatchEvent({
-		type: "error",
-		content: this
-	});
+	if(this.hasEventListener("error"))
+	{
+		this.dispatchEvent({
+			type: "error",
+			content: this
+		});
+	}
 };
 
 /**
@@ -10543,6 +10555,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
 	jsonLoader.addEventListener("loaded", function (event) {
 		scope.json = event.content.json;
 		scope.onJSONLoaded();
+		jsonLoader.removeAllListeners();
 	});
 	jsonLoader.load();
 };
@@ -10561,6 +10574,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 
 	this.texture = image.texture;
 	image.addEventListener("loaded", function (event) {
+		image.removeAllListeners();
 		scope.onLoaded();
 	});
 
@@ -10594,10 +10608,13 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-	this.dispatchEvent({
-		type: "loaded",
-		content: this
-	});
+	if(this.hasEventListener("loaded"))
+	{
+		this.dispatchEvent({
+			type: "loaded",
+			content: this
+		});
+	}
 };
 
 /**
@@ -10643,6 +10660,7 @@ PIXI.ImageLoader.prototype.load = function()
         var scope = this;
         this.texture.baseTexture.addEventListener("loaded", function()
         {
+			scope.texture.baseTexture.removeAllListeners();
             scope.onLoaded();
         });
     }
@@ -10660,7 +10678,8 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: "loaded", content: this});
+	if(this.hasEventListener("loaded"))
+    	this.dispatchEvent({type: "loaded", content: this});
 };
 
 /**
@@ -10926,6 +10945,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
 			var scope = this;
 			image.addEventListener("loaded", function() {
+				image.removeAllListeners();
 				scope.onLoaded();
 			});
 			image.load();
@@ -10941,7 +10961,8 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-	this.dispatchEvent({type: "loaded", content: this});
+	if(this.hasEventListener("loaded"))
+		this.dispatchEvent({type: "loaded", content: this});
 };
 
 /**
