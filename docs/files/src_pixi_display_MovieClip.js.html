@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;MovieClip.js - Pixi.JS</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <title>src/pixi/display/MovieClip.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -130,7 +150,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;MovieClip.js</h1>
+                        <h1 class="file-heading">File: src/pixi/display/MovieClip.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -140,64 +160,138 @@
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
+ *
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array} an array of {Texture} objects that make up the animation
+ * @param textures {Array&lt;Texture&gt;} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
-	PIXI.Sprite.call( this, textures[0]);
-	
+	PIXI.Sprite.call(this, textures[0]);
+
 	/**
 	 * The array of textures that make up the animation
+	 *
 	 * @property textures
 	 * @type Array
 	 */
 	this.textures = textures;
-	
-	/**
-	 * [read only] The index MovieClips current frame (this may not have to be a whole number)
-	 * @property currentFrame
-	 * @type Number
-	 */
-	this.currentFrame = 0; 
-	
+
 	/**
 	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
+	 *
 	 * @property animationSpeed
 	 * @type Number
+	 * @default 1
 	 */
 	this.animationSpeed = 1;
 
 	/**
 	 * Whether or not the movie clip repeats after playing.
+	 *
 	 * @property loop
 	 * @type Boolean
+	 * @default true
 	 */
 	this.loop = true;
 
 	/**
 	 * Function to call when a MovieClip finishes playing
+	 *
 	 * @property onComplete
 	 * @type Function
 	 */
 	this.onComplete = null;
-	
+
 	/**
-	 * [read only] indicates if the MovieClip is currently playing
+	 * [read-only] The index MovieClips current frame (this may not have to be a whole number)
+	 *
+	 * @property currentFrame
+	 * @type Number
+	 * @default 0
+	 * @readOnly
+	 */
+	this.currentFrame = 0;
+
+	/**
+	 * [read-only] Indicates if the MovieClip is currently playing
+	 *
 	 * @property playing
 	 * @type Boolean
+	 * @readOnly
 	 */
-	this.playing;
+	this.playing = false;
+	
+	/**
+	 * This is the MovieClip&#x27;s target animation rate - the rate at which the animation was created. 
+	 * @property _animFrameRate
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._animFrameRate = 30;
+	
+	/**
+	 * This is the time elapsed in the animation from frame 0 in seconds.
+	 * @property _elapsedTime
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._elapsedTime = 0;
+	
+	/**
+	 * This is the total time for the animation.
+	 * @property _animDuration
+	 * @type Number
+	 * @default 0
+	 * @private
+	 */
+	this._animDuration = 0;
 }
 
 // constructor
-PIXI.MovieClip.constructor = PIXI.MovieClip;
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
+PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
+
+Object.defineProperty(PIXI.MovieClip.prototype, &quot;fps&quot;, {
+	get: function() { return this._animFrameRate; },
+	set: function(value) {
+		this._animFrameRate = value;
+		this._elapsedTime = 0;
+		if(this.textures)
+			this._duration = value ? this.textures.length / value : 0;
+		else
+			this._duration = 0;
+	}
+})
+
+PIXI.MovieClip.prototype.updateDuration = function()
+{
+	this._duration = this._animFrameRate ? this.textures.length / this._animFrameRate : 0;
+}
+
+/**
+* [read-only] totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
+* assigned to the MovieClip.
+*
+* @property totalFrames
+* @type Number
+* @default 0
+* @readOnly
+*/
+Object.defineProperty( PIXI.MovieClip.prototype, &#x27;totalFrames&#x27;, {
+	get: function() {
+
+		return this.textures.length;
+	}
+});
+
 
 /**
  * Stops the MovieClip
+ *
  * @method stop
  */
 PIXI.MovieClip.prototype.stop = function()
@@ -207,6 +301,7 @@ PIXI.MovieClip.prototype.stop = function()
 
 /**
  * Plays the MovieClip
+ *
  * @method play
  */
 PIXI.MovieClip.prototype.play = function()
@@ -216,6 +311,7 @@ PIXI.MovieClip.prototype.play = function()
 
 /**
  * Stops the MovieClip and goes to a specific frame
+ *
  * @method gotoAndStop
  * @param frameNumber {Number} frame index to stop at
  */
@@ -223,42 +319,69 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
 	this.playing = false;
 	this.currentFrame = frameNumber;
+	this._elapsedTime = frameNumber / this._animFrameRate;
 	var round = (this.currentFrame + 0.5) | 0;
 	this.setTexture(this.textures[round % this.textures.length]);
 }
 
 /**
  * Goes to a specific frame and begins playing the MovieClip
+ *
  * @method gotoAndPlay
  * @param frameNumber {Number} frame index to start at
  */
 PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 {
+	this._elapsedTime = frameNumber / this._animFrameRate;
 	this.currentFrame = frameNumber;
 	this.playing = true;
 }
 
+/**
+ * Updates the animation given a delta time.
+ * @method updateAnim
+ * @param deltaSec {Number} The time to advance the animation by in seconds.
+ */
+PIXI.MovieClip.prototype.updateAnim = function(deltaSec)
+{
+	this._elapsedTime += deltaSec * this.animationSpeed;
+}
+
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-	PIXI.Sprite.prototype.updateTransform.call(this);
-	
-	if(!this.playing)return;
-	
-	this.currentFrame += this.animationSpeed;
-	var round = (this.currentFrame + 0.5) | 0;
-	if(this.loop || round &lt; this.textures.length)
+	if(this.playing)
 	{
-		this.setTexture(this.textures[round % this.textures.length]);
-	}
-	else if(round &gt;= this.textures.length)
-	{
-		this.gotoAndStop(this.textures.length - 1);
-		if(this.onComplete)
+		var complete = false;
+		if(this._elapsedTime &gt; this._duration)
+		{
+			if(this.loop)
+				this._elapsedTime = this._elapsedTime % this._duration;
+			else
+			{
+				this._elapsedTime = this._duration;
+				complete = true;
+				this.playing = false;
+			}
+		}
+		this.currentFrame = (this._elapsedTime * this._animFrameRate) | 0;
+		//sanity check
+		if(this.currentFrame &gt;= this.textures.length)
+			this.currentFrame = this.textures.length - 1;
+		this.setTexture(this.textures[this.currentFrame]);	
+		if(complete &amp;&amp; this.onComplete)
 		{
 			this.onComplete();
 		}
 	}
+	PIXI.Sprite.prototype.updateTransform.call(this);
 }
+
     </pre>
 </div>
 

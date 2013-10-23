@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -144,45 +164,54 @@ PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
+ *
  * @class BaseTexture
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(source)
+PIXI.BaseTexture = function(source, generateCanvas)
 {
 	PIXI.EventTarget.call( this );
-	
-	/*
-	 * The url of the texture
-	 * @property imageUrl
-	 * @type String
-	 */
-	//this.imageUrl = source.src;
-	
+
 	/**
-	 * [read only] The width of the base texture set when the image has loaded
+	 * [read-only] The width of the base texture set when the image has loaded
+	 *
 	 * @property width
 	 * @type Number
+	 * @readOnly
 	 */
 	this.width = 100;
+
 	/**
-	 * [read only] The height of the base texture set when the image has loaded
+	 * [read-only] The height of the base texture set when the image has loaded
+	 *
 	 * @property height
 	 * @type Number
+	 * @readOnly
 	 */
 	this.height = 100;
-	
+
+	/**
+	 * [read-only] Describes if the base texture has loaded or not
+	 *
+	 * @property hasLoaded
+	 * @type Boolean
+	 * @readOnly
+	 */
+	this.hasLoaded = false;
+
 	/**
 	 * The source that is loaded to create the texture
+	 *
 	 * @property source
 	 * @type Image
 	 */
-	this.source = source//new Image();
-	
+	this.source = source;
+
 	if(!source)return;
-	
-	if(this.source instanceof Image)
+
+	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
 	{
 		if(this.source.complete)
 		{
@@ -190,22 +219,57 @@ PIXI.BaseTexture = function(source)
 			this.width = this.source.width;
 			this.height = this.source.height;
 			
+			if(generateCanvas)
+			{
+				var canvas = document.createElement(&quot;canvas&quot;);
+				canvas.width = this.width;
+				canvas.height = this.height;
+			    var context = canvas.getContext(&quot;2d&quot;);
+				context.webkitImageSmoothingEnabled = false;
+				context.imageSmoothingEnabled = false;
+				context.mozImageSmoothingEnabled = false;
+				context.oImageSmoothingEnabled = false;
+				context.drawImage(this.source, 0, 0);
+				this.source.src = null;
+				this.source = canvas;
+			}
+			
 			PIXI.texturesToUpdate.push(this);
 		}
 		else
 		{
-			
+
 			var scope = this;
 			this.source.onload = function(){
-				
+
 				scope.hasLoaded = true;
+				scope.source.onload = null;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
+				
+				if(generateCanvas)
+				{
+					var canvas = document.createElement(&quot;canvas&quot;);
+					canvas.width = scope.width;
+					canvas.height = scope.height;
+				    var context = canvas.getContext(&quot;2d&quot;);
+					context.webkitImageSmoothingEnabled = false;
+					context.imageSmoothingEnabled = false;
+					context.mozImageSmoothingEnabled = false;
+					context.oImageSmoothingEnabled = false;
+					context.drawImage(scope.source, 0, 0);
+					scope.source.src = null;
+					scope.source = canvas;
+				}
 			
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
+				if(scope.hasEventListener(&quot;loaded&quot;))
+					scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
 			}
+			/*this.source.onerror = function()
+			{
+			}*/
 			//	this.image.src = imageUrl;
 		}
 	}
@@ -214,51 +278,64 @@ PIXI.BaseTexture = function(source)
 		this.hasLoaded = true;
 		this.width = this.source.width;
 		this.height = this.source.height;
-			
+
 		PIXI.texturesToUpdate.push(this);
 	}
-	
+
 	this._powerOf2 = false;
 	
+	this.destroyed = false;
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
+/**
+ * Destroys this base texture
+ *
+ * @method destroy
+ */
 PIXI.BaseTexture.prototype.destroy = function()
 {
+	if(this.destroyed) return;
+	
 	if(this.source instanceof Image)
 	{
 		this.source.src = null;
 	}
 	this.source = null;
 	PIXI.texturesToDestroy.push(this);
+	this.destroyed = true;
+	this.removeAllListeners(true);
+	delete PIXI.BaseTextureCache[this._id];
 }
 
-
-&#x2F;**
- * 
+/**
  * Helper function that returns a base texture based on an image url
  * If the image is not in the base texture cache it will be  created and loaded
+ *
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
  * @return BaseTexture
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
-	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	var id = filenameFromUrl(imageUrl);
+	var baseTexture = PIXI.BaseTextureCache[id];
 	if(!baseTexture)
 	{
-		&#x2F;&#x2F; new Image() breaks tex loading in some versions of Chrome.
-		&#x2F;&#x2F; See https:&#x2F;&#x2F;code.google.com&#x2F;p&#x2F;chromium&#x2F;issues&#x2F;detail?id=238071
-		var image = new Image();&#x2F;&#x2F;document.createElement(&#x27;img&#x27;); 
+		// new Image() breaks tex loading in some versions of Chrome.
+		// See https://code.google.com/p/chromium/issues/detail?id=238071
+		var image = new Image();//document.createElement(&#x27;img&#x27;);
 		if (crossorigin)
 		{
 			image.crossOrigin = &#x27;&#x27;;
 		}
 		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
-		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		baseTexture = new PIXI.BaseTexture(image, generateCanvas);
+		//PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		PIXI.BaseTextureCache[id] = baseTexture;
+		baseTexture._id = id;
 	}
 
 	return baseTexture;

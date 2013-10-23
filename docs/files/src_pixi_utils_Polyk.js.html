@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/extras/Rope.js - Pixi.JS</title>
+    <title>src/pixi/utils/Polyk.js - Pixi.JS</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -150,185 +150,159 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/extras/Rope.js</h1>
+                        <h1 class="file-heading">File: src/pixi/utils/Polyk.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/*
+	PolyK library
+	url: http://polyk.ivank.net
+	Released under MIT licence.
+
+	Copyright (c) 2012 Ivan Kuckir
+
+	Permission is hereby granted, free of charge, to any person
+	obtaining a copy of this software and associated documentation
+	files (the &quot;Software&quot;), to deal in the Software without
+	restriction, including without limitation the rights to use,
+	copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the
+	Software is furnished to do so, subject to the following
+	conditions:
+
+	The above copyright notice and this permission notice shall be
+	included in all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+	OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+	NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+	OTHER DEALINGS IN THE SOFTWARE.
+
+	This is an amazing lib!
+
+	slightly modified by mat groves (matgroves.com);
+*/
+
+PIXI.PolyK = {};
+
 /**
- * @author Mat Groves http://matgroves.com/
+ * Triangulates shapes for webGL graphic fills
+ *
+ * @method Triangulate
+ * @namespace PolyK
+ * @constructor
  */
-
-
-PIXI.Rope = function(texture, points)
+PIXI.PolyK.Triangulate = function(p)
 {
-	PIXI.Strip.call( this, texture );
-	this.points = points;
+	var sign = true;
 
-	try
+	var n = p.length&gt;&gt;1;
+	if(n&lt;3) return [];
+	var tgs = [];
+	var avl = [];
+	for(var i=0; i&lt;n; i++) avl.push(i);
+
+	var i = 0;
+	var al = n;
+	while(al &gt; 3)
 	{
-		this.verticies = new Float32Array( points.length * 4);
-		this.uvs = new Float32Array( points.length * 4);
-		this.colors = new Float32Array(  points.length * 2);
-		this.indices = new Uint16Array( points.length * 2);
-	}
-	catch(error)
-	{
-		this.verticies = verticies
+		var i0 = avl[(i+0)%al];
+		var i1 = avl[(i+1)%al];
+		var i2 = avl[(i+2)%al];
 
-		this.uvs = uvs
-		this.colors = colors
-		this.indices = indices
-	}
+		var ax = p[2*i0],  ay = p[2*i0+1];
+		var bx = p[2*i1],  by = p[2*i1+1];
+		var cx = p[2*i2],  cy = p[2*i2+1];
 
-	this.refresh();
+		var earFound = false;
+		if(PIXI.PolyK._convex(ax, ay, bx, by, cx, cy, sign))
+		{
+			earFound = true;
+			for(var j=0; j&lt;al; j++)
+			{
+				var vi = avl[j];
+				if(vi==i0 || vi==i1 || vi==i2) continue;
+				if(PIXI.PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {earFound = false; break;}
+			}
+		}
+		if(earFound)
+		{
+			tgs.push(i0, i1, i2);
+			avl.splice((i+1)%al, 1);
+			al--;
+			i = 0;
+		}
+		else if(i++ &gt; 3*al)
+		{
+			// need to flip flip reverse it!
+			// reset!
+			if(sign)
+			{
+				var tgs = [];
+				avl = [];
+				for(var i=0; i&lt;n; i++) avl.push(i);
+
+				i = 0;
+				al = n;
+
+				sign = false;
+			}
+			else
+			{
+				console.log(&quot;PIXI Warning: shape too complex to fill&quot;)
+				return [];
+			}
+		}
+	}
+	tgs.push(avl[0], avl[1], avl[2]);
+	return tgs;
 }
 
-
-// constructor
-PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
-PIXI.Rope.prototype.constructor = PIXI.Rope;
-
-PIXI.Rope.prototype.refresh = function()
+/**
+ * Checks if a point is within a triangle
+ *
+ * @class _PointInTriangle
+ * @namespace PolyK
+ * @private
+ */
+PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
 {
-	var points = this.points;
-	if(points.length &lt; 1)return;
+	var v0x = cx-ax;
+	var v0y = cy-ay;
+	var v1x = bx-ax;
+	var v1y = by-ay;
+	var v2x = px-ax;
+	var v2y = py-ay;
 
-	var uvs = this.uvs
-	var indices = this.indices;
-	var colors = this.colors;
+	var dot00 = v0x*v0x+v0y*v0y;
+	var dot01 = v0x*v1x+v0y*v1y;
+	var dot02 = v0x*v2x+v0y*v2y;
+	var dot11 = v1x*v1x+v1y*v1y;
+	var dot12 = v1x*v2x+v1y*v2y;
 
-	var lastPoint = points[0];
-	var nextPoint;
-	var perp = {x:0, y:0};
-	var point = points[0];
+	var invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+	var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-	this.count-=0.2;
-
-
-	uvs[0] = 0
-	uvs[1] = 1
-	uvs[2] = 0
-	uvs[3] = 1
-
-	colors[0] = 1;
-	colors[1] = 1;
-
-	indices[0] = 0;
-	indices[1] = 1;
-
-	var total = points.length;
-
-	for (var i =  1; i &lt; total; i++)
-	{
-
-		var point = points[i];
-		var index = i * 4;
-		// time to do some smart drawing!
-		var amount = i/(total-1)
-
-		if(i%2)
-		{
-			uvs[index] = amount;
-			uvs[index+1] = 0;
-
-			uvs[index+2] = amount
-			uvs[index+3] = 1
-
-		}
-		else
-		{
-			uvs[index] = amount
-			uvs[index+1] = 0
-
-			uvs[index+2] = amount
-			uvs[index+3] = 1
-		}
-
-		index = i * 2;
-		colors[index] = 1;
-		colors[index+1] = 1;
-
-		index = i * 2;
-		indices[index] = index;
-		indices[index + 1] = index + 1;
-
-		lastPoint = point;
-	}
+	// Check if point is in triangle
+	return (u &gt;= 0) &amp;&amp; (v &gt;= 0) &amp;&amp; (u + v &lt; 1);
 }
 
-PIXI.Rope.prototype.updateTransform = function()
+/**
+ * Checks if a shape is convex
+ *
+ * @class _convex
+ * @namespace PolyK
+ * @private
+ */
+PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
 {
-
-	var points = this.points;
-	if(points.length &lt; 1)return;
-
-	var verticies = this.verticies
-
-	var lastPoint = points[0];
-	var nextPoint;
-	var perp = {x:0, y:0};
-	var point = points[0];
-
-	this.count-=0.2;
-
-	verticies[0] = point.x + perp.x
-	verticies[1] = point.y + perp.y //+ 200
-	verticies[2] = point.x - perp.x
-	verticies[3] = point.y - perp.y//+200
-	// time to do some smart drawing!
-
-	var total = points.length;
-
-	for (var i =  1; i &lt; total; i++)
-	{
-
-		var point = points[i];
-		var index = i * 4;
-
-		if(i &lt; points.length-1)
-		{
-			nextPoint = points[i+1];
-		}
-		else
-		{
-			nextPoint = point
-		}
-
-		perp.y = -(nextPoint.x - lastPoint.x);
-		perp.x = nextPoint.y - lastPoint.y;
-
-		var ratio = (1 - (i / (total-1))) * 10;
-				if(ratio &gt; 1)ratio = 1;
-
-		var perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
-		var num = this.texture.height/2//(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
-		perp.x /= perpLength;
-		perp.y /= perpLength;
-
-		perp.x *= num;
-		perp.y *= num;
-
-		verticies[index] = point.x + perp.x
-		verticies[index+1] = point.y + perp.y
-		verticies[index+2] = point.x - perp.x
-		verticies[index+3] = point.y - perp.y
-
-		lastPoint = point;
-	}
-
-	PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+	return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) &gt;= 0) == sign;
 }
-
-PIXI.Rope.prototype.setTexture = function(texture)
-{
-	// stop current texture
-	this.texture = texture;
-	this.updateFrame = true;
-}
-
-
-
-
 
     </pre>
 </div>

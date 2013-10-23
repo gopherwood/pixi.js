@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -134,54 +154,97 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
- * Provides requestAnimationFrame in a cross browser way.
- *&#x2F;
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(&#x2F;* function FrameRequestCallback *&#x2F; callback, &#x2F;* DOMElement Element *&#x2F; element) {
-           window.setTimeout(callback, 1000&#x2F;60);
-         };
-})();
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+// MIT license
+
+/**
+ * A polyfill for requestAnimationFrame
+ *
+ * @method requestAnimationFrame
+ */
+/**
+ * A polyfill for cancelAnimationFrame
+ *
+ * @method cancelAnimationFrame
+ */
+var lastTime = 0;
+var vendors = [&#x27;ms&#x27;, &#x27;moz&#x27;, &#x27;webkit&#x27;, &#x27;o&#x27;];
+for(var x = 0; x &lt; vendors.length &amp;&amp; !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x]+&#x27;RequestAnimationFrame&#x27;];
+    window.cancelAnimationFrame = window[vendors[x]+&#x27;CancelAnimationFrame&#x27;]
+                               || window[vendors[x]+&#x27;CancelRequestAnimationFrame&#x27;];
+}
+
+if (!window.requestAnimationFrame)
+{
+    window.requestAnimationFrame = function(callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+          timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+
+	if (!window.cancelAnimationFrame)//only set this up if the corresponding requestAnimationFrame was set up
+	    window.cancelAnimationFrame = function(id) {
+	        clearTimeout(id);
+	    };
+}
+window.requestAnimFrame = window.requestAnimationFrame;
+
+/**
+ * Converts a hex color number to an [R, G, B] array
+ *
+ * @method HEXtoRGB
+ * @param hex {Number}
+ */
 function HEXtoRGB(hex) {
 	return [(hex &gt;&gt; 16 &amp; 0xFF) / 255, ( hex &gt;&gt; 8 &amp; 0xFF) / 255, (hex &amp; 0xFF)/ 255];
 }
 
 /**
- * Provides bind in a cross browser way.
+ * A polyfill for Function.prototype.bind
+ *
+ * @method bind
  */
 if (typeof Function.prototype.bind != &#x27;function&#x27;) {
   Function.prototype.bind = (function () {
     var slice = Array.prototype.slice;
     return function (thisArg) {
       var target = this, boundArgs = slice.call(arguments, 1);
- 
+
       if (typeof target != &#x27;function&#x27;) throw new TypeError();
- 
+
       function bound() {
 	var args = boundArgs.concat(slice.call(arguments));
 	target.apply(this instanceof bound ? this : thisArg, args);
       }
- 
+
       bound.prototype = (function F(proto) {
           proto &amp;&amp; (F.prototype = proto);
-          if (!(this instanceof F)) return new F;          
+          if (!(this instanceof F)) return new F;
 	})(target.prototype);
- 
+
       return bound;
     };
   })();
 }
 
+/**
+ * A wrapper for ajax requests to be handled cross browser
+ *
+ * @class AjaxRequest
+ * @constructor
+ */
 var AjaxRequest = PIXI.AjaxRequest = function()
 {
-	var activexmodes = [&quot;Msxml2.XMLHTTP&quot;, &quot;Microsoft.XMLHTTP&quot;] //activeX versions to check for in IE
-	
+	var activexmodes = [&quot;Msxml2.XMLHTTP.6.0&quot;, &quot;Msxml2.XMLHTTP.3.0&quot;, &quot;Microsoft.XMLHTTP&quot;] //activeX versions to check for in IE
+
 	if (window.ActiveXObject)
 	{ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
 		for (var i=0; i&lt;activexmodes.length; i++)
@@ -204,9 +267,25 @@ var AjaxRequest = PIXI.AjaxRequest = function()
  	}
 }
 
-&#x2F;*
+/**
+ * @method filenameFromUrl
+ * @param {String} url The url to pull the filename from.
+ * @return {String} The filename (excluding extension).
+ */
+function filenameFromUrl(url)
+{
+	var name = url.substring(url.lastIndexOf(&quot;/&quot;) + 1);
+	var i = name.lastIndexOf(&quot;.&quot;);
+	if(i != -1)
+		name = name.substring(0, i);
+	return name;
+}
+
+Math.PI_OVER_180 = Math.PI / 180;
+
+/*
  * DEBUGGING ONLY
- *&#x2F;
+ */
 PIXI.runList = function(item)
 {
 	console.log(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;)
@@ -214,23 +293,21 @@ PIXI.runList = function(item)
 	var safe = 0;
 	var tmp = item.first;
 	console.log(tmp);
-	
+
 	while(tmp._iNext)
 	{
 		safe++;
-&#x2F;&#x2F;		console.log(tmp.childIndex + tmp);
 		tmp = tmp._iNext;
-		console.log(tmp);&#x2F;&#x2F;.childIndex);
-	&#x2F;&#x2F;	console.log(tmp);
-	
+		console.log(tmp);
+	//	console.log(tmp);
+
 		if(safe &gt; 100)
 		{
 			console.log(&quot;BREAK&quot;)
 			break
 		}
-	}	
+	}
 }
-
 
 
 

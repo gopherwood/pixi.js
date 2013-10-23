@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/extras/Rope.js - Pixi.JS</title>
+    <title>EventTarget - Pixi.JS</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -150,187 +150,268 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/extras/Rope.js</h1>
+                        <h1>EventTarget Class</h1>
+<div class="box meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-/**
- * @author Mat Groves http://matgroves.com/
- */
+    
 
+    
+        <div class="foundat">
+            Defined in: <a href="../files/src_pixi_utils_EventTarget.js.html#l6"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:6</code></a>
+        </div>
+    
 
-PIXI.Rope = function(texture, points)
-{
-	PIXI.Strip.call( this, texture );
-	this.points = points;
+    
+        
+            Module: <a href="../modules/PIXI.html">PIXI</a>
+        
+    
 
-	try
-	{
-		this.verticies = new Float32Array( points.length * 4);
-		this.uvs = new Float32Array( points.length * 4);
-		this.colors = new Float32Array(  points.length * 2);
-		this.indices = new Uint16Array( points.length * 2);
-	}
-	catch(error)
-	{
-		this.verticies = verticies
-
-		this.uvs = uvs
-		this.colors = colors
-		this.indices = indices
-	}
-
-	this.refresh();
-}
-
-
-// constructor
-PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
-PIXI.Rope.prototype.constructor = PIXI.Rope;
-
-PIXI.Rope.prototype.refresh = function()
-{
-	var points = this.points;
-	if(points.length &lt; 1)return;
-
-	var uvs = this.uvs
-	var indices = this.indices;
-	var colors = this.colors;
-
-	var lastPoint = points[0];
-	var nextPoint;
-	var perp = {x:0, y:0};
-	var point = points[0];
-
-	this.count-=0.2;
-
-
-	uvs[0] = 0
-	uvs[1] = 1
-	uvs[2] = 0
-	uvs[3] = 1
-
-	colors[0] = 1;
-	colors[1] = 1;
-
-	indices[0] = 0;
-	indices[1] = 1;
-
-	var total = points.length;
-
-	for (var i =  1; i &lt; total; i++)
-	{
-
-		var point = points[i];
-		var index = i * 4;
-		// time to do some smart drawing!
-		var amount = i/(total-1)
-
-		if(i%2)
-		{
-			uvs[index] = amount;
-			uvs[index+1] = 0;
-
-			uvs[index+2] = amount
-			uvs[index+3] = 1
-
-		}
-		else
-		{
-			uvs[index] = amount
-			uvs[index+1] = 0
-
-			uvs[index+2] = amount
-			uvs[index+3] = 1
-		}
-
-		index = i * 2;
-		colors[index] = 1;
-		colors[index+1] = 1;
-
-		index = i * 2;
-		indices[index] = index;
-		indices[index + 1] = index + 1;
-
-		lastPoint = point;
-	}
-}
-
-PIXI.Rope.prototype.updateTransform = function()
-{
-
-	var points = this.points;
-	if(points.length &lt; 1)return;
-
-	var verticies = this.verticies
-
-	var lastPoint = points[0];
-	var nextPoint;
-	var perp = {x:0, y:0};
-	var point = points[0];
-
-	this.count-=0.2;
-
-	verticies[0] = point.x + perp.x
-	verticies[1] = point.y + perp.y //+ 200
-	verticies[2] = point.x - perp.x
-	verticies[3] = point.y - perp.y//+200
-	// time to do some smart drawing!
-
-	var total = points.length;
-
-	for (var i =  1; i &lt; total; i++)
-	{
-
-		var point = points[i];
-		var index = i * 4;
-
-		if(i &lt; points.length-1)
-		{
-			nextPoint = points[i+1];
-		}
-		else
-		{
-			nextPoint = point
-		}
-
-		perp.y = -(nextPoint.x - lastPoint.x);
-		perp.x = nextPoint.y - lastPoint.y;
-
-		var ratio = (1 - (i / (total-1))) * 10;
-				if(ratio &gt; 1)ratio = 1;
-
-		var perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
-		var num = this.texture.height/2//(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
-		perp.x /= perpLength;
-		perp.y /= perpLength;
-
-		perp.x *= num;
-		perp.y *= num;
-
-		verticies[index] = point.x + perp.x
-		verticies[index+1] = point.y + perp.y
-		verticies[index+2] = point.x - perp.x
-		verticies[index+3] = point.y - perp.y
-
-		lastPoint = point;
-	}
-
-	PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
-}
-
-PIXI.Rope.prototype.setTexture = function(texture)
-{
-	// stop current texture
-	this.texture = texture;
-	this.updateFrame = true;
-}
+    
+</div>
 
 
 
+<div class="box intro">
+    <p>Adds event emitter functionality to a class</p>
+</div>
 
 
-    </pre>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_autoDetectRenderer">autoDetectRenderer</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_autoDetectRenderer" class="method item">
+    <h3 class="name"><code>autoDetectRenderer</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>view</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>transparent=false</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>antialias=false</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_Detector.js.html#l5"><code>src&#x2F;pixi&#x2F;utils&#x2F;Detector.js:5</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This helper function will automatically detect which renderer you should be using.
+WebGL is the preferred renderer as it is a lot fastest. If webGL is not supported by
+the browser then this function will return a canvas renderer</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the width of the renderers view</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the height of the renderers view</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">view</code>
+                        <span class="type">Canvas</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the canvas to use as a view, optional</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">transparent=false</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the transparency of the render view, default false</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">antialias=false</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>sets antialias (only applicable in webGL chrome at the moment)</p>
+
+<p>antialias</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+
+        
+    </div>
 </div>
 
                     </div>

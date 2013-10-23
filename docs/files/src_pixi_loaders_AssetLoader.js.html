@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -139,64 +159,91 @@
  */
 
 /**
- * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
+ * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
+ * assets have been loaded they are added to the PIXI Texture cache and can be accessed
+ * easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
  * When all items have been loaded this class will dispatch a &quot;onLoaded&quot; event
  * As each individual item is loaded this class will dispatch a &quot;onProgress&quot; event
+ *
  * @class AssetLoader
  * @constructor
- * @extends EventTarget
- * @param {Array} assetURLs an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported sprite sheet data formats only include &quot;JSON&quot; at this time. Supported bitmap font data formats include &quot;xml&quot; and &quot;fnt&quot;.
+ * @uses EventTarget
+ * @param {Array&lt;String&gt;} assetURLs an array of image/sprite sheet urls that you would like loaded
+ *      supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported
+ *      sprite sheet data formats only include &quot;JSON&quot; at this time. Supported bitmap font
+ *      data formats include &quot;xml&quot; and &quot;fnt&quot;.
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs)
+PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
 {
 	PIXI.EventTarget.call(this);
-	
+
 	/**
 	 * The array of asset URLs that are going to be loaded
+     *
 	 * @property assetURLs
-	 * @type Array
+	 * @type Array&lt;String&gt;
 	 */
 	this.assetURLs = assetURLs;
 
-	this.crossorigin = false;
-
-    this.loadersByType = {
-        &quot;jpg&quot;:  PIXI.ImageLoader,
-        &quot;jpeg&quot;: PIXI.ImageLoader,
-        &quot;png&quot;:  PIXI.ImageLoader,
-        &quot;gif&quot;:  PIXI.ImageLoader,
-        &quot;json&quot;: PIXI.JsonLoader,
-        &quot;anim&quot;: PIXI.SpineLoader,
-        &quot;xml&quot;:  PIXI.BitmapFontLoader,
-        &quot;fnt&quot;:  PIXI.BitmapFontLoader
-    };
-    
-    
+    /**
+     * Whether the requests should be treated as cross origin
+     *
+     * @property crossorigin
+     * @type Boolean
+     */
+	this.crossorigin = crossorigin;
+	
+	this.generateCanvas = generateCanvasFromTexture || false;
+	
+	/**
+	 * Maps file extension to loader types
+	 *
+	 * @property loadersByType
+	 * @type Object
+	 */
+	if(!PIXI.AssetLoader.loadersByType)
+	{
+		PIXI.AssetLoader.loadersByType = {
+		    &quot;jpg&quot;:  PIXI.ImageLoader,
+		    &quot;jpeg&quot;: PIXI.ImageLoader,
+		    &quot;png&quot;:  PIXI.ImageLoader,
+		    &quot;gif&quot;:  PIXI.ImageLoader,
+		    &quot;json&quot;: PIXI.JsonLoader,
+		    &quot;anim&quot;: PIXI.SpineLoader,
+		    &quot;xml&quot;:  PIXI.BitmapFontLoader,
+		    &quot;fnt&quot;:  PIXI.BitmapFontLoader
+		};
+	}
 };
 
 /**
-Fired when an item has loaded
-@event onProgress
-**/
+ * Fired when an item has loaded
+ * @event onProgress
+ */
 
 /**
-Fired when all the assets have loaded
-@event onComplete 
-**/
+ * Fired when all the assets have loaded
+ * @event onComplete
+ */
 
 // constructor
-PIXI.AssetLoader.constructor = PIXI.AssetLoader;
+PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
- * This will begin loading the assets sequentially
+ * Starts loading the assets sequentially
+ *
  * @method load
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-    var scope = this;
-
 	this.loadCount = this.assetURLs.length;
-
+	
+	var loadCallback = function(load)
+    {
+        this.onAssetLoaded();
+		load.removeAllListeners();
+    };
     for (var i=0; i &lt; this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
@@ -204,33 +251,34 @@ PIXI.AssetLoader.prototype.load = function()
 		if(fileType.indexOf(&quot;?&quot;) != -1)
 			fileType = fileType.substring(0, fileType.indexOf(&quot;?&quot;));
 
-        var loaderClass = this.loadersByType[fileType];
+        var loaderClass = PIXI.AssetLoader.loadersByType[fileType];
         if(!loaderClass)
             throw new Error(fileType + &quot; is an unsupported file type&quot;);
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
 
-        loader.addEventListener(&quot;loaded&quot;, function()
-        {
-            scope.onAssetLoaded();
-        });
+        loader.addEventListener(&quot;loaded&quot;, loadCallback.bind(this, loader));
         loader.load();
 	}
 };
 
 /**
  * Invoked after each file is loaded
+ *
+ * @method onAssetLoaded
  * @private
  */
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: &quot;onProgress&quot;, content: this});
+	if(this.hasEventListener(&quot;onProgress&quot;))
+		this.dispatchEvent({type: &quot;onProgress&quot;, content: this});
 	if(this.onProgress) this.onProgress();
-	
+
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent({type: &quot;onComplete&quot;, content: this});
+		if(this.hasEventListener(&quot;onComplete&quot;))
+			this.dispatchEvent({type: &quot;onComplete&quot;, content: this});
 		if(this.onComplete) this.onComplete();
 	}
 };

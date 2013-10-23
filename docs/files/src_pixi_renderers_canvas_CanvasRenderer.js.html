@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js - Pixi.JS</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <title>src/pixi/renderers/canvas/CanvasRenderer.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -130,7 +150,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js</h1>
+                        <h1 class="file-heading">File: src/pixi/renderers/canvas/CanvasRenderer.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -142,38 +162,36 @@
 /**
  * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
+ *
  * @class CanvasRenderer
  * @constructor
- * @param width {Number} the width of the canvas view
- * @default 0
- * @param height {Number} the height of the canvas view
- * @default 0
+ * @param width=0 {Number} the width of the canvas view
+ * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view, default false
- * @default false
- * 
+ * @param transparent=false {Boolean} the transparency of the render view, default false
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
 	this.transparent = transparent;
-	
+
 	/**
 	 * The width of the canvas view
+	 *
 	 * @property width
 	 * @type Number
 	 * @default 800
 	 */
 	this.width = width || 800;
+
 	/**
 	 * The height of the canvas view
+	 *
 	 * @property height
 	 * @type Number
 	 * @default 600
 	 */
 	this.height = height || 600;
-	
-	this.refresh = true;
-	
+
 	/**
 	 * If the view should be cleared before each render.
 	 * @property clearView
@@ -184,49 +202,58 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	
 	/**
 	 * The canvas element that the everything is drawn to
+	 *
 	 * @property view
 	 * @type Canvas
 	 */
-	this.view = view || document.createElement( &#x27;canvas&#x27; ); 
-	
-	// hack to enable some hardware acceleration!
-	//this.view.style[&quot;transform&quot;] = &quot;translatez(0)&quot;;
-	
-    this.view.width = this.width;
-	this.view.height = this.height;  
-	this.count = 0;
-	
+	this.view = view || document.createElement( &#x27;canvas&#x27; );
+
 	/**
 	 * The canvas context that the everything is drawn to
 	 * @property context
 	 * @type Canvas 2d Context
 	 */
 	this.context = this.view.getContext(&quot;2d&quot;);
+
+	this.refresh = true;
+	// hack to enable some hardware acceleration!
+	//this.view.style[&quot;transform&quot;] = &quot;translatez(0)&quot;;
+	
+    this.view.width = this.width;
+	this.view.height = this.height;  
+	this.count = 0;
 }
 
 // constructor
-PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
+PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
+
+PIXI.CanvasRenderer.prototype.destroy = function()
+{
+	this.view = null;
+	this.context = null;
+}
 
 /**
  * Renders the stage to its canvas view
+ *
  * @method render
  * @param stage {Stage} the Stage element to be rendered
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];
 	
 	// update textures if need be
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color
-	if(this.view.style.backgroundColor!=stage.backgroundColorString &amp;&amp; !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
+	if(!this.transparent &amp;&amp; this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
 
 	this.context.setTransform(1,0,0,1,0,0);
 	if(this.clearView)
@@ -250,14 +277,18 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// remove frame updates..
 	if(PIXI.Texture.frameUpdates.length &gt; 0)
 	{
-		PIXI.Texture.frameUpdates = [];
+		PIXI.Texture.frameUpdates.length = 0;
 	}
+	
+	
 }
 
 /**
  * resizes the canvas view to the specified width and height
- * @param the new width of the canvas view
- * @param the new height of the canvas view
+ *
+ * @method resize
+ * @param width {Number} the new width of the canvas view
+ * @param height {Number} the new height of the canvas view
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
@@ -269,20 +300,21 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 }
 
 /**
+ * Renders a display object
+ *
+ * @method renderDisplayObject
+ * @param displayObject {DisplayObject} The displayObject to render
  * @private
  */
-
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
-	&#x2F;&#x2F; no loger recurrsive!
+	// no loger recurrsive!
 	var transform;
 	var context = this.context;
-	&#x2F;&#x2F;context.globalCompositeOperation = &quot;source-over&quot;
-	var blit = false;
 	
 	context.globalCompositeOperation = &#x27;source-over&#x27;;
 	
-	&#x2F;&#x2F; one the display object hits this. we can break the loop	
+	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
 	displayObject = displayObject.first;
 	
@@ -292,7 +324,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(!displayObject.visible)
 		{
-			displayObject = displayObject.last._iNext;
+			displayObject = (displayObject.last !== displayObject &amp;&amp; displayObject.last instanceof PIXI.FilterBlock) ? displayObject.last : displayObject.last._iNext;
 			continue;
 		}
 		
@@ -302,80 +334,103 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			continue;
 		}
 		
-	if(displayObject instanceof PIXI.Sprite)
-	{
-		var frame = displayObject.texture.frame;
-		
-		if(frame)
+		if(displayObject instanceof PIXI.Sprite)
 		{
-			context.globalAlpha = displayObject.worldAlpha;
+			var texture = displayObject.texture;
+			var frame = texture.frame;
 			
-			&#x2F;&#x2F; BLITZ!!!
-			&#x2F;*
-			 * if the rotation is 0 then we can blitz it
-			 * meaning we dont need to do a transform and also we
-			 * can round to the nearest round number for a little extra speed!
-			 *&#x2F;
-			&#x2F;*if(displayObject.rotation == 0)
+			if(frame &amp;&amp; frame.width &amp;&amp; frame.height)
 			{
-				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
-				blit = true;
-				context.drawImage(displayObject.texture.baseTexture.image, 
-								   frame.x,
-								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
-								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
-								   (displayObject.width * transform[0]),
-								   (displayObject.height * transform[4]));
+				context.globalAlpha = displayObject.worldAlpha;
 				
-			}	
-			else
-			{*&#x2F;
-			&#x2F;&#x2F;	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-					
-				context.drawImage(displayObject.texture.baseTexture.source, 
+				
+				var w = frame.width;
+				var h = frame.height;
+				var aX = displayObject.anchor.x;
+				var aY = displayObject.anchor.y;
+				if(texture.realSize)
+				{
+					var rs = texture.realSize;
+					aX = (rs.width * aX + rs.x) / w;
+					aY = (rs.height * aY + rs.y) / h;
+				}
+				context.drawImage(texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (displayObject.anchor.x) * -frame.width, 
-								   (displayObject.anchor.y) * -frame.height,
-								 &#x2F;&#x2F;   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
-								  &#x2F;&#x2F; (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
-								   frame.width,
-								   frame.height);
-			&#x2F;&#x2F;}
-		}					   
-   	}
-   	else if(displayObject instanceof PIXI.Strip)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderStrip(displayObject);
+								   w,
+								   h,
+								   aX * -w, 
+								   aY * -h,
+								   w,
+								   h);
+			}					   
+   		}
+	   	else if(displayObject instanceof PIXI.Strip)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderStrip(displayObject);
+		}
+		else if(displayObject instanceof PIXI.TilingSprite)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderTilingSprite(displayObject);
+		}
+		else if(displayObject instanceof PIXI.CustomRenderable)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+			displayObject.renderCanvas(this);
+		}
+		else if(displayObject instanceof PIXI.Graphics)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
+		}
+		else if(displayObject instanceof PIXI.FilterBlock)
+		{
+			if(displayObject.data instanceof PIXI.Graphics)
+ 			{
+				var mask = displayObject.data;
+
+				if(displayObject.open)
+				{
+					context.save();
+					
+					var cacheAlpha = mask.alpha;
+					var maskTransform = mask.worldTransform;
+					
+					context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+					
+					mask.worldAlpha = 0.5;
+					
+					context.worldAlpha = 0;
+					
+					PIXI.CanvasGraphics.renderGraphicsMask(mask, context);
+					context.clip();
+					
+					mask.worldAlpha = cacheAlpha;
+				}
+				else
+				{
+					context.restore();
+				}
+			}
+			else
+			{
+				// only masks supported right now!
+			}
+		}
+	//	count++
+		displayObject = displayObject._iNext;
 	}
-	else if(displayObject instanceof PIXI.TilingSprite)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderTilingSprite(displayObject);
-	}
-	else if(displayObject instanceof PIXI.CustomRenderable)
-	{
-		displayObject.renderCanvas(this);
-	}
-	
-	&#x2F;&#x2F; render!
-	for (var i=0; i &lt; displayObject.children.length; i++) 
-	{
-		this.renderDisplayObject(displayObject.children[i]);
-	}
-	
-	this.context.setTransform(1,0,0,1,0,0); 
+	while(displayObject != testObject)
 }
 
-&#x2F;**
+/**
+ * Renders a flat strip
+ *
+ * @method renderStripFlat
+ * @param strip {Strip} The Strip to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
@@ -403,14 +458,16 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 		
 	};	
 	
-&#x2F;&#x2F;	context.globalCompositeOperation = &#x27;lighter&#x27;;
 	context.fillStyle = &quot;#FF0000&quot;;
 	context.fill();
 	context.closePath();
-	&#x2F;&#x2F;context.globalCompositeOperation = &#x27;source-over&#x27;;	
 }
 
 /**
+ * Renders a tiling sprite
+ *
+ * @method renderTilingSprite
+ * @param sprite {TilingSprite} The tilingsprite to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
@@ -439,15 +496,17 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
     context.closePath();
 }
 
-
-
 /**
+ * Renders a strip
+ *
+ * @method renderStrip
+ * @param strip {Strip} The Strip to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
-	//context.globalCompositeOperation = &#x27;lighter&#x27;;
+
 	// draw triangles!!
 	var verticies = strip.verticies;
 	var uvs = strip.uvs;
@@ -474,8 +533,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		context.lineTo(x2, y2);
 		context.closePath();
 		
-	//	context.fillStyle = &quot;white&quot;//rgb(1, 1, 1,1));
-	//	context.fill();
 		context.clip();
 		
 		
@@ -499,16 +556,7 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	  	context.restore();
 	};
 	
-//	context.globalCompositeOperation = &#x27;source-over&#x27;;	
 }
-
-
-
-
-
-
-
-
 
     </pre>
 </div>

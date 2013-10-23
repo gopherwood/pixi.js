@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -142,51 +162,54 @@ PIXI.TextureCache = {};
 PIXI.FrameCache = {};
 
 /**
- * A texture stores the information that represents an image or part of an image. It cannot be added to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
+ * A texture stores the information that represents an image or part of an image. It cannot be added
+ * to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
+ *
  * @class Texture
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param baseTexture {BaseTexture}
- * @param frmae {Rectangle}
+ * @param baseTexture {BaseTexture} The base texture source to create the texture from
+ * @param frame {Rectangle} The rectangle frame of the texture to show
  */
 PIXI.Texture = function(baseTexture, frame)
 {
 	PIXI.EventTarget.call( this );
-	
+
 	if(!frame)
 	{
 		this.noFrame = true;
 		frame = new PIXI.Rectangle(0,0,1,1);
 	}
 	
-	this.trim = new PIXI.Point();
-
+	this.height = 1;
+	this.width = 1;
 	if(baseTexture instanceof PIXI.Texture)
+	{
+		frame.x += baseTexture.frame.x;
+		frame.y += baseTexture.frame.y;
 		baseTexture = baseTexture.baseTexture;
+	}
 	
 	/**
 	 * The base texture of this texture
+	 *
 	 * @property baseTexture
 	 * @type BaseTexture
 	 */
 	this.baseTexture = baseTexture;
 	
-	
-	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
 	 * @property frame
-	 * @type #Rectangle
+	 * @type Rectangle
 	 */
 	this.frame = frame;
-	
-	this.scope = this;
-	
+
 	if(baseTexture.hasLoaded)
 	{
 		if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
 		//console.log(frame)
-		
+
 		this.setFrame(frame);
 	}
 	else
@@ -196,74 +219,111 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 }
 
-PIXI.Texture.constructor = PIXI.Texture;
+PIXI.Texture.prototype.constructor = PIXI.Texture;
 
+/**
+ * Called when the base texture is loaded
+ *
+ * @method onBaseTextureLoaded
+ * @param event
+ * @private
+ */
 PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 {
 	var baseTexture = this.baseTexture;
 	baseTexture.removeEventListener( &#x27;loaded&#x27;, this.onLoaded );
-	
+
 	if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
 	this.noFrame = false;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+	}
 	
-	this.scope.dispatchEvent( { type: &#x27;update&#x27;, content: this } );
+	if(this.hasEventListener(&quot;update&quot;))
+		this.dispatchEvent( { type: &#x27;update&#x27;, content: this } );
 }
 
+/**
+ * Destroys this texture
+ *
+ * @method destroy
+ * @param destroyBase {Boolean} Whether to destroy the base texture as well
+ */
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
 	if(destroyBase)this.baseTexture.destroy();
+	this.baseTexture = null;
+	this.frame = null;
+	this.realSize = null;
+	this.removeAllListeners(true);
 }
 
 /**
  * Specifies the rectangle region of the baseTexture
+ *
  * @method setFrame
- * @param frame {Rectangle}
+ * @param frame {Rectangle} The frame of the texture to set it to
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
 	this.frame = frame;
-	this.width = frame.width;
-	this.height = frame.height;
+	if(this.realSize)
+	{
+		this.width = this.realSize.width;
+		this.height = this.realSize.height;
+	}
+	else
+	{
+		this.width = frame.width;
+		this.height = frame.height;
+	}
 	
 	if(frame.x + frame.width &gt; this.baseTexture.width || frame.y + frame.height &gt; this.baseTexture.height)
 	{
 		throw new Error(&quot;Texture Error: frame does not fit inside the base Texture dimensions &quot; + this);
 	}
-	
+
 	this.updateFrame = true;
-	
+
 	PIXI.Texture.frameUpdates.push(this);
 	//this.dispatchEvent( { type: &#x27;update&#x27;, content: this } );
 }
 
 /**
- * 
  * Helper function that returns a texture based on an image url
  * If the image is not in the texture cache it will be  created and loaded
+ *
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 {
-	var texture = PIXI.TextureCache[imageUrl];
+	var id = filenameFromUrl(imageUrl);
+	var texture = PIXI.TextureCache[id];
 	
 	if(!texture)
 	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
-		PIXI.TextureCache[imageUrl] = texture;
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, generateCanvas));
+		PIXI.TextureCache[id] = texture;
 	}
-	
+
 	return texture;
 }
 
 /**
- * 
  * Helper function that returns a texture based on a frame id
  * If the frame id is not in the texture cache an error will be thrown
+ *
  * @static
  * @method fromFrame
  * @param frameId {String} The frame id of the texture
@@ -271,15 +331,16 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
  */
 PIXI.Texture.fromFrame = function(frameId)
 {
-	var texture = PIXI.TextureCache[frameId];
-	if(!texture)throw new Error(&quot;The frameId &#x27;&quot;+ frameId +&quot;&#x27; does not exist in the texture cache &quot; + this);
+	var id = filenameFromUrl(frameId);
+	var texture = PIXI.TextureCache[id];
+	if(!texture)throw new Error(&quot;The frameId &#x27;&quot;+ frameId +&quot;&#x27; does not exist in the texture cache - id was converted to &quot; + id);
 	return texture;
 }
 
 /**
- * 
  * Helper function that returns a texture based on a canvas element
  * If the canvas is not in the texture cache it will be  created and loaded
+ *
  * @static
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
@@ -293,8 +354,8 @@ PIXI.Texture.fromCanvas = function(canvas)
 
 
 /**
- * 
- * Adds a texture to the textureCache. 
+ * Adds a texture to the textureCache.
+ *
  * @static
  * @method addTextureToCache
  * @param texture {Texture}
@@ -306,8 +367,8 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 }
 
 /**
- * 
- * Remove a texture from the textureCache. 
+ * Remove a texture from the textureCache.
+ *
  * @static
  * @method removeTextureFromCache
  * @param id {String} the id of the texture to be removed
@@ -315,9 +376,43 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-	var texture = PIXI.TextureCache[id]
+	var texture = PIXI.TextureCache[id];
 	PIXI.TextureCache[id] = null;
 	return texture;
+}
+
+PIXI.Texture.destroyTexture = function(id)
+{
+	id = filenameFromUrl(id);
+	var tc = PIXI.TextureCache;
+	var texture = tc[id];
+	if(!texture) return;
+	var base = texture.baseTexture;
+	delete tc[id];
+	if(texture)
+		texture.destroy(true);
+	for(id in tc)
+	{
+		texture = tc[id];
+		if(texture.baseTexture == base)
+		{
+			delete tc[id];
+			texture.destroy();
+		}
+	}
+}
+
+PIXI.Texture.destroyAllTextures = function()
+{
+	var tc = PIXI.TextureCache;
+	for(var id in tc)
+	{
+		var texture = tc[id];
+		if(!texture) return;
+		delete tc[id];
+		if(texture)
+			texture.destroy(true);
+	}
 }
 
 // this is more for webGL.. it contains updated frames..

@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -146,97 +166,142 @@
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
  * When loaded this class will dispatch a &quot;loaded&quot; event
+ *
  * @class SpriteSheetLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url the url of the sprite sheet JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the sprite sheet JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 
-PIXI.SpriteSheetLoader = function(url, crossorigin)
-{
-	&#x2F;*
+PIXI.SpriteSheetLoader = function (url, crossorigin) {
+	/*
 	 * i use texture packer to load the assets..
 	 * http://www.codeandweb.com/texturepacker
-	 * make sure to set the format as &quot;JSON&quot;
+	 * make sure to set the format as &quot;JSON&quot; (&quot;JSON-Map&quot; in newer versions)
 	 */
 	PIXI.EventTarget.call(this);
+
+	/**
+	 * The url of the bitmap font data
+	 *
+	 * @property url
+	 * @type String
+	 */
 	this.url = url;
-	this.baseUrl = url.replace(/[^\/]*$/, &quot;&quot;);
-	this.texture = null;
-	this.frames = {};
+
+	/**
+	 * Whether the requests should be treated as cross origin
+	 *
+	 * @property crossorigin
+	 * @type Boolean
+	 */
 	this.crossorigin = crossorigin;
+
+	/**
+	 * [read-only] The base url of the bitmap font data
+	 *
+	 * @property baseUrl
+	 * @type String
+	 * @readOnly
+	 */
+	this.baseUrl = url.replace(/[^\/]*$/, &quot;&quot;);
+	this.versioning = null;
+	if(url.indexOf(&quot;?&quot;) != -1)
+		this.versioning = url.substring(url.indexOf(&quot;?&quot;));
+	/**
+	* The texture being loaded
+	*
+	* @property texture
+	* @type Texture
+	*/
+	this.texture = null;
+	
+	/**
+	* The frames of the sprite sheet
+	*
+	* @property frames
+	* @type Object
+	*/
+	this.frames = {};
 };
 
 // constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 
 /**
  * This will begin loading the JSON file
- *&#x2F;
-PIXI.SpriteSheetLoader.prototype.load = function()
-{
-	this.ajaxRequest = new AjaxRequest();
+ *
+ * @method load
+ */
+PIXI.SpriteSheetLoader.prototype.load = function () {
 	var scope = this;
 	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
 	jsonLoader.addEventListener(&quot;loaded&quot;, function (event) {
 		scope.json = event.content.json;
 		scope.onJSONLoaded();
-	};
-		
-	this.ajaxRequest.open(&quot;GET&quot;, this.url, true);
-	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&quot;application&#x2F;json&quot;);
-	this.ajaxRequest.send(null)
+		jsonLoader.removeAllListeners();
+	});
+	jsonLoader.load();
 };
 
-&#x2F;**
+/**
  * Invoke when JSON file is loaded
+ *
+ * @method onJSONLoaded
  * @private
- *&#x2F;
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
-{
-	if (this.ajaxRequest.readyState == 4)
-	{
-		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf(&quot;http&quot;) == -1)
-	 	{
-			var jsonData = eval(&quot;(&quot; + this.ajaxRequest.responseText + &quot;)&quot;);
-			var textureUrl = this.baseUrl + jsonData.meta.image;
+ */
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
+	var scope = this;
+	var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : &quot;&quot;);
+	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+	var frameData = this.json.frames;
 
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-            this.texture = image.texture.baseTexture;
-            var scope = this;
-            image.addEventListener(&quot;loaded&quot;, function(event) {
-                 scope.onLoaded();
-            });
+	this.texture = image.texture;
+	image.addEventListener(&quot;loaded&quot;, function (event) {
+		image.removeAllListeners();
+		scope.onLoaded();
+	});
 
-			var frameData = jsonData.frames;
-			for (var i in frameData)
-			{
-				var rect = frameData[i].frame;
-				if (rect)
-				{
-					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-					
-					if(frameData[i].trimmed)
-					{
-						&#x2F;&#x2F;var realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0;&#x2F;&#x2F; (realSize.x &#x2F; rect.w)
-						&#x2F;&#x2F; calculate the offset!
-					}
-				}
-   			}
+	for (var i in frameData) {
+		if(PIXI.TextureCache[filenameFromUrl(i)])
+			continue;
+		var f = frameData[i];
+		var rect = f.frame;
+		if (rect) {
+			var t = PIXI.TextureCache[filenameFromUrl(i)] = new PIXI.Texture(this.texture, {
+				x: rect.x,
+				y: rect.y,
+				width: rect.w,
+				height: rect.h
+			});
+			if (f.trimmed) {
+				t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
+				//update these in case the base texture was already loaded for some reason
+				t.width = t.realSize.width;
+				t.height = t.realSize.height;
+			}
+		}
+	}
 
 	image.load();
 };
 /**
  * Invoke when all files are loaded (json and texture)
+ *
+ * @method onLoaded
  * @private
- *&#x2F;
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
-{
-    this.dispatchEvent({type: &quot;loaded&quot;, content: this});
+ */
+PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
+	if(this.hasEventListener(&quot;loaded&quot;))
+	{
+		this.dispatchEvent({
+			type: &quot;loaded&quot;,
+			content: this
+		});
+	}
 };
+
     </pre>
 </div>
 

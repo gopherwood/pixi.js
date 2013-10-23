@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -142,23 +162,40 @@
  * The image loader class is responsible for loading images file formats (&quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot; and &quot;gif&quot;)
  * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * When loaded this class will dispatch a &#x27;loaded&#x27; event
+ *
  * @class ImageLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url The url of the image
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the image
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.ImageLoader = function(url, crossorigin)
+PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
 {
     PIXI.EventTarget.call(this);
-    this.texture = PIXI.Texture.fromImage(url, crossorigin);
+
+    /**
+     * The texture being loaded
+     *
+     * @property texture
+     * @type Texture
+     */
+    this.texture = PIXI.Texture.fromImage(url, crossorigin, generateCanvas);
+
+    /**
+     * if the image is loaded with loadFramedSpriteSheet
+     * frames will contain the sprite sheet frames
+     *
+     */
+    this.frames = [];
 };
 
 // constructor
-PIXI.ImageLoader.constructor = PIXI.ImageLoader;
+PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
 
 /**
  * Loads image or takes it from cache
+ *
+ * @method load
  */
 PIXI.ImageLoader.prototype.load = function()
 {
@@ -167,6 +204,7 @@ PIXI.ImageLoader.prototype.load = function()
         var scope = this;
         this.texture.baseTexture.addEventListener(&quot;loaded&quot;, function()
         {
+			scope.texture.baseTexture.removeAllListeners();
             scope.onLoaded();
         });
     }
@@ -178,11 +216,59 @@ PIXI.ImageLoader.prototype.load = function()
 
 /**
  * Invoked when image file is loaded or it is already cached and ready to use
+ *
+ * @method onLoaded
  * @private
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: &quot;loaded&quot;, content: this});
+	if(this.hasEventListener(&quot;loaded&quot;))
+    	this.dispatchEvent({type: &quot;loaded&quot;, content: this});
+};
+
+/**
+ * Loads image and split it to uniform sized frames
+ *
+ *
+ * @method loadFramedSpriteSheet
+ * @param frameWidth {Number} with of each frame
+ * @param frameHeight {Number} height of each frame
+ * @param textureName {String} if given, the frames will be cached in &lt;textureName&gt;-&lt;ord&gt; format 
+ */
+PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHeight, textureName)
+{
+    this.frames = [];
+    var cols = Math.floor(this.texture.width / frameWidth);
+    var rows = Math.floor(this.texture.height / frameHeight);
+
+    var i=0;
+    for (var y=0; y&lt;rows; y++)
+    {
+        for (var x=0; x&lt;cols; x++,i++)
+        {
+            var texture = new PIXI.Texture(this.texture, {
+                x: x*frameWidth,
+                y: y*frameHeight,
+                width: frameWidth,
+                height: frameHeight
+            });
+
+            this.frames.push(texture);
+            if (textureName) PIXI.TextureCache[textureName+&#x27;-&#x27;+i] = texture;
+        }
+    }
+
+    if(!this.texture.baseTexture.hasLoaded)
+    {
+        var scope = this;
+        this.texture.baseTexture.addEventListener(&quot;loaded&quot;, function() {
+            scope.onLoaded();
+        });
+    }
+    else
+    {
+        this.onLoaded();
+    }
 };
 
     </pre>

@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -262,7 +282,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                     
 
                     <div class="param-description">
-                         
+                        <p>The width of the render texture</p>
                     </div>
 
                     
@@ -277,7 +297,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                     
 
                     <div class="param-description">
-                         
+                        <p>The height of the render texture</p>
                     </div>
 
                     
@@ -319,8 +339,43 @@ renderTexture.render(doc);  // Renders to center of renderTexture
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
-                                <a href="#method_render">render</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_initCanvas">initCanvas</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_initWebGL">initWebGL</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private inherited">
+                                <a href="#method_onBaseTextureLoaded">onBaseTextureLoaded</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_renderCanvas">renderCanvas</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_renderWebGL">renderWebGL</a>
 
                                 
                                 
@@ -371,8 +426,290 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_render" class="method item">
-    <h3 class="name"><code>render</code></h3>
+                    <div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>destroyBase</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method_destroy">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l97"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:97</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Destroys this texture</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">destroyBase</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Whether to destroy the base texture as well</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_initCanvas" class="method item private">
+    <h3 class="name"><code>initCanvas</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l127"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:127</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Initializes the canvas data for this texture</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_initWebGL" class="method item private">
+    <h3 class="name"><code>initWebGL</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l57"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:57</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Initializes the webgl data for this texture</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_onBaseTextureLoaded" class="method item private inherited">
+    <h3 class="name"><code>onBaseTextureLoaded</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method_onBaseTextureLoaded">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l68"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:68</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Called when the base texture is loaded</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_renderCanvas" class="method item private">
+    <h3 class="name"><code>renderCanvas</code></h3>
 
     
         <div class="args">
@@ -399,6 +736,8 @@ renderTexture.render(doc);  // Renders to center of renderTexture
     
 
     
+        <span class="flag private">private</span>
+    
 
     
 
@@ -419,7 +758,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l90"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:90</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l217"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:217</code></a>
         
         </p>
 
@@ -448,7 +787,117 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                     
 
                     <div class="param-description">
-                         
+                        <p>The display object to render this texture on</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">clear</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>If true the texture will be cleared before the displayObject is drawn</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_renderWebGL" class="method item private">
+    <h3 class="name"><code>renderWebGL</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>displayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>clear</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l143"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:143</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function will draw the display object to the texture.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The display object to render this texture on</p>
                     </div>
 
                     
@@ -518,7 +967,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l83"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:83</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l112"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:112</code></a>
         
         </p>
 
@@ -547,7 +996,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                     
 
                     <div class="param-description">
-                         
+                        <p>The frame of the texture to set it to</p>
                     </div>
 
                     
@@ -591,7 +1040,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l31"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:31</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l37"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:37</code></a>
         
         </p>
 
@@ -614,7 +1063,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
                 
                     <div id="property_frame" class="property item inherited">
     <h3 class="name"><code>frame</code></h3>
-    <span class="type">#Rectangle</span>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
 
     
 
@@ -632,7 +1081,7 @@ renderTexture.render(doc);  // Renders to center of renderTexture
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l40"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:40</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l45"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:45</code></a>
         
         </p>
 

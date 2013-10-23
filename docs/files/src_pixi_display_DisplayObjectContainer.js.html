@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;DisplayObjectContainer.js - Pixi.JS</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <title>src/pixi/display/DisplayObjectContainer.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -130,7 +150,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;DisplayObjectContainer.js</h1>
+                        <h1 class="file-heading">File: src/pixi/display/DisplayObjectContainer.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -140,7 +160,9 @@
 
 
 /**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * A DisplayObjectContainer represents a collection of display objects.
+ * It is the base class of all display objects that act as a container for other objects.
+ *
  * @class DisplayObjectContainer 
  * @extends DisplayObject
  * @constructor
@@ -151,55 +173,39 @@ PIXI.DisplayObjectContainer = function()
 	
 	/**
 	 * [read-only] The of children of this container.
-	 * @property children {Array}
+	 *
+	 * @property children
+	 * @type Array&lt;DisplayObject&gt;
+	 * @readOnly
 	 */	
 	this.children = [];
-	//s
-	this.renderable = false;
-	
 }
 
 // constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
-
-//TODO make visible a getter setter
-/*
-Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;visible&#x27;, {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-        
-    }
-});*/
+PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
  * Adds a child to the container.
+ *
  * @method addChild
- * @param  DisplayObject {DisplayObject}
+ * @param child {DisplayObject} The DisplayObject to add to the container
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-	
-	&#x2F;&#x2F;this.addChildAt(child, this.children.length)
-	&#x2F;&#x2F;return;
-	
 	if(child.parent != undefined)
 	{
 		
-		&#x2F;&#x2F;&#x2F;&#x2F; COULD BE THIS???
+		//// COULD BE THIS???
 		child.parent.removeChild(child);
-	&#x2F;&#x2F;	return;
+	//	return;
 	}
-	
+
 	child.parent = this;
-	&#x2F;&#x2F;child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
-	&#x2F;&#x2F; updae the stage refference..
+	// update the stage refference..
 	
 	if(this.stage)
 	{
@@ -213,7 +219,50 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		while(tmpChild)
 	}
 	
-	&#x2F;&#x2F; need to remove any render groups..
+	// LINKED LIST //
+	
+	// modify the list..
+	var childFirst = child.first
+	var childLast = child.last;
+	var nextObject;
+	var previousObject;
+	
+	// this could be wrong if there is a filter??
+	if(this._filters || this._mask)
+	{
+		previousObject =  this.last._iPrev;
+	}
+	else
+	{
+		previousObject = this.last;
+	}
+
+	nextObject = previousObject._iNext;
+	
+	// always true in this case
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	var prevLast = previousObject;
+	
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = child.last;
+		}
+		updateLast = updateLast.parent;
+	}
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;		
+
+	// need to remove any render groups..
 	if(this.__renderGroup)
 	{
 		// being used by a renderTexture.. if it exists then it must be from a render texture;
@@ -226,9 +275,10 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
 /**
  * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
+ *
  * @method addChildAt
- * @param DisplayObject {DisplayObject}
- * @param index {Number}
+ * @param child {DisplayObject} The child to add
+ * @param index {Number} The index to place the child in
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
@@ -252,8 +302,8 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			while(tmpChild)
 		}
 		
-		&#x2F;&#x2F; modify the list..
-		var childFirst = child.first
+		// modify the list..
+		var childFirst = child.first;
 		var childLast = child.last;
 		var nextObject;
 		var previousObject;
@@ -261,7 +311,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			var updateLast = this;&#x2F;&#x2F;.parent;
+			var updateLast = this;
 			var prevLast = this.last;
 			while(updateLast)
 			{
@@ -283,7 +333,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		nextObject = previousObject._iNext;
 		
-		&#x2F;&#x2F; always true in this case
+		// always true in this case
 		if(nextObject)
 		{
 			nextObject._iPrev = childLast;
@@ -292,8 +342,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		childFirst._iPrev = previousObject;
 		previousObject._iNext = childFirst;		
-		
-		&#x2F;&#x2F; need to remove any render groups..
+
+		this.children.splice(index, 0, child);
+		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
 			// being used by a renderTexture.. if it exists then it must be from a render texture;
@@ -302,31 +353,40 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
-		console.log(this.children)
 	}
 	else
 	{
-		&#x2F;&#x2F; error!
-		
 		throw new Error(child + &quot; The index &quot;+ index +&quot; supplied is out of bounds &quot; + this.children.length);
 	}
 }
 
 /**
- * Swaps the depth of 2 displayObjects
+ * [NYI] Swaps the depth of 2 displayObjects
+ *
  * @method swapChildren
- * @param  DisplayObject {DisplayObject}
- * @param  DisplayObject2 {DisplayObject}
+ * @param child {DisplayObject}
+ * @param child2 {DisplayObject}
+ * @private
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
-	&#x2F;&#x2F; TODO I already know this??
+	/*
+	 * this funtion needs to be recoded.. 
+	 * can be done a lot faster..
+	 */
+	return;
+	
+	// need to fix this function :/
+	/*
+	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
 	
 	if ( index !== -1 &amp;&amp; index2 !== -1 ) 
 	{
-		&#x2F;&#x2F; cool
+		// cool
+		
+		/*
 		if(this.stage)
 		{
 			// this is to satisfy the webGL batching..
@@ -338,10 +398,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			this.stage.__addChild(child2);
 		}
 		
-		&#x2F;&#x2F; swap the indexes..
-		child.childIndex = index2;
-		child2.childIndex = index;
-		&#x2F;&#x2F; swap the positions..
+		// swap the positions..
 		this.children[index] = child2;
 		this.children[index2] = child;
 		
@@ -349,13 +406,14 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	else
 	{
 		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
-	}*&#x2F;
+	}*/
 }
 
 /**
  * Returns the Child at the specified index
+ *
  * @method getChildAt
- * @param  index {Number}
+ * @param index {Number} The index to get the child from
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
@@ -371,18 +429,18 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 
 /**
  * Removes a child from the container.
+ *
  * @method removeChild
- * @param  DisplayObject {DisplayObject}
+ * @param child {DisplayObject} The DisplayObject to remove
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
 	var index = this.children.indexOf( child );
 	if ( index !== -1 ) 
 	{
-		&#x2F;&#x2F;console.log(&quot;&gt;&gt;&quot;)
-		&#x2F;&#x2F; unlink &#x2F;&#x2F;
-		&#x2F;&#x2F; modify the list..
-		var childFirst = child.first
+		// unlink //
+		// modify the list..
+		var childFirst = child.first;
 		var childLast = child.last;
 		
 		var nextObject = childLast._iNext;
@@ -394,7 +452,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		if(this.last == childLast)
 		{
 			var tempLast =  childFirst._iPrev;	
-			&#x2F;&#x2F; need to make sure the parents last is updated too
+			// need to make sure the parents last is updated too
 			var updateLast = this;
 			while(updateLast.last == childLast.last)
 			{
@@ -407,7 +465,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		childLast._iNext = null;
 		childFirst._iPrev = null;
 		 
-		&#x2F;&#x2F; update the stage reference..
+		// update the stage reference..
 		if(this.stage)
 		{
 			var tmpChild = child;
@@ -419,22 +477,15 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 			}	
 			while(tmpChild)
 		}
-		
-		&#x2F;&#x2F; webGL trim
+	
+		// webGL trim
 		if(child.__renderGroup)
 		{
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		}
 		
-	&#x2F;&#x2F;	console.log(&quot;&gt;&quot; + child.__renderGroup)
 		child.parent = undefined;
 		this.children.splice( index, 1 );
-	
-		&#x2F;&#x2F; update in dexs!
-		for(var i=index,j=this.children.length; i&lt;j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
 	}
 	else
 	{
@@ -447,27 +498,47 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  * @method removeChildren
  * @param  leave=0 {Number} The number of children at the back to leave. Default is 0.
  */
-PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave)
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(leave, recurse)
 {
 	if(this.children.length == 0) return;
 	
-	if(typeof leave == &quot;undefined&quot;)
+	/*if(typeof leave == &quot;undefined&quot;)
 		leave = 0;
 	for(var i = this.children.length - 1; i &gt;= leave; --i)
 	{
 		var child = this.children[i];
+		// update the stage reference..
 		if(this.stage)
-			this.stage.__removeChild(child);
+		{
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = null;
+				tmpChild = tmpChild._iNext;
+			}	
+			while(tmpChild)
+		}
 		// webGL trim
 		if(child.__renderGroup)
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		child.parent = undefined;
 	}
-	this.children.length = leave;
+	this.children.length = leave;*/
+	while(this.children.length)
+	{
+		var c = this.children[0];
+		this.removeChild(c);
+		if(recurse &amp;&amp; c.removeChildren)
+			c.removeChildren(0, recurse);
+	}
 }
 
 
 /**
+ * Updates the container&#x27;s children&#x27;s transform for rendering
+ *
+ * @method updateTransform
  * @private
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()

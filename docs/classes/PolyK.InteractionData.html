@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>InteractionManager - Pixi.JS</title>
+    <title>PolyK.InteractionData - Pixi.JS</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -130,7 +150,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>InteractionManager Class</h1>
+                        <h1>PolyK.InteractionData Class</h1>
 <div class="box meta">
     
 
@@ -138,7 +158,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_InteractionManager.js.html#l7"><code>src&#x2F;pixi&#x2F;InteractionManager.js:7</code></a>
+            Defined in: <a href="../files/src_pixi_InteractionManager.js.html#l666"><code>src&#x2F;pixi&#x2F;InteractionManager.js:666</code></a>
         </div>
     
 
@@ -154,28 +174,17 @@
 
 
 <div class="box intro">
-    <p>The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
-This manager also supports multitouch.</p>
+    <p>Holds all information related to an Interaction event</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_InteractionManager" class="method item">
-    <h3 class="name"><code>InteractionManager</code></h3>
+        <div id="method_PolyK.InteractionData" class="method item">
+    <h3 class="name"><code>PolyK.InteractionData</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>stage</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -203,7 +212,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l7"><code>src&#x2F;pixi&#x2F;InteractionManager.js:7</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l666"><code>src&#x2F;pixi&#x2F;InteractionManager.js:666</code></a>
         
         </p>
 
@@ -217,29 +226,6 @@ This manager also supports multitouch.</p>
         
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">stage</code>
-                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -275,10 +261,8 @@ This manager also supports multitouch.</p>
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_autoDetectRenderer">autoDetectRenderer</a>
+                                <a href="#method_getLocalPosition">getLocalPosition</a>
 
-                                
-                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -294,21 +278,21 @@ This manager also supports multitouch.</p>
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_mouse">mouse</a>
+                                <a href="#property_global">global</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_stage">stage</a>
+                                <a href="#property_originalEvent">originalEvent</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_touchs">touchs</a>
+                                <a href="#property_target">target</a>
 
                                 
                                 
@@ -328,8 +312,8 @@ This manager also supports multitouch.</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_autoDetectRenderer" class="method item">
-    <h3 class="name"><code>autoDetectRenderer</code></h3>
+                    <div id="method_getLocalPosition" class="method item">
+    <h3 class="name"><code>getLocalPosition</code></h3>
 
     
         <div class="args">
@@ -337,25 +321,13 @@ This manager also supports multitouch.</p>
             
                 <li class="arg">
                     
-                        <code>width</code>
+                        <code>displayObject</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>height</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>view</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>transparent</code>
+                        <code>outPoint</code>
                     
                 </li>
             
@@ -364,7 +336,9 @@ This manager also supports multitouch.</p>
     
 
     
-
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
     
 
     
@@ -372,7 +346,7 @@ This manager also supports multitouch.</p>
     
 
     
-        <span class="flag static">static</span>
+
     
 
     
@@ -390,7 +364,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_utils_Detector.js.html#l5"><code>src&#x2F;pixi&#x2F;utils&#x2F;Detector.js:5</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l702"><code>src&#x2F;pixi&#x2F;InteractionManager.js:702</code></a>
         
         </p>
 
@@ -401,8 +375,7 @@ This manager also supports multitouch.</p>
     </div>
 
     <div class="description">
-        <p>This helper function will automatically detect which renderer you should be using.
-WebGL is the preferred renderer as it is a lot fastest. If webGL is not supported by the browser then this function will return a canvas renderer</p>
+        <p>This will return the local coords of the specified displayObject for this InteractionData</p>
     </div>
 
     
@@ -413,14 +386,14 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
                 <li class="param">
                     
-                        <code class="param-name">width</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the width of the renderers view</p>
+                        <p>The DisplayObject that you would like the local coords off</p>
                     </div>
 
                     
@@ -428,44 +401,14 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
                 <li class="param">
                     
-                        <code class="param-name">height</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">outPoint</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the height of the renderers view</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">view</code>
-                        <span class="type">Canvas</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the canvas to use as a view, optional</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">transparent</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                        <p>An optional point to use instead of creating a new point</p>
                     </div>
 
                     
@@ -475,6 +418,19 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    A point containing the coords of the InteractionData position relative to the DisplayObject
+                
+            </div>
+        </div>
     
 
     
@@ -489,9 +445,9 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_mouse" class="property item">
-    <h3 class="name"><code>mouse</code></h3>
-    <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    <div id="property_global" class="property item">
+    <h3 class="name"><code>global</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
     
 
@@ -512,7 +468,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l30"><code>src&#x2F;pixi&#x2F;InteractionManager.js:30</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l674"><code>src&#x2F;pixi&#x2F;InteractionManager.js:674</code></a>
         
         </p>
 
@@ -522,7 +478,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     </div>
 
     <div class="description">
-        <p>the mouse data</p>
+        <p>This point stores the global coords of where the touch/mouse event happened</p>
     </div>
 
     
@@ -533,9 +489,9 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="property_stage" class="property item">
-    <h3 class="name"><code>stage</code></h3>
-    <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+                    <div id="property_originalEvent" class="property item">
+    <h3 class="name"><code>originalEvent</code></h3>
+    <span class="type">Event</span>
 
     
 
@@ -556,7 +512,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l17"><code>src&#x2F;pixi&#x2F;InteractionManager.js:17</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l693"><code>src&#x2F;pixi&#x2F;InteractionManager.js:693</code></a>
         
         </p>
 
@@ -566,7 +522,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     </div>
 
     <div class="description">
-        <p>a refference to the stage</p>
+        <p>When passed to an event handler, this will be the original DOM Event that was captured</p>
     </div>
 
     
@@ -577,9 +533,9 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="property_touchs" class="property item">
-    <h3 class="name"><code>touchs</code></h3>
-    <span class="type">Object</span>
+                    <div id="property_target" class="property item">
+    <h3 class="name"><code>target</code></h3>
+    <span class="type"><a href="../classes/Sprite.html" class="crosslink">Sprite</a></span>
 
     
 
@@ -600,7 +556,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l37"><code>src&#x2F;pixi&#x2F;InteractionManager.js:37</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l685"><code>src&#x2F;pixi&#x2F;InteractionManager.js:685</code></a>
         
         </p>
 
@@ -610,7 +566,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     </div>
 
     <div class="description">
-        <p>an object that stores current touches (InteractionData) by id reference</p>
+        <p>The target Sprite that was interacted with</p>
     </div>
 
     

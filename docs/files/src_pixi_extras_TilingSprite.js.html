@@ -49,29 +49,49 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
-                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+            
+                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+            
+                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+            
+                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -140,6 +160,7 @@
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
+ *
  * @class TilingSprite
  * @extends DisplayObjectContainer
  * @constructor
@@ -150,42 +171,79 @@
 PIXI.TilingSprite = function(texture, width, height)
 {
 	PIXI.DisplayObjectContainer.call( this );
-	
+
+	/**
+	 * The texture that the sprite is using
+	 *
+	 * @property texture
+	 * @type Texture
+	 */
 	this.texture = texture;
+
+	/**
+	 * The width of the tiling sprite
+	 *
+	 * @property width
+	 * @type Number
+	 */
 	this.width = width;
+
+	/**
+	 * The height of the tiling sprite
+	 *
+	 * @property height
+	 * @type Number
+	 */
 	this.height = height;
-	this.renderable = true;
-	
-	&#x2F;**
+
+	/**
 	 * The scaling of the image that is being tiled
+	 *
 	 * @property tileScale
 	 * @type Point
-	 */	
+	 */
 	this.tileScale = new PIXI.Point(1,1);
+
 	/**
 	 * The offset position of the image that is being tiled
+	 *
 	 * @property tilePosition
 	 * @type Point
-	 */	
+	 */
 	this.tilePosition = new PIXI.Point(0,0);
-	
+
+	this.renderable = true;
+
 	this.blendMode = PIXI.blendModes.NORMAL
 }
 
 // constructor
-PIXI.TilingSprite.constructor = PIXI.TilingSprite;
 PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
+/**
+ * Sets the texture of the tiling sprite
+ *
+ * @method setTexture
+ * @param texture {Texture} The PIXI texture that is displayed by the sprite
+ */
 PIXI.TilingSprite.prototype.setTexture = function(texture)
 {
 	//TODO SET THE TEXTURES
 	//TODO VISIBILITY
-	
-	// stop current texture 
+
+	// stop current texture
 	this.texture = texture;
 	this.updateFrame = true;
 }
 
+/**
+ * When the texture is updated, this event will fire to update the frame
+ *
+ * @method onTextureUpdate
+ * @param event
+ * @private
+ */
 PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 {
 	this.updateFrame = true;
