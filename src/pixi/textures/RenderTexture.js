@@ -209,7 +209,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 		this.renderGroup.setRenderable(displayObject);
 		this.renderGroup.render(this.projection);
 	}
-
+	
 	displayObject.worldTransform = originalWorldTransform;
 }
 
@@ -249,4 +249,3 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 
   //  PIXI.texturesToUpdate.push(this.baseTexture);
 }
-

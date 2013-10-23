@@ -68,7 +68,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
 
 /**
  * Fired when all the assets have loaded
- * @event onComplete 
+ * @event onComplete
  */
 
 // constructor
@@ -118,7 +118,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
 	if(this.hasEventListener("onProgress"))
 		this.dispatchEvent({type: "onProgress", content: this});
 	if(this.onProgress) this.onProgress();
-	
+
 	if(this.loadCount == 0)
 	{
 		if(this.hasEventListener("onComplete"))

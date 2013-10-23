@@ -201,4 +201,3 @@ PIXI.Sprite.fromImage = function(imageId)
 	var texture = PIXI.Texture.fromImage(imageId);
 	return new PIXI.Sprite(texture);
 }
-

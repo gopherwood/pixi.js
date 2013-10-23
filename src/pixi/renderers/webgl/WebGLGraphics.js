@@ -66,7 +66,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	
 	// WHY DOES THIS LINE NEED TO BE THERE???
-	gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	//gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
 	// its not even used.. but need to be set or it breaks?
 	// only on pc though..
 	
@@ -78,8 +78,10 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
+	PIXI.deactivatePrimitiveShader();
+	
 	// return to default shader...
-	PIXI.activateDefaultShader();
+//	PIXI.activateShader(PIXI.defaultShader);
 }
 
 /**

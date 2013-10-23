@@ -82,10 +82,10 @@ PIXI.BaseTexture = function(source, generateCanvas)
 		}
 		else
 		{
-			
+
 			var scope = this;
 			this.source.onload = function(){
-				
+
 				scope.hasLoaded = true;
 				scope.source.onload = null;
 				scope.width = scope.source.width;
@@ -122,7 +122,7 @@ PIXI.BaseTexture = function(source, generateCanvas)
 		this.hasLoaded = true;
 		this.width = this.source.width;
 		this.height = this.source.height;
-			
+
 		PIXI.texturesToUpdate.push(this);
 	}
 
@@ -170,7 +170,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, generateCanvas)
 	{
 		// new Image() breaks tex loading in some versions of Chrome.
 		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = new Image();//document.createElement('img'); 
+		var image = new Image();//document.createElement('img');
 		if (crossorigin)
 		{
 			image.crossOrigin = '';

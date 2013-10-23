@@ -4,7 +4,7 @@
 
 /**
  * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
- * You can generate the fnt files using 
+ * You can generate the fnt files using
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
  *
@@ -170,7 +170,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
 	{
         this.forceUpdateText();
 	}
-	
+
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
 

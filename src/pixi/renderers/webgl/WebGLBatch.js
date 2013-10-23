@@ -415,7 +415,10 @@ PIXI.WebGLBatch.prototype.update = function()
 	var indexRun = 0;
 
 	var displayObject = this.head;
-
+	var verticies = this.verticies;
+	var uvs = this.uvs;
+	var colors = this.colors;
+	
 	while(displayObject)
 	{
 		if(displayObject.vcount === PIXI.visibleCount)
@@ -448,21 +451,19 @@ PIXI.WebGLBatch.prototype.update = function()
 			d = worldTransform[4];
 			tx = worldTransform[2];
 			ty = worldTransform[5];
-			
-			var vArray = this.verticies;
-			vArray[index + 0 ] = a * w1 + c * h1 + tx; 
-			vArray[index + 1 ] = d * h1 + b * w1 + ty;
-			 
-			vArray[index + 2 ] = a * w0 + c * h1 + tx; 
-			vArray[index + 3 ] = d * h1 + b * w0 + ty; 
-			
-			vArray[index + 4 ] = a * w0 + c * h0 + tx; 
-			vArray[index + 5 ] = d * h0 + b * w0 + ty; 
-			
-			vArray[index + 6] =  a * w1 + c * h0 + tx; 
-			vArray[index + 7] =  d * h0 + b * w1 + ty; 
-			
-			
+
+			verticies[index + 0 ] = a * w1 + c * h1 + tx; 
+			verticies[index + 1 ] = d * h1 + b * w1 + ty;
+
+			verticies[index + 2 ] = a * w0 + c * h1 + tx; 
+			verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+
+			verticies[index + 4 ] = a * w0 + c * h0 + tx; 
+			verticies[index + 5 ] = d * h0 + b * w0 + ty; 
+
+			verticies[index + 6] =  a * w1 + c * h0 + tx; 
+			verticies[index + 7] =  d * h0 + b * w1 + ty; 
+
 			if(displayObject.updateFrame || displayObject.texture.updateFrame)
 			{
 				this.dirtyUVS = true;
@@ -472,19 +473,18 @@ PIXI.WebGLBatch.prototype.update = function()
 				var frame = texture.frame;
 				var tw = texture.baseTexture.width;
 				var th = texture.baseTexture.height;
+
+				var uv0 = uvs[index + 0] = frame.x / tw;
+				var uv1 = uvs[index + 1] = frame.y / th;
 				
-				var uvArray = this.uvs;
-				var uv0 = uvArray[index + 0] = frame.x / tw;
-				var uv1 = uvArray[index + 1] = frame.y / th;
+				var uv2 = uvs[index + 2] = (frame.x + frame.width) / tw;
+				uvs[index + 3] = uv1;//frame.y / th;
 				
-				var uv2 = uvArray[index + 2] = (frame.x + frame.width) / tw;
-				uvArray[index + 3] = uv1;//frame.y / th;
+				uvs[index + 4] = uv2;//(frame.x + frame.width) / tw;
+				var uv5 = uvs[index + 5] = (frame.y + frame.height) / th; 
 				
-				uvArray[index + 4] = uv2;//(frame.x + frame.width) / tw;
-				var uv5 = uvArray[index + 5] = (frame.y + frame.height) / th; 
-				
-				uvArray[index + 6] = uv0;//frame.x / tw;
-				uvArray[index + 7] = uv5;//(frame.y + frame.height) / th;
+				uvs[index + 6] = uv0;//frame.x / tw;
+				uvs[index + 7] = uv5;//(frame.y + frame.height) / th;
 				
 				displayObject.updateFrame = false;
 			}
@@ -495,26 +495,15 @@ PIXI.WebGLBatch.prototype.update = function()
 				displayObject.cacheAlpha = displayObject.worldAlpha;
 
 				var colorIndex = indexRun * 4;
-				this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
+				colors[colorIndex] = colors[colorIndex + 1] = colors[colorIndex + 2] = colors[colorIndex + 3] = displayObject.worldAlpha;
 				this.dirtyColors = true;
 			}
 		}
 		else
 		{
 			index = indexRun * 8;
-			
-			var tempArray = this.verticies;
-			tempArray[index + 0 ] = 0;
-			tempArray[index + 1 ] = 0;
-			 
-			tempArray[index + 2 ] = 0;
-			tempArray[index + 3 ] = 0;
-			
-			tempArray[index + 4 ] = 0;
-			tempArray[index + 5 ] = 0;
-			
-			tempArray[index + 6] = 0;
-			tempArray[index + 7] = 0;
+
+			verticies[index + 0 ] = verticies[index + 1 ] = verticies[index + 2 ] = verticies[index + 3 ] = verticies[index + 4 ] = verticies[index + 5 ] = verticies[index + 6] = 	verticies[index + 7] = 0;
 		}
 
 		indexRun++;
@@ -548,8 +537,9 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	
 	//TODO optimize this!
 
-	var shaderProgram = PIXI.shaderProgram;
-	gl.useProgram(shaderProgram);
+	var shaderProgram = PIXI.currentShader;
+	
+	//gl.useProgram(shaderProgram);
 
 	// update the verts..
 	gl.bindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);

@@ -134,9 +134,9 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
 
 /*
  * Awesome JS run time provided by EsotericSoftware
- * 
+ *
  * https://github.com/EsotericSoftware/spine-runtimes
- * 
+ *
  */
 
 var spine = PIXI.spine = {};

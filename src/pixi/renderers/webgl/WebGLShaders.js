@@ -1,4 +1,3 @@
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -23,13 +22,11 @@ PIXI.shaderVertexSrc = [
   "attribute vec2 aVertexPosition;",
   "attribute vec2 aTextureCoord;",
   "attribute float aColor;",
-  //"uniform mat4 uMVMatrix;",
   
   "uniform vec2 projectionVector;",
   "varying vec2 vTextureCoord;",
   "varying float vColor;",
   "void main(void) {",
-   // "gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
     "gl_Position = vec4( aVertexPosition.x / projectionVector.x -1.0, aVertexPosition.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
     "vTextureCoord = aTextureCoord;",
     "vColor = aColor;",
@@ -69,7 +66,6 @@ PIXI.stripShaderVertexSrc = [
   "}"
 ];
 
-
 /*
  * primitive shader..
  */
@@ -96,6 +92,8 @@ PIXI.primitiveShaderVertexSrc = [
   "}"
 ];
 
+PIXI.shaderStack = [];
+
 PIXI.initPrimitiveShader = function() 
 {
 	var gl = PIXI.gl;
@@ -110,27 +108,26 @@ PIXI.initPrimitiveShader = function()
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
     
+  
+	//gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	//gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+//gl.enableVertexAttribArray(program.textureCoordAttribute);
+	
 	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	PIXI.primitiveProgram = shaderProgram;
+	
+	
 }
 
 PIXI.initDefaultShader = function() 
 {
-	var gl = this.gl;
-	var shaderProgram = PIXI.compileProgram(PIXI.shaderVertexSrc, PIXI.shaderFragmentSrc)
-	
-    gl.useProgram(shaderProgram);
-
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-
-   // shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-    
-	PIXI.shaderProgram = shaderProgram;
+	PIXI.defaultShader = new PIXI.PixiShader();
+	PIXI.defaultShader.init();
+	PIXI.pushShader(PIXI.defaultShader);
+	/*
+	PIXI.shaderStack.push(PIXI.defaultShader);
+	PIXI.current*/
 }
 
 PIXI.initDefaultStripShader = function() 
@@ -147,9 +144,7 @@ PIXI.initDefaultStripShader = function()
 	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
-    
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
     
 	PIXI.stripShaderProgram = shaderProgram;
@@ -200,34 +195,55 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 	return shaderProgram;
 } 
 
+PIXI.pushShader = function(shader)
+{
+	PIXI.shaderStack.push(shader);
 
-PIXI.activateDefaultShader = function()
+	var gl = PIXI.gl;
+	
+	var shaderProgram = shader.program;
+	
+	
+	// map uniforms..
+	gl.useProgram(shaderProgram);
+	
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+	gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+	shader.syncUniforms();
+	
+	PIXI.currentShader = shaderProgram;
+}
+
+
+PIXI.popShader = function()
 {
 	var gl = PIXI.gl;
-	var shaderProgram = PIXI.shaderProgram;
+	var lastProgram = PIXI.shaderStack.pop();
+	
+	var shaderProgram = PIXI.shaderStack[ PIXI.shaderStack.length-1 ].program;
 	
 	gl.useProgram(shaderProgram);
 	
-	
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+	PIXI.currentShader = shaderProgram;
 }
-
-	
 
 PIXI.activatePrimitiveShader = function()
 {
 	var gl = PIXI.gl;
 	
-	gl.disableVertexAttribArray(PIXI.shaderProgram.textureCoordAttribute);
-    gl.disableVertexAttribArray(PIXI.shaderProgram.colorAttribute);
-    
 	gl.useProgram(PIXI.primitiveProgram);
-	
-	gl.enableVertexAttribArray(PIXI.primitiveProgram.vertexPositionAttribute);
-	gl.enableVertexAttribArray(PIXI.primitiveProgram.colorAttribute);
+	gl.disableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
 } 
+
+PIXI.deactivatePrimitiveShader = function()
+{
+	var gl = PIXI.gl;
+
+	gl.useProgram(PIXI.currentShader);
+	gl.enableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
+}
 
 PIXI.deleteShaders = function()
 {

@@ -12,7 +12,6 @@ PIXI.DisplayObject = function()
 {
 	this.last = this;
 	this.first = this;
-
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 *
@@ -289,16 +288,57 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     },
     set: function(value) {
     	
-        this._mask = value;
-        
+    	
         if(value)
         {
+        	if(this._mask)
+	    	{
+	    		value.start = this._mask.start;
+	    		value.end = this._mask.end;
+	    	}
+    		else
+    		{
+		        this.addFilter(value);
+		        value.renderable = false;
+    		}
+        }
+        else
+        {
+        	 this.removeFilter(this._mask);
+			 this._mask.renderable = true;
+        }
+        
+        this._mask = value;
+    }
+});
+
+/**
+ * Sets the filters for the displayObject. Currently there's a few limitations.
+ * 1: At the moment only one filter can be applied at a time.. 
+ * 2: They cannot be nested.
+ * 3: There's no padding yet.
+ * 4: this is a webGL only feature.
+ * @property filters
+ * @type Array
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
+    get: function() {
+        return this._filters;
+    },
+    set: function(value) {
+    	
+        //if(value == )
+        if(value)
+        {
+        	if(this._filters)this.removeFilter(this._filters);
 	        this.addFilter(value)
         }
         else
         {
-        	 this.removeFilter();
+        	if(this._filters)this.removeFilter(this._filters);
         }
+        
+        this._filters = value;
     }
 });
 
@@ -309,17 +349,21 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * @param mask {Graphics} the graphics object to use as a filter
  * @private
  */
-PIXI.DisplayObject.prototype.addFilter = function(mask)
+PIXI.DisplayObject.prototype.addFilter = function(data)
 {
-	if(this.filter)return;
-	this.filter = true;
+	//if(this.filter)return;
+	//this.filter = true;
 	
 	// insert a filter block..
+	// TODO Onject pool thease bad boys..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
 	
-	start.mask = mask;
-	end.mask = mask;
+	data.start = start;
+	data.end = end;
+	
+	start.data = data;
+	end.data = data;
 	
 	start.first = start.last =  this;
 	end.first = end.last = this;
@@ -397,8 +441,6 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 		this.__renderGroup.addFilterBlocks(start, end);
 	}
 	
-	mask.renderable = false;
-	
 }
 
 /*
@@ -407,13 +449,14 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
  * @method removeFilter
  * @private
  */
-PIXI.DisplayObject.prototype.removeFilter = function()
+PIXI.DisplayObject.prototype.removeFilter = function(data)
 {
-	if(!this.filter)return;
-	this.filter = false;
-	
+	//if(!this.filter)return;
+	//this.filter = false;
+	console.log("YUOIO")
 	// modify the list..
-	var startBlock = this.first;
+	var startBlock = data.start;
+	
 	
 	var nextObject = startBlock._iNext;
 	var previousObject = startBlock._iPrev;
@@ -423,9 +466,8 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	
 	this.first = startBlock._iNext;
 	
-	
 	// remove the end filter
-	var lastBlock = this.last;
+	var lastBlock = data.end;
 	
 	var nextObject = lastBlock._iNext;
 	var previousObject = lastBlock._iPrev;
@@ -443,9 +485,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 		updateLast = updateLast.parent;
 		if(!updateLast)break;
 	}
-	
-	var mask = startBlock.mask
-	mask.renderable = true;
 	
 	// if webGL...
 	if(this.__renderGroup)

@@ -53,25 +53,32 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	this.batchs = [];
 
-	try 
- 	{
-        PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
-    		 alpha: this.transparent,
-    		 antialias:!!antialias, // SPEED UP??
-    		 premultipliedAlpha:false,
-    		 stencil:true
-        });
-    } 
-    catch (e) 
-    {
-    	throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
-    }
+	var options = {
+		alpha: this.transparent,
+		antialias:!!antialias, // SPEED UP??
+		premultipliedAlpha:false,
+		stencil:true
+	}
 
-    PIXI.initPrimitiveShader();
+	//try 'experimental-webgl'
+	try {
+		PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  options);
+	} catch (e) {
+		//try 'webgl'
+		try {
+			PIXI.gl = this.gl = this.view.getContext("webgl",  options);
+		} catch (e) {
+			// fail, not able to get a context
+			throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
+		}
+	}
+
     PIXI.initDefaultShader();
+    PIXI.initPrimitiveShader();
     PIXI.initDefaultStripShader();
 
-    PIXI.activateDefaultShader();
+	
+//    PIXI.activateDefaultShader();
 
     var gl = this.gl;
     PIXI.WebGLRenderer.gl = gl;
@@ -88,7 +95,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.resize(this.width, this.height);
     this.contextLost = false;
 
+	PIXI.pushShader(PIXI.defaultShader);
+
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
+    
 }
 
 // constructor
