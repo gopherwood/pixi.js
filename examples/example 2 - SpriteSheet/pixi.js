@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-10-23
+ * Compiled: 2013-11-01
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1027,6 +1027,34 @@ PIXI.DisplayObject = function()
 
 // constructor
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
+
+/**
+ * Placeholder so that generic code can at least read a value of 0.
+ *
+ * @property width
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
+    get: function() {
+        return 0;
+    },
+    set: function(value) {
+    }
+});
+
+/**
+ * Placeholder so that generic code can at least read a value of 0.
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
+    get: function() {
+        return  0;
+    },
+    set: function(value) {
+    }
+});
 
 /**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default

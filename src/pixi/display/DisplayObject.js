@@ -242,6 +242,34 @@ PIXI.DisplayObject = function()
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
 /**
+ * Placeholder so that generic code can at least read a value of 0.
+ *
+ * @property width
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
+    get: function() {
+        return 0;
+    },
+    set: function(value) {
+    }
+});
+
+/**
+ * Placeholder so that generic code can at least read a value of 0.
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
+    get: function() {
+        return  0;
+    },
+    set: function(value) {
+    }
+});
+
+/**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
  * Instead of using this function you can now simply set the interactive property to true or false
  *
