@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,11 +75,17 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -176,6 +192,7 @@
 <div class="box intro">
     <p>The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
 This manager also supports multitouch.</p>
+
 </div>
 
 
@@ -253,6 +270,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The stage to handle interactions</p>
+
                     </div>
 
                     
@@ -466,7 +484,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l76"><code>src&#x2F;pixi&#x2F;InteractionManager.js:76</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l70"><code>src&#x2F;pixi&#x2F;InteractionManager.js:70</code></a>
         
         </p>
 
@@ -478,6 +496,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Collects an interactive sprite recursively to have their interactions managed</p>
+
     </div>
 
     
@@ -496,6 +515,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>the displayObject to collect</p>
+
                     </div>
 
                     
@@ -576,7 +596,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l433"><code>src&#x2F;pixi&#x2F;InteractionManager.js:433</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l422"><code>src&#x2F;pixi&#x2F;InteractionManager.js:422</code></a>
         
         </p>
 
@@ -588,6 +608,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Tests if the current mouse coords hit a sprite</p>
+
     </div>
 
     
@@ -606,6 +627,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The displayObject to test for a hit</p>
+
                     </div>
 
                     
@@ -621,6 +643,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The interactiondata object to update in the case of a hit</p>
+
                     </div>
 
                     
@@ -680,7 +703,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l316"><code>src&#x2F;pixi&#x2F;InteractionManager.js:316</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l305"><code>src&#x2F;pixi&#x2F;InteractionManager.js:305</code></a>
         
         </p>
 
@@ -692,6 +715,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when the mouse button is pressed down on the renderer element</p>
+
     </div>
 
     
@@ -710,6 +734,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of a mouse button being pressed down</p>
+
                     </div>
 
                     
@@ -769,7 +794,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l284"><code>src&#x2F;pixi&#x2F;InteractionManager.js:284</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l273"><code>src&#x2F;pixi&#x2F;InteractionManager.js:273</code></a>
         
         </p>
 
@@ -781,6 +806,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when the mouse moves accross the renderer element</p>
+
     </div>
 
     
@@ -799,6 +825,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of the mouse moving</p>
+
                     </div>
 
                     
@@ -858,7 +885,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l381"><code>src&#x2F;pixi&#x2F;InteractionManager.js:381</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l370"><code>src&#x2F;pixi&#x2F;InteractionManager.js:370</code></a>
         
         </p>
 
@@ -870,6 +897,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when the mouse button is released on the renderer element</p>
+
     </div>
 
     
@@ -888,6 +916,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of a mouse button being released</p>
+
                     </div>
 
                     
@@ -947,7 +976,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l592"><code>src&#x2F;pixi&#x2F;InteractionManager.js:592</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l575"><code>src&#x2F;pixi&#x2F;InteractionManager.js:575</code></a>
         
         </p>
 
@@ -959,6 +988,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when a touch is ended on the renderer element</p>
+
     </div>
 
     
@@ -977,6 +1007,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of a touch ending on the renderer view</p>
+
                     </div>
 
                     
@@ -1036,7 +1067,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l508"><code>src&#x2F;pixi&#x2F;InteractionManager.js:508</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l495"><code>src&#x2F;pixi&#x2F;InteractionManager.js:495</code></a>
         
         </p>
 
@@ -1048,6 +1079,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when a touch is moved accross the renderer element</p>
+
     </div>
 
     
@@ -1066,6 +1098,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of a touch moving accross the renderer view</p>
+
                     </div>
 
                     
@@ -1125,7 +1158,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l541"><code>src&#x2F;pixi&#x2F;InteractionManager.js:541</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l526"><code>src&#x2F;pixi&#x2F;InteractionManager.js:526</code></a>
         
         </p>
 
@@ -1137,6 +1170,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Is called when a touch is started on the renderer element</p>
+
     </div>
 
     
@@ -1155,6 +1189,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>The DOM event of a touch starting on the renderer view</p>
+
                     </div>
 
                     
@@ -1214,7 +1249,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l120"><code>src&#x2F;pixi&#x2F;InteractionManager.js:120</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l114"><code>src&#x2F;pixi&#x2F;InteractionManager.js:114</code></a>
         
         </p>
 
@@ -1226,6 +1261,7 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Sets the target for event delegation</p>
+
     </div>
 
     
@@ -1244,6 +1280,7 @@ This manager also supports multitouch.</p>
 
                     <div class="param-description">
                         <p>the renderer to bind events to</p>
+
                     </div>
 
                     
@@ -1303,7 +1340,7 @@ This manager also supports multitouch.</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l141"><code>src&#x2F;pixi&#x2F;InteractionManager.js:141</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l135"><code>src&#x2F;pixi&#x2F;InteractionManager.js:135</code></a>
         
         </p>
 
@@ -1315,8 +1352,9 @@ This manager also supports multitouch.</p>
 
     <div class="description">
         <p>Sets the dom element which will receive mouse/touch events. This is useful for when you have other DOM
-elements ontop of the renderers Canvas element. With this you'll be able to delegate another dom element
+elements ontop of the renderers Canvas element. With this you&#39;ll be able to delegate another dom element
 to receive those events</p>
+
     </div>
 
     
@@ -1335,6 +1373,7 @@ to receive those events</p>
 
                     <div class="param-description">
                         <p>the dom element which will receive mouse and touch events</p>
+
                     </div>
 
                     
@@ -1384,7 +1423,7 @@ to receive those events</p>
             
         
         
-        <a href="../files/src_pixi_InteractionManager.js.html#l191"><code>src&#x2F;pixi&#x2F;InteractionManager.js:191</code></a>
+        <a href="../files/src_pixi_InteractionManager.js.html#l185"><code>src&#x2F;pixi&#x2F;InteractionManager.js:185</code></a>
         
         </p>
 
@@ -1396,6 +1435,7 @@ to receive those events</p>
 
     <div class="description">
         <p>updates the state of interactive objects</p>
+
     </div>
 
     
@@ -1448,6 +1488,7 @@ to receive those events</p>
 
     <div class="description">
         <p>the mouse data</p>
+
     </div>
 
     
@@ -1492,6 +1533,7 @@ to receive those events</p>
 
     <div class="description">
         <p>a refference to the stage</p>
+
     </div>
 
     
@@ -1536,6 +1578,7 @@ to receive those events</p>
 
     <div class="description">
         <p>an object that stores current touches (InteractionData) by id reference</p>
+
     </div>
 
     

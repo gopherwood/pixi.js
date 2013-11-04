@@ -41,73 +41,65 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
+                <li><a href="..&#x2F;classes/AssetLoader.html">AssetLoader</a></li>
             
-                <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
+                <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
-                <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
             
-                <li><a href="../classes/BitmapText.html">BitmapText</a></li>
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
-                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
-                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
-                <li><a href="../classes/Circle.html">Circle</a></li>
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
-                <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
+                <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
-                <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+                <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
-                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
-                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/Graphics.html">Graphics</a></li>
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
-                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+                <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
-                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+                <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
             
-                <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
             
-                <li><a href="../classes/Point.html">Point</a></li>
+                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
             
-                <li><a href="../classes/Polygon.html">Polygon</a></li>
+                <li><a href="..&#x2F;classes/Point.html">Point</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
+                <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
             
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+                <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
-                <li><a href="../classes/Spine.html">Spine</a></li>
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
+                <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
             
-                <li><a href="../classes/Stage.html">Stage</a></li>
+                <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
             
-                <li><a href="../classes/Text.html">Text</a></li>
-            
-                <li><a href="../classes/Texture.html">Texture</a></li>
-            
-                <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
-            
-                <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+                <li><a href="..&#x2F;classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
             </ul>
 
@@ -179,6 +171,8 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.backgroundColor;
 	this.batchs = [];
 	this.toRemove = [];
+	
+	this.filterManager = new PIXI.WebGLFilterManager();
 }
 
 // constructor
@@ -206,72 +200,86 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	this.addDisplayObjectAndChildren(displayObject);
 }
 
-/**
- * Renders the stage to its webgl view
- *
- * @method render
- * @param projection {Object}
- */
 PIXI.WebGLRenderGroup.prototype.render = function(projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
-	
+
+	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-	// will render all the elements in the group
+	
+	&#x2F;&#x2F; TODO remove this by replacing visible with getter setters..	
+	this.checkVisibility(this.root, this.root.visible);
+	
+	&#x2F;&#x2F; will render all the elements in the group
 	var renderable;
+	
+	
 	for (var i=0; i &lt; this.batchs.length; i++) 
 	{
+		
 		renderable = this.batchs[i];
 		if(renderable instanceof PIXI.WebGLBatch)
 		{
-			renderable.render();
-			continue;
+			this.batchs[i].render();
 		}
-		
-		// non sprite batch..
-		var worldVisible = renderable.vcount === PIXI.visibleCount;
-
-		if(renderable instanceof PIXI.TilingSprite)
+		else if(renderable instanceof PIXI.TilingSprite)
 		{
-			if(worldVisible)this.renderTilingSprite(renderable, projection);
+			if(renderable.visible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
 		{
-			if(worldVisible)this.renderStrip(renderable, projection);
+			if(renderable.visible)this.renderStrip(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(worldVisible &amp;&amp; renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(renderable.visible &amp;&amp; renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);&#x2F;&#x2F;, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
-			this.handleFilterBlock(renderable, projection);
+			&#x2F;*
+			 * for now only masks are supported..
+			 *&#x2F;
+			if(renderable.open)
+			{
+    			gl.enable(gl.STENCIL_TEST);
+					
+				gl.colorMask(false, false, false, false);
+				gl.stencilFunc(gl.ALWAYS,1,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+  					
+				gl.colorMask(true, true, true, false);
+				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			}
+			else
+			{
+				gl.disable(gl.STENCIL_TEST);
+			}
 		}
 	}
 	
 }
 
-/**
- * Renders a specific displayObject
- *
- * @method renderSpecific
- * @param displayObject {DisplayObject}
- * @param projection {Object}
- * @private
- */
+PIXI.WebGLRenderGroup.prototype.handleFilter = function(filter, projection)
+{
+	
+}
+
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
-	
 	var gl = this.gl;
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+	this.checkVisibility(displayObject, displayObject.visible);
 	
-	// to do!
-	// render part of the scene...
+&#x2F;&#x2F;	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
+
+	&#x2F;&#x2F; to do!
+	&#x2F;&#x2F; render part of the scene...
 	
 	var startIndex;
 	var startBatchIndex;
@@ -288,11 +296,13 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var nextRenderable = displayObject.first;
 	while(nextRenderable._iNext)
 	{
-		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable &amp;&amp; nextRenderable.__renderGroup)break;
+		nextRenderable = nextRenderable._iNext;
 	}
 	var startBatch = nextRenderable.batch;
+	//console.log(nextRenderable);
 	
+	//console.log(renderable)
 	if(nextRenderable instanceof PIXI.Sprite)
 	{
 		startBatch = nextRenderable.batch;
@@ -321,14 +331,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		startBatch = nextRenderable;
 	}
 	
-	// Get the LAST renderable object
+	&#x2F;&#x2F; Get the LAST renderable object
 	var lastRenderable = displayObject;
 	var endBatch;
 	var lastItem = displayObject;
 	while(lastItem.children.length &gt; 0)
 	{
 		lastItem = lastItem.children[lastItem.children.length-1];
-		if(lastItem.renderable)lastRenderable = lastItem.last;
+		if(lastItem.renderable)lastRenderable = lastItem;
 	}
 	
 	if(lastRenderable instanceof PIXI.Sprite)
@@ -357,7 +367,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		endBatch = lastRenderable;
 	}
 	
-	// TODO - need to fold this up a bit!
+	&#x2F;&#x2F; TODO - need to fold this up a bit!
 	
 	if(startBatch == endBatch)
 	{
@@ -422,10 +432,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
  */
 PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
-	var sta = PIXI.shaderStack.length;
-	
-	var worldVisible = renderable.vcount === PIXI.visibleCount
-
 	if(renderable instanceof PIXI.TilingSprite)
 	{
 		if(worldVisible)this.renderTilingSprite(renderable, projection);
@@ -444,57 +450,49 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	}
 	else if(renderable instanceof PIXI.FilterBlock)
 	{
-		this.handleFilterBlock(renderable, projection);
-	}
-}
-
-PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(renderable, projection)
-{
-	/*
-	 * for now only masks are supported..
-	 */
-	var gl = PIXI.gl;
-	var KEEP = gl.KEEP;
-
-	if(renderable.open)
-	{
-		if(renderable.data instanceof Array)
-		{
-			var filter = renderable.data[0];
-			
-			if(!filter.shader)
-			{
-				var shader = new PIXI.PixiShader();
-				
-				shader.fragmentSrc = filter.fragmentSrc;
-				shader.uniforms = filter.uniforms;
-				shader.init();
-				
-				filter.shader = shader
-			}
-			
-			PIXI.pushShader(filter.shader);
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
-		}
-		else
+		&#x2F;*
+		 * for now only masks are supported..
+		 *&#x2F;
+		if(renderable.open)
 		{
 			gl.enable(gl.STENCIL_TEST);
 				
 			gl.colorMask(false, false, false, false);
 			gl.stencilFunc(gl.ALWAYS,1,0xff);
-			gl.stencilOp(KEEP,KEEP,gl.REPLACE);
-			PIXI.WebGLGraphics.renderGraphics(renderable.data, projection);
-			gl.colorMask(true, true, true, true);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+				
+			gl.colorMask(true, true, true, false);
 			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
-			gl.stencilOp(KEEP,KEEP,KEEP);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+		}
+		else
+		{
+			gl.disable(gl.STENCIL_TEST);
 		}
 	}
-	else
+}
+
+PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
+{
+	&#x2F;&#x2F; give the dp a reference to its renderGroup...
+	var children = displayObject.children;
+	&#x2F;&#x2F;displayObject.worldVisible = globalVisible;
+	for (var i=0; i &lt; children.length; i++) 
 	{
-		if(renderable.data instanceof Array)
+		var child = children[i];
+		
+		&#x2F;&#x2F; TODO optimize... should&#x27;nt need to loop through everything all the time
+		child.worldVisible = child.visible &amp;&amp; globalVisible;
+		
+		&#x2F;&#x2F; everything should have a batch!
+		&#x2F;&#x2F; time to see whats new!
+		if(child.textureChange)
 		{
-			PIXI.popShader();
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+			child.textureChange = false;
+			if(child.worldVisible)this.updateTexture(child);
+			&#x2F;&#x2F; update texture!!
 		}
 		else
 		{
@@ -1020,21 +1018,25 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.stripShaderProgram;
+	var shaderProgram = PIXI.shaderProgram;
+&#x2F;&#x2F;	mat
+	&#x2F;&#x2F;var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
+	&#x2F;&#x2F;PIXI.mat4.transpose(mat4Real);
+	&#x2F;&#x2F;PIXI.mat4.multiply(projectionMatrix, mat4Real, mat4Real )
+
 	
-	
-	gl.useProgram(shaderProgram);
+	gl.useProgram(PIXI.stripShaderProgram);
 
 	var m = PIXI.mat3.clone(strip.worldTransform);
 	
 	PIXI.mat3.transpose(m);
 	
-	// set the matrix transform for the 
- 	gl.uniformMatrix3fv(shaderProgram.translationMatrix, false, m);
-	gl.uniform2f(shaderProgram.projectionVector, projection.x, projection.y);
-	gl.uniform1f(shaderProgram.alpha, strip.worldAlpha);
+	&#x2F;&#x2F; set the matrix transform for the 
+ 	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
+	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
+	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
 
-/*
+&#x2F;*
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -1045,23 +1047,22 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	}
 	*/
 	
-	
+	//console.log(&quot;!!&quot;)
 	if(!strip.dirty)
-	{
-		
+	{	
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, strip.verticies)
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
 	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 			
 	    gl.activeTexture(gl.TEXTURE0);
 	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
-	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
@@ -1071,19 +1072,19 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 		strip.dirty = false;
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
 	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
 	   	gl.bufferData(gl.ARRAY_BUFFER, strip.uvs, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 			
 	    gl.activeTexture(gl.TEXTURE0);
 	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
-		
+	//	console.log(strip.texture.baseTexture._glTexture)
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
@@ -1093,7 +1094,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
-  	gl.useProgram(PIXI.currentProgram);
+  	gl.useProgram(PIXI.shaderProgram);
 }
 
 /**
@@ -1107,6 +1108,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projectionMatrix)
 {
 	var gl = this.gl;
+
+
 	var shaderProgram = PIXI.shaderProgram;
 	
 	var tilePosition = sprite.tilePosition;

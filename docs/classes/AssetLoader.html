@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,19 +75,25 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
                 <li><a href="../classes/Point.html">Point</a></li>
             
-                <li><a href="../classes/Polygon.html">Polygon</a></li>
+                <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
+                <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -186,8 +202,9 @@
     <p>A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
 assets have been loaded they are added to the PIXI Texture cache and can be accessed
 easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
-When all items have been loaded this class will dispatch a "onLoaded" event
-As each individual item is loaded this class will dispatch a "onProgress" event</p>
+When all items have been loaded this class will dispatch a &quot;onLoaded&quot; event
+As each individual item is loaded this class will dispatch a &quot;onProgress&quot; event</p>
+
 </div>
 
 
@@ -271,9 +288,10 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
 
                     <div class="param-description">
                         <p>an array of image/sprite sheet urls that you would like loaded
-     supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported
-     sprite sheet data formats only include "JSON" at this time. Supported bitmap font
-     data formats include "xml" and "fnt".</p>
+     supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported
+     sprite sheet data formats only include &quot;JSON&quot; at this time. Supported bitmap font
+     data formats include &quot;xml&quot; and &quot;fnt&quot;.</p>
+
                     </div>
 
                     
@@ -289,6 +307,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
 
                     <div class="param-description">
                         <p>Whether requests should be treated as crossorigin</p>
+
                     </div>
 
                     
@@ -409,122 +428,6 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
         </div>
 
         
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_load" class="method item">
-    <h3 class="name"><code>load</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l77"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:77</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Starts loading the assets sequentially</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_onAssetLoaded" class="method item private">
-    <h3 class="name"><code>onAssetLoaded</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l109"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:109</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Invoked after each file is loaded</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-            </div>
-        
 
         
             <div id="properties" class="api-class-tabpanel">
@@ -554,7 +457,97 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
             
         
         
-        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l25"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:25</code></a>
+        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l74"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:74</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Starts loading the assets sequentially</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_crossorigin" class="property item">
+    <h3 class="name"><code>crossorigin</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l104"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:104</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Invoked after each file is loaded</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_loadersByType" class="property item">
+    <h3 class="name"><code>loadersByType</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l41"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:41</code></a>
         
         </p>
 
@@ -565,6 +558,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
 
     <div class="description">
         <p>The array of asset URLs that are going to be loaded</p>
+
     </div>
 
     
@@ -696,7 +690,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
             
         
         
-        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l69"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:69</code></a>
+        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l66"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:66</code></a>
         
         </p>
 
@@ -707,6 +701,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
 
     <div class="description">
         <p>Fired when all the assets have loaded</p>
+
     </div>
 
     
@@ -739,7 +734,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
             
         
         
-        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l64"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:64</code></a>
+        <a href="../files/src_pixi_loaders_AssetLoader.js.html#l61"><code>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js:61</code></a>
         
         </p>
 
@@ -750,6 +745,7 @@ As each individual item is loaded this class will dispatch a "onProgress" event<
 
     <div class="description">
         <p>Fired when an item has loaded</p>
+
     </div>
 
     

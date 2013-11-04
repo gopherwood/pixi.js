@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,11 +75,17 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -158,8 +174,20 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA 
+ * color and alpha values of every pixel on your displayObject to produce a result 
+ * with a new set of RGBA color and alpha values. Its pretty powerful!
+ * @class ColorMatrixFilter
+ * @contructor
+ */
 PIXI.ColorMatrixFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
 	// set the uniforms
 	this.uniforms = {
 		matrix: {type: &#x27;mat4&#x27;, value: [1,0,0,0,
@@ -183,7 +211,16 @@ PIXI.ColorMatrixFilter = function()
 	
 }
 
+PIXI.ColorMatrixFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
 
+/**
+ * Sets the matrix of the color matrix filter
+ *
+ * @property matrix
+ * @type Array and array of 26 numbers
+ * @default [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+ */
 Object.defineProperty(PIXI.ColorMatrixFilter.prototype, &#x27;matrix&#x27;, {
     get: function() {
         return this.uniforms.matrix.value;

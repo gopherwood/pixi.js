@@ -10,7 +10,7 @@
 		}
 	</style>
 
-	<script src="pixi.js"></script>
+	<script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
 	<script>
@@ -133,7 +133,7 @@
 		count += 0.1;
 
 		thing.clear();
-		thing.lineStyle(5, 0x16f1ff, 1);
+
 		thing.beginFill(0x8bc5ff, 0.4);
 		thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
 		thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
@@ -141,6 +141,9 @@
 		thing.lineTo(-120 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
 		thing.lineTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
 		thing.rotation = count * 0.1;
+
+		//var mask1 = new PIXI.Graphics();
+	
 
 	    renderer.render(stage);
 	    requestAnimFrame( animate );

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-11-01
+ * Compiled: 2013-11-04
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -946,11 +946,17 @@ PIXI.DisplayObject = function()
 	 * @private
 	 */
 	this.dynamic = true;
+	
+	this._width = 0;
+	this._width = 0;
 
 	// chach that puppy!
 	this._sr = 0;
 	this._cr = 1;
 
+
+	this.filterArea = new PIXI.Rectangle(0,0,1,1);
+	
 	/*
 	 * MOUSE Callbacks
 	 */
@@ -1036,9 +1042,10 @@ PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
     get: function() {
-        return 0;
+        return this._width;// * this.scale.x;
     },
     set: function(value) {
+		this._width = value;// / this.scale.x;
     }
 });
 
@@ -1050,9 +1057,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
     get: function() {
-        return  0;
+        return this._height;// * this.scale.y;
     },
     set: function(value) {
+		this._height = value;// / this.scale.y;
     }
 });
 
@@ -1128,13 +1136,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 });
 
 /**
- * Sets the filters for the displayObject. Currently there's a few limitations.
- * 1: At the moment only one filter can be applied at a time.. 
- * 2: They cannot be nested.
- * 3: There's no padding yet.
- * 4: this is a webGL only feature.
+ * Sets the filters for the displayObject. 
+ * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+ * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array
+ * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     get: function() {
@@ -1142,11 +1148,23 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     },
     set: function(value) {
     	
-        //if(value == )
         if(value)
         {
         	if(this._filters)this.removeFilter(this._filters);
-	        this.addFilter(value)
+	        this.addFilter(value);
+
+		    // now put all the passes in one place..
+	        var passes = [];
+	        for (var i = 0; i < value.length; i++) 
+	        {
+	        	var filterPasses = value[i].passes;
+	        	for (var j = 0; j < filterPasses.length; j++) 
+	        	{
+	        		passes.push(filterPasses[j]);
+	        	};
+	        };
+
+	        value.start.filterPasses = passes;
         }
         else
         {
@@ -1154,6 +1172,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
         }
         
         this._filters = value;
+
+       
+
+        
     }
 });
 
@@ -1168,7 +1190,9 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 {
 	//if(this.filter)return;
 	//this.filter = true;
+//	data[0].target = this;
 	
+
 	// insert a filter block..
 	// TODO Onject pool thease bad boys..
 	var start = new PIXI.FilterBlock();
@@ -1184,6 +1208,8 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 	end.first = end.last = this;
 	
 	start.open = true;
+	
+	start.target = this;
 	
 	/*
 	 * insert start
@@ -2211,150 +2237,6 @@ PIXI.FilterBlock = function()
 	this.visible = true;
 	this.renderable = true;
 }
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-PIXI.ColorMatrixFilter = function()
-{
-	// set the uniforms
-	this.uniforms = {
-		matrix: {type: 'mat4', value: [1,0,0,0,
-									   0,1,0,0,
-									   0,0,1,0,
-									   0,0,0,1]},
-	};
-	
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform float invert;",
-	  "uniform mat4 matrix;",
-	  "uniform sampler2D uSampler;",
-	  "void main(void) {",
-	    "gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;",
-	    "gl_FragColor = gl_FragColor * vColor;",
-	  "}"
-	];
-	
-}
-
-
-Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
-    get: function() {
-        return this.uniforms.matrix.value;
-    },
-    set: function(value) {
-    	this.uniforms.matrix.value = value;
-    }
-});
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-
-
-PIXI.GreyFilter = function()
-{
-	// set the uniforms
-	this.uniforms = {
-		grey: {type: 'f', value: 1},
-	};
-	
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform sampler2D uSampler;",
-	  "uniform float grey;",
-	  "void main(void) {",
-	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
-		"gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), grey);",
-	    "gl_FragColor = gl_FragColor * vColor;",
-	  "}"
-	];
-	
-	this.primitiveFragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec4 vColor;",
-	  "uniform float grey;",
-	  "void main(void) {",
-		"gl_FragColor = vColor;",
-		"gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), grey);",
-		"gl_FragColor = gl_FragColor * vColor;",
-	  "}"
-	];
-
-}
-
-Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
-    get: function() {
-        return this.uniforms.grey.value;
-    },
-    set: function(value) {
-    	this.uniforms.grey.value = value;
-    }
-});
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-
-
-PIXI.DisplacementFilter = function(texture)
-{
-	// set the uniforms
-	
-	this.uniforms = {
-		displacementMap: {type: 'sampler2D', value:texture},
-		scale:			 {type: 'f2', value:{x:30, y:30}},
-		mapDimensions:   {type: 'f2', value:{x:texture.width, y:texture.height}}
-	};
-	
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform sampler2D displacementMap;",
-	  "uniform sampler2D uSampler;",
-	  "uniform vec2 scale;",
-	  "uniform vec2 mapDimensions;",// = vec2(256.0, 256.0);",
-	  "const vec2 textureDimensions = vec2(245.0, 263.0);",
-	  
-	  "void main(void) {",
-	  
-	  	"vec2 matSample = texture2D(displacementMap, vTextureCoord * (textureDimensions/mapDimensions)).xy;",
-		"matSample -= 0.5;",	  
-	 	"matSample *= scale;",
-	 	"matSample /= textureDimensions;",
-	    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));",
-		"gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);",
-	    "gl_FragColor = gl_FragColor * vColor;",
-	    
-	  "}"
-	];
-	
-}
-
-Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
-    get: function() {
-        return this.uniforms.displacementMap.value;
-    },
-    set: function(value) {
-    	this.uniforms.displacementMap.value = value;
-    }
-});
-
-Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
-    get: function() {
-        return this.uniforms.scale.value;
-    },
-    set: function(value) {
-    	this.uniforms.scale.value = value;
-    }
-});
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -4137,152 +4019,77 @@ PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
  */
 
 
-/*
- * the default suoer fast shader!
- */
-
-PIXI.shaderFragmentSrc = [
-  "precision mediump float;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "uniform sampler2D uSampler;",
-  "void main(void) {",
-    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
-    "gl_FragColor = gl_FragColor * vColor;",
-  "}"
-];
-
-PIXI.shaderVertexSrc = [
-  "attribute vec2 aVertexPosition;",
-  "attribute vec2 aTextureCoord;",
-  "attribute float aColor;",
-  
-  "uniform vec2 projectionVector;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "void main(void) {",
-    "gl_Position = vec4( aVertexPosition.x / projectionVector.x -1.0, aVertexPosition.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
-    "vTextureCoord = aTextureCoord;",
-    "vColor = aColor;",
-  "}"
-];
-
-/*
- * the triangle strip shader..
- */
-
-PIXI.stripShaderFragmentSrc = [
-  "precision mediump float;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "uniform float alpha;",
-  "uniform sampler2D uSampler;",
-  "void main(void) {",
-    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
-    "gl_FragColor = gl_FragColor * alpha;",
-  "}"
-];
-
-
-PIXI.stripShaderVertexSrc = [
-  "attribute vec2 aVertexPosition;",
-  "attribute vec2 aTextureCoord;",
-  "attribute float aColor;",
-  "uniform mat3 translationMatrix;",
-  "uniform vec2 projectionVector;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "void main(void) {",
-	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
-    "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
-    "vTextureCoord = aTextureCoord;",
-    "vColor = aColor;",
-  "}"
-];
-
-/*
- * primitive shader..
- */
-
-PIXI.primitiveShaderFragmentSrc = [
-  "precision mediump float;",
-  "varying vec4 vColor;",
-  "void main(void) {",
-    "gl_FragColor = vColor;",
-  "}"
-];
-
-PIXI.primitiveShaderVertexSrc = [
-  "attribute vec2 aVertexPosition;",
-  "attribute vec4 aColor;",
-  "uniform mat3 translationMatrix;",
-  "uniform vec2 projectionVector;",
-  "uniform float alpha;",
-  "varying vec4 vColor;",
-  "void main(void) {",
-  	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
-    "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
-    "vColor = aColor  * alpha;",
-  "}"
-];
-
-PIXI.shaderStack = [];
-
-PIXI.initPrimitiveShader = function() 
+PIXI.initDefaultShaders = function() 
 {
-	var gl = PIXI.gl;
+	PIXI.primitiveShader = new PIXI.PrimitiveShader();
+  PIXI.primitiveShader.init();
 
-	var shaderProgram = PIXI.compileProgram(PIXI.primitiveShaderVertexSrc, PIXI.primitiveShaderFragmentSrc)
-	
-    gl.useProgram(shaderProgram);
+  PIXI.stripShader = new PIXI.StripShader();
+  PIXI.stripShader.init();
 
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-    
-    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
-    shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
-    
-  
-	//gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	//gl.enableVertexAttribArray(shaderProgram.colorAttribute);
-//gl.enableVertexAttribArray(program.textureCoordAttribute);
-	
-	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
-
-	PIXI.primitiveProgram = shaderProgram;
-	
-	
-}
-
-PIXI.initDefaultShader = function() 
-{
 	PIXI.defaultShader = new PIXI.PixiShader();
 	PIXI.defaultShader.init();
-	PIXI.pushShader(PIXI.defaultShader);
-	/*
-	PIXI.shaderStack.push(PIXI.defaultShader);
-	PIXI.current*/
+
+  var gl = PIXI.gl; 
+  var shaderProgram = PIXI.defaultShader.program;
+ 
+
+  gl.useProgram(shaderProgram);
+  
+  gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+  gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+  gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
 }
 
-PIXI.initDefaultStripShader = function() 
+PIXI.activatePrimitiveShader = function()
 {
-	var gl = this.gl;
-	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.stripShaderFragmentSrc)
-	
-    gl.useProgram(shaderProgram);
+  var gl = PIXI.gl;
+  
+  gl.useProgram(PIXI.primitiveShader.program);
+  
+  gl.disableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+  gl.disableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+  gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
 
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-	shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
-	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
+  gl.enableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
+  gl.enableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
+} 
 
-	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-    
-	PIXI.stripShaderProgram = shaderProgram;
+PIXI.deactivatePrimitiveShader = function()
+{
+  var gl = PIXI.gl;
+
+  gl.useProgram(PIXI.defaultShader.program);
+  
+  gl.disableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
+  gl.disableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
+
+  gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+  gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+  gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+
 }
+
+PIXI.activateStripShader = function()
+{
+  var gl = PIXI.gl;
+  
+  gl.useProgram(PIXI.stripShader.program);
+ // gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+} 
+
+PIXI.deactivateStripShader = function()
+{
+  var gl = PIXI.gl;
+
+  gl.useProgram(PIXI.defaultShader.program);
+  //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+}
+
+/*
+
+SHADER COMPILER HELPERS
+*/
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
@@ -4302,7 +4109,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
   gl.compileShader(shader);
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(shader));
+    console.log(gl.getShaderInfoLog(shader));
     return null;
   }
 
@@ -4323,71 +4130,20 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
     gl.linkProgram(shaderProgram);
 
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert("Could not initialise shaders");
+        console.log("Could not initialise shaders");
     }
 
 	return shaderProgram;
 } 
 
-PIXI.pushShader = function(shader)
-{
-	PIXI.shaderStack.push(shader);
-
-	var gl = PIXI.gl;
-	
-	var shaderProgram = shader.program;
-	
-	
-	// map uniforms..
-	gl.useProgram(shaderProgram);
-	
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	gl.enableVertexAttribArray(shaderProgram.colorAttribute);
-	gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-
-	shader.syncUniforms();
-	
-	PIXI.currentShader = shaderProgram;
-}
-
-
-PIXI.popShader = function()
-{
-	var gl = PIXI.gl;
-	var lastProgram = PIXI.shaderStack.pop();
-	
-	var shaderProgram = PIXI.shaderStack[ PIXI.shaderStack.length-1 ].program;
-	
-	gl.useProgram(shaderProgram);
-	
-	PIXI.currentShader = shaderProgram;
-}
-
-PIXI.activatePrimitiveShader = function()
-{
-	var gl = PIXI.gl;
-	
-	gl.useProgram(PIXI.primitiveProgram);
-	gl.disableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
-} 
-
-PIXI.deactivatePrimitiveShader = function()
-{
-	var gl = PIXI.gl;
-
-	gl.useProgram(PIXI.currentShader);
-	gl.enableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
-}
-
 PIXI.deleteShaders = function()
 {
 	var gl = PIXI.gl;
 	if(!gl) return;
-	gl.deleteProgram(PIXI.primitiveProgram);
-	gl.deleteProgram(PIXI.shaderProgram);
-	gl.deleteProgram(PIXI.stripShaderProgram);
+	gl.deleteProgram(PIXI.primitiveProgram.program);
+	gl.deleteProgram(PIXI.stripShaderProgram.program);
+	gl.deleteProgram(PIXI.defaultProgram.program);
 }
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -4412,27 +4168,34 @@ PIXI.PixiShader = function()
 
 PIXI.PixiShader.prototype.init = function()
 {
-	var program = PIXI.compileProgram(this.vertexSrc || PIXI.shaderVertexSrc, this.fragmentSrc)
+	var program = PIXI.compileProgram(this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc)
 	
 	var gl = PIXI.gl;
 	
     gl.useProgram(program);
 	
-	// get the default shader bits!
-    program.vertexPositionAttribute = gl.getAttribLocation(program, "aVertexPosition");
-	program.colorAttribute = gl.getAttribLocation(program, "aColor");
-    program.textureCoordAttribute = gl.getAttribLocation(program, "aTextureCoord");
+	// get and store the uniforms for the shader
+	this.uSampler = gl.getUniformLocation(program, "uSampler");
+	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
+	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+    //this.dimensions = gl.getUniformLocation(this.program, "dimensions");
     
-    program.projectionVector = gl.getUniformLocation(program, "projectionVector");
-    program.samplerUniform = gl.getUniformLocation(program, "uSampler");
-    
+    // get and store the attributes
+    this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+	this.colorAttribute = gl.getAttribLocation(program, "aColor");
+	this.aTextureCoord = gl.getAttribLocation(program, "aTextureCoord");
+	  
     // add those custom shaders!
     for (var key in this.uniforms)
     {
+       
     	// get the uniform locations..
-		program[key] = gl.getUniformLocation(program, key);
+	//	program[key] = 
+        this.uniforms[key].uniformLocation = gl.getUniformLocation(program, key);
+
+      
     }
-    
+  
 	this.program = program;
 }
 
@@ -4448,15 +4211,21 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     	// need to grow this!
     	if(type == "f")
     	{
-			gl.uniform1f(this.program[key], this.uniforms[key].value);
+			gl.uniform1f(this.uniforms[key].uniformLocation, this.uniforms[key].value);
     	}
     	if(type == "f2")
     	{
-			gl.uniform2f(this.program[key], this.uniforms[key].value.x, this.uniforms[key].value.y);
+    	//	console.log(this.program[key])
+			gl.uniform2f(this.uniforms[key].uniformLocation, this.uniforms[key].value.x, this.uniforms[key].value.y);
     	}
+        else if(type == "f4")
+        {
+           // console.log(this.uniforms[key].value)
+            gl.uniform4fv(this.uniforms[key].uniformLocation, this.uniforms[key].value);
+        }
     	else if(type == "mat4")
     	{
-    		gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
+    		gl.uniformMatrix4fv(this.uniforms[key].uniformLocation, false, this.uniforms[key].value);
     	}
     	else if(type == "sampler2D")
     	{
@@ -4466,8 +4235,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     		gl.activeTexture(gl.TEXTURE1);
 	    	gl.bindTexture(gl.TEXTURE_2D, texture.baseTexture._glTexture);
 	    	
-    		gl.uniform1i(this.program[key], 1);
-    		
+    		gl.uniform1i(this.uniforms[key].uniformLocation, 1);
     		
     		// activate texture..
     		// gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
@@ -4477,6 +4245,148 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     
 }
 
+PIXI.PixiShader.defaultVertexSrc = [
+  "attribute vec2 aVertexPosition;",
+  "attribute vec2 aTextureCoord;",
+  "attribute float aColor;",
+  
+  "uniform vec2 projectionVector;",
+ "uniform vec2 offsetVector;",
+  "varying vec2 vTextureCoord;",
+  
+  "varying float vColor;",
+
+  "const vec2 center = vec2(-1.0, 1.0);",
+  "void main(void) {",
+    "gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);",
+    "vTextureCoord = aTextureCoord;",
+    "vColor = aColor;",
+  "}"
+];
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+PIXI.StripShader = function()
+{
+	// the webGL program..
+	this.program;
+	
+    this.fragmentSrc = [
+      "precision mediump float;",
+      "varying vec2 vTextureCoord;",
+      "varying float vColor;",
+      "uniform float alpha;",
+      "uniform sampler2D uSampler;",
+      "void main(void) {",
+        "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+        "gl_FragColor = gl_FragColor * alpha;",
+      "}"
+    ];
+
+    this.vertexSrc = [
+      "attribute vec2 aVertexPosition;",
+      "attribute vec2 aTextureCoord;",
+      "attribute float aColor;",
+      "uniform mat3 translationMatrix;",
+      "uniform vec2 projectionVector;",
+      "varying vec2 vTextureCoord;",
+      "varying vec2 offsetVector;",
+      "varying float vColor;",
+      "void main(void) {",
+        "vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
+        "v -= offsetVector.xyx;",
+        "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / projectionVector.y + 1.0 , 0.0, 1.0);",
+        "vTextureCoord = aTextureCoord;",
+        "vColor = aColor;",
+      "}"
+    ];
+}
+
+PIXI.StripShader.prototype.init = function()
+{
+	var program = PIXI.compileProgram(this.vertexSrc, this.fragmentSrc)
+	
+	var gl = PIXI.gl;
+	
+    gl.useProgram(program);
+
+	// get and store the uniforms for the shader
+	this.uSampler = gl.getUniformLocation(program, "uSampler");
+	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
+	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+	this.colorAttribute = gl.getAttribLocation(program, "aColor");
+	//this.dimensions = gl.getUniformLocation(this.program, "dimensions");
+	
+	// get and store the attributes
+	this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+	this.aTextureCoord = gl.getAttribLocation(program, "aTextureCoord");
+	  
+    this.translationMatrix = gl.getUniformLocation(program, "translationMatrix");
+    this.alpha = gl.getUniformLocation(program, "alpha");
+  
+	this.program = program;
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+PIXI.PrimitiveShader = function()
+{
+	// the webGL program..
+	this.program;
+    	
+    this.fragmentSrc = [
+      "precision mediump float;",
+      "varying vec4 vColor;",
+      "void main(void) {",
+        "gl_FragColor = vColor;",
+      "}"
+    ];
+
+    this.vertexSrc  = [
+      "attribute vec2 aVertexPosition;",
+      "attribute vec4 aColor;",
+      "uniform mat3 translationMatrix;",
+      "uniform vec2 projectionVector;",
+      "uniform vec2 offsetVector;",
+      "uniform float alpha;",
+      "varying vec4 vColor;",
+      "void main(void) {",
+        "vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);",
+        "v -= offsetVector.xyx;",
+        "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
+        "vColor = aColor  * alpha;",
+      "}"
+    ];
+	
+}
+
+PIXI.PrimitiveShader.prototype.init = function()
+{
+	var program = PIXI.compileProgram(this.vertexSrc, this.fragmentSrc);
+	
+	var gl = PIXI.gl;
+	
+  gl.useProgram(program);
+	
+	// get and store the uniforms for the shader
+	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
+	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+  
+  // get and store the attributes
+  this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+	this.colorAttribute = gl.getAttribLocation(program, "aColor");
+	
+  this.translationMatrix = gl.getUniformLocation(program, "translationMatrix");
+  this.alpha = gl.getUniformLocation(program, "alpha");
+
+	this.program = program;
+}
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -4526,7 +4436,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 		PIXI.WebGLGraphics.updateGraphics(graphics);
 	}
 	
-	
 	PIXI.activatePrimitiveShader();
 	
 	// This  could be speeded up fo sure!
@@ -4536,29 +4445,26 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	
 	// set the matrix transform for the 
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
- 	
- 	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
- 	
-	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
-	
-	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
+ 	gl.uniformMatrix3fv(PIXI.primitiveShader.translationMatrix, false, m);
+ 	
+	gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
+	gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
+	
+	gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	
-	// WHY DOES THIS LINE NEED TO BE THERE???
-	//gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-	// its not even used.. but need to be set or it breaks?
-	// only on pc though..
-	
-	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
-	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+	gl.vertexAttribPointer(PIXI.primitiveShader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+	gl.vertexAttribPointer(PIXI.primitiveShader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
 	
+
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
 	PIXI.deactivatePrimitiveShader();
+	
 	
 	// return to default shader...
 //	PIXI.activateShader(PIXI.defaultShader);
@@ -4766,6 +4672,14 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	var points = graphicsData.points;
 	if(points.length == 0)return;
 	
+	// if the line width is an odd number add 0.5 to align to a whole pixel
+	if(graphicsData.lineWidth%2)
+	{
+		for (var i = 0; i < points.length; i++) {
+			points[i] += 0.5;
+		};
+	}
+
 	// get first and last point.. figure out the middle!
 	var firstPoint = new PIXI.Point( points[0], points[1] );
 	var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
@@ -4867,16 +4781,27 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	    c2 = (-perp2x + p3x) * (-perp2y + p2y) - (-perp2x + p2x) * (-perp2y + p3y);
 	 
 	    denom = a1*b2 - a2*b1;
-	    
-	    if (denom == 0) {
-	    	denom+=1;
-	    }
+
+	   if(Math.abs(denom) < 0.1 )
+		{
+		
+			denom+=10.1;
+			verts.push(p2x - perpx , p2y - perpy,
+				r, g, b, alpha);
+	
+			verts.push(p2x + perpx , p2y + perpy,
+				r, g, b, alpha);
+			
+			continue;
+		}
 	    
 	    px = (b1*c2 - b2*c1)/denom;
 	    py = (a2*c1 - a1*c2)/denom;
 		
+			
 		pdist = (px -p2x) * (px -p2x) + (py -p2y) + (py -p2y);
 		
+
 		if(pdist > 140 * 140)
 		{
 			perp3x = perpx - perp2x;
@@ -4901,6 +4826,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 		}
 		else
 		{
+
 			verts.push(px , py);
 			verts.push(r, g, b, alpha);
 			
@@ -5070,14 +4996,18 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 		}
 	}
 
-    PIXI.initDefaultShader();
-    PIXI.initPrimitiveShader();
-    PIXI.initDefaultStripShader();
+    PIXI.initDefaultShaders();
+ 
 
 	
-//    PIXI.activateDefaultShader();
+
+   // PIXI.activateDefaultShader();
 
     var gl = this.gl;
+    
+    gl.useProgram(PIXI.defaultShader.program);
+
+
     PIXI.WebGLRenderer.gl = gl;
 
     this.batch = new PIXI.WebGLBatch(gl);
@@ -5088,11 +5018,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     gl.colorMask(true, true, true, this.transparent); 
 
     PIXI.projection = new PIXI.Point(400, 300);
+    PIXI.offset = new PIXI.Point(0, 0);
+
+    // TODO remove thease globals..
 
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-	PIXI.pushShader(PIXI.defaultShader);
+	//PIXI.pushShader(PIXI.defaultShader);
 
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
     
@@ -5171,15 +5104,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		this.__stage = stage;
 		renderGroup.setRenderable(stage);
 	}
-	
-	// TODO not needed now... 
-	// update children if need be
-	// best to remove first!
-	/*for (var i=0; i < stage.__childrenRemoved.length; i++)
-	{
-		var group = stage.__childrenRemoved[i].__renderGroup
-		if(group)group.removeDisplayObject(stage.__childrenRemoved[i]);
-	}*/
 
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
@@ -5205,7 +5129,11 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// HACK TO TEST
 	
-	//renderGroup.backgroundColor = stage.backgroundColorSplit;
+	renderGroup.backgroundColor = stage.backgroundColorSplit;
+	
+	PIXI.projection.x =  this.width/2;
+	PIXI.projection.y =  -this.height/2;
+	
 	renderGroup.render(PIXI.projection);
 	
 	// interaction
@@ -5337,7 +5265,10 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	//var projectionMatrix = this.projectionMatrix;
 
 	PIXI.projection.x =  this.width/2;
-	PIXI.projection.y =  this.height/2;
+	PIXI.projection.y =  -this.height/2;
+	
+	//PIXI.size.x =  this.width/2;
+	//PIXI.size.y =  -this.height/2;
 
 //	projectionMatrix[0] = 2/this.width;
 //	projectionMatrix[5] = -2/this.height;
@@ -5933,7 +5864,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	
 	//TODO optimize this!
 
-	var shaderProgram = PIXI.currentShader;
+	var shaderProgram = PIXI.defaultShader;
 	
 	//gl.useProgram(shaderProgram);
 
@@ -5941,7 +5872,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	gl.bindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);
 	// ok..
 	gl.bufferSubData(GL_ARRAY_BUFFER, 0, this.verticies)
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, GL_FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.aVertexPosition, 2, GL_FLOAT, false, 0, 0);
 	
 	// update the uvs
    	gl.bindBuffer(GL_ARRAY_BUFFER, this.uvBuffer);
@@ -5952,7 +5883,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
     	gl.bufferSubData(GL_ARRAY_BUFFER,  0, this.uvs);
     }
     
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, GL_FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.aTextureCoord, 2, GL_FLOAT, false, 0, 0);
 	
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture._glTexture);
@@ -6002,6 +5933,8 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.backgroundColor;
 	this.batchs = [];
 	this.toRemove = [];
+	
+	this.filterManager = new PIXI.WebGLFilterManager();
 }
 
 // constructor
@@ -6035,17 +5968,20 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
  * @method render
  * @param projection {Object}
  */
-PIXI.WebGLRenderGroup.prototype.render = function(projection)
+PIXI.WebGLRenderGroup.prototype.render = function(projection, buffer)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+	gl.uniform2f(PIXI.defaultShader.projectionVector, projection.x, projection.y);
+
+	this.filterManager.begin(projection, buffer);
+
 	
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	// will render all the elements in the group
 	var renderable;
+
 	for (var i=0; i < this.batchs.length; i++) 
 	{
 		renderable = this.batchs[i];
@@ -6055,25 +5991,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 			continue;
 		}
 		
-		// non sprite batch..
-		var worldVisible = renderable.vcount === PIXI.visibleCount;
-
-		if(renderable instanceof PIXI.TilingSprite)
-		{
-			if(worldVisible)this.renderTilingSprite(renderable, projection);
-		}
-		else if(renderable instanceof PIXI.Strip)
-		{
-			if(worldVisible)this.renderStrip(renderable, projection);
-		}
-		else if(renderable instanceof PIXI.Graphics)
-		{
-			if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.FilterBlock)
-		{
-			this.handleFilterBlock(renderable, projection);
-		}
+		// render special
+		this.renderSpecial(renderable, projection);
 	}
 	
 }
@@ -6086,13 +6005,15 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
  * @param projection {Object}
  * @private
  */
-PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection)
+PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection, buffer)
 {
 	PIXI.WebGLRenderer.updateTextures();
-	
 	var gl = this.gl;
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
-	
+
+	gl.uniform2f(PIXI.defaultShader.projectionVector, projection.x, projection.y);
+
+	this.filterManager.begin(projection, buffer);
+
 	// to do!
 	// render part of the scene...
 	
@@ -6111,11 +6032,13 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var nextRenderable = displayObject.first;
 	while(nextRenderable._iNext)
 	{
-		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+		nextRenderable = nextRenderable._iNext;
 	}
 	var startBatch = nextRenderable.batch;
+	//console.log(nextRenderable);
 	
+	//console.log(renderable)
 	if(nextRenderable instanceof PIXI.Sprite)
 	{
 		startBatch = nextRenderable.batch;
@@ -6145,13 +6068,11 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	}
 	
 	// Get the LAST renderable object
-	var lastRenderable = displayObject;
-	var endBatch;
-	var lastItem = displayObject;
-	while(lastItem.children.length > 0)
+	var lastRenderable = displayObject.last;
+	while(lastRenderable._iPrev)
 	{
-		lastItem = lastItem.children[lastItem.children.length-1];
-		if(lastItem.renderable)lastRenderable = lastItem.last;
+		if(lastRenderable.renderable && lastRenderable.__renderGroup)break;
+		lastRenderable = lastRenderable._iNext;
 	}
 	
 	if(lastRenderable instanceof PIXI.Sprite)
@@ -6180,6 +6101,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		endBatch = lastRenderable;
 	}
 	
+	//console.log(endBatch);
 	// TODO - need to fold this up a bit!
 	
 	if(startBatch == endBatch)
@@ -6245,9 +6167,9 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
  */
 PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
-	var sta = PIXI.shaderStack.length;
 	
 	var worldVisible = renderable.vcount === PIXI.visibleCount
+
 
 	if(renderable instanceof PIXI.TilingSprite)
 	{
@@ -6271,56 +6193,73 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	}
 }
 
-PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(renderable, projection)
+flip = false;
+var maskStack = [];
+var maskPosition = 0;
+
+//var usedMaskStack = [];
+
+PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projection)
 {
 	/*
 	 * for now only masks are supported..
 	 */
 	var gl = PIXI.gl;
 	var KEEP = gl.KEEP;
-
-	if(renderable.open)
+	
+	if(filterBlock.open)
 	{
-		if(renderable.data instanceof Array)
+		if(filterBlock.data instanceof Array)
 		{
-			var filter = renderable.data[0];
+			this.filterManager.pushFilter(filterBlock);
+			// ok so..
 			
-			if(!filter.shader)
-			{
-				var shader = new PIXI.PixiShader();
-				
-				shader.fragmentSrc = filter.fragmentSrc;
-				shader.uniforms = filter.uniforms;
-				shader.init();
-				
-				filter.shader = shader
-			}
-			
-			PIXI.pushShader(filter.shader);
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 		}
 		else
-		{
+		{	
+			maskPosition++;
+
+			maskStack.push(filterBlock)
+	
 			gl.enable(gl.STENCIL_TEST);
-				
+			
 			gl.colorMask(false, false, false, false);
-			gl.stencilFunc(gl.ALWAYS,1,0xff);
-			gl.stencilOp(KEEP,KEEP,gl.REPLACE);
-			PIXI.WebGLGraphics.renderGraphics(renderable.data, projection);
+			
+			gl.stencilFunc(gl.ALWAYS,1,1);
+			gl.stencilOp(KEEP,KEEP,gl.INCR);
+	
+			PIXI.WebGLGraphics.renderGraphics(filterBlock.data, projection);
+			
 			gl.colorMask(true, true, true, true);
-			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+			gl.stencilFunc(gl.NOTEQUAL,0,maskStack.length);
 			gl.stencilOp(KEEP,KEEP,KEEP);
 		}
 	}
 	else
 	{
-		if(renderable.data instanceof Array)
+		if(filterBlock.data instanceof Array)
 		{
-			PIXI.popShader();
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+			this.filterManager.popFilter();
 		}
 		else
 		{
+			var maskData = maskStack.pop(filterBlock)
+
+
+			if(maskData)
+			{
+				gl.colorMask(false, false, false, false);
+			
+				gl.stencilFunc(gl.ALWAYS,1,1);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
+
+				PIXI.WebGLGraphics.renderGraphics(maskData.data, projection);
+			
+				gl.colorMask(true, true, true, true);
+				gl.stencilFunc(gl.NOTEQUAL,0,maskStack.length);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			};
+
 			gl.disable(gl.STENCIL_TEST);
 		}
 	}
@@ -6843,21 +6782,26 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.stripShaderProgram;
-	
-	
-	gl.useProgram(shaderProgram);
 
+	PIXI.activateStripShader();
+
+	var shader = PIXI.stripShader;
+
+	var program = shader.program;
+	
 	var m = PIXI.mat3.clone(strip.worldTransform);
 	
 	PIXI.mat3.transpose(m);
 	
+//	console.log(projection)
 	// set the matrix transform for the 
- 	gl.uniformMatrix3fv(shaderProgram.translationMatrix, false, m);
-	gl.uniform2f(shaderProgram.projectionVector, projection.x, projection.y);
-	gl.uniform1f(shaderProgram.alpha, strip.worldAlpha);
+ 	gl.uniformMatrix3fv(shader.translationMatrix, false, m);
+	gl.uniform2f(shader.projectionVector, projection.x, projection.y);
+	gl.uniform2f(shader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
+	
+	gl.uniform1f(shader.alpha, strip.worldAlpha);
 
-/*
+	/*
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -6868,23 +6812,22 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	}
 	*/
 	
-	
+	//console.log("!!")
 	if(!strip.dirty)
-	{
-		
+	{	
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, strip.verticies)
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
 	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 			
 	    gl.activeTexture(gl.TEXTURE0);
 	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
-	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
@@ -6894,19 +6837,19 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 		strip.dirty = false;
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
 	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
 	   	gl.bufferData(gl.ARRAY_BUFFER, strip.uvs, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 			
 	    gl.activeTexture(gl.TEXTURE0);
 	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
-		
+	//	console.log(strip.texture.baseTexture._glTexture)
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW)
-	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+	    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
@@ -6916,7 +6859,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
-  	gl.useProgram(PIXI.currentProgram);
+    PIXI.deactivateStripShader();
+  	//gl.useProgram(PIXI.currentProgram);
 }
 
 /**
@@ -6930,6 +6874,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projectionMatrix)
 {
 	var gl = this.gl;
+
+
 	var shaderProgram = PIXI.shaderProgram;
 	
 	var tilePosition = sprite.tilePosition;
@@ -6992,6 +6938,523 @@ PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
 }
 
 
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+PIXI.WebGLFilterManager = function()
+{
+	this.filterStack = [];
+	this.texturePool = [];
+	
+	this.offsetX = 0;
+	this.offsetY = 0;
+	
+	this.initShaderBuffers();
+}
+
+// API
+
+PIXI.WebGLFilterManager.prototype.begin = function(projection, buffer)
+{
+	this.width = projection.x * 2;
+	this.height = -projection.y * 2;
+	this.buffer = buffer;
+}
+
+PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
+{
+	var gl = PIXI.gl;
+
+	// filter program
+	// OPTIMISATION - the first filter is free if its a simple color change?
+	this.filterStack.push(filterBlock);
+
+	var filter = filterBlock.filterPasses[0];
+
+	
+
+	this.offsetX += filterBlock.target.filterArea.x;
+	this.offsetY += filterBlock.target.filterArea.y;
+	
+	
+	
+	
+	
+	var texture = this.texturePool.pop();
+	if(!texture)texture = new PIXI.FilterTexture(this.width, this.height);
+	
+	gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
+	
+	this.getBounds(filterBlock.target);
+		
+	// addpadding?
+	//displayObject.filterArea.x
+
+	var filterArea = filterBlock.target.filterArea;
+
+	var padidng = filter.padding;
+	filterArea.x -= padidng;
+	filterArea.y -= padidng;
+	filterArea.width += padidng * 2;
+	filterArea.height += padidng * 2;
+
+	// cap filter to screen size..
+	if(filterArea.x < 0)filterArea.x = 0;	
+	if(filterArea.width > this.width)filterArea.width = this.width;
+	if(filterArea.y < 0)filterArea.y = 0;	
+	if(filterArea.height > this.height)filterArea.height = this.height;
+
+
+	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
+   
+  // console.log(filterArea)
+	// set view port
+	gl.viewport(0, 0, filterArea.width, filterArea.height);	
+	
+	PIXI.projection.x = filterArea.width/2;
+	PIXI.projection.y = -filterArea.height/2;
+	
+	PIXI.offset.x = -filterArea.x; 
+	PIXI.offset.y = -filterArea.y;
+
+	//console.log(PIXI.defaultShader.projectionVector)
+	// update projection
+	gl.uniform2f(PIXI.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
+	gl.uniform2f(PIXI.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
+	//PIXI.primitiveProgram
+
+	gl.colorMask(true, true, true, true); 
+	gl.clearColor(0,0,0, 0);     
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	
+	//filter.texture = texture;
+	filterBlock._glFilterTexture = texture;
+
+	//console.log("PUSH")
+}
+
+
+PIXI.WebGLFilterManager.prototype.popFilter = function()
+{
+	
+	var gl = PIXI.gl;
+	
+	var filterBlock = this.filterStack.pop();
+
+
+
+	var filterArea = filterBlock.target.filterArea;
+
+	var texture = filterBlock._glFilterTexture;
+
+	if(filterBlock.filterPasses.length > 1)
+	{
+		gl.viewport(0, 0, filterArea.width, filterArea.height);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	
+		this.vertexArray[0] = 0;
+		this.vertexArray[1] = filterArea.height;
+		
+		this.vertexArray[2] = filterArea.width;
+		this.vertexArray[3] = filterArea.height;
+		
+		this.vertexArray[4] = 0;
+		this.vertexArray[5] = 0;
+		
+		this.vertexArray[6] = filterArea.width;
+		this.vertexArray[7] = 0;
+
+
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
+
+	
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+		// nnow set the uvs..
+		this.uvArray[2] = filterArea.width/this.width;
+		this.uvArray[5] = filterArea.height/this.height;
+		this.uvArray[6] = filterArea.width/this.width;
+		this.uvArray[7] = filterArea.height/this.height;
+		
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
+
+		var inputTexture = texture;
+		var outputTexture = this.texturePool.pop();
+		if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.width, this.height);
+		
+		// need to clear this FBO as it may have some left over elements from a prvious filter.
+		gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );     
+		gl.clear(gl.COLOR_BUFFER_BIT);
+	 
+		gl.disable(gl.BLEND);
+		
+		for (var i = 0; i < filterBlock.filterPasses.length-1; i++) 
+		{
+			var filterPass = filterBlock.filterPasses[i];
+	
+			gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
+			
+			// set texture
+		    gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
+			
+			// draw texture..
+			//filterPass.applyFilterPass(filterArea.width, filterArea.height);
+			this.applyFilterPass(filterPass, filterArea, filterArea.width, filterArea.height);
+
+			// swap the textures..
+			var temp = inputTexture;
+			inputTexture = outputTexture;
+			outputTexture = temp;
+			
+		};
+
+		gl.enable(gl.BLEND);
+
+		texture = inputTexture;
+		this.texturePool.push(outputTexture);
+	}
+
+	var filter = filterBlock.filterPasses[filterBlock.filterPasses.length-1];
+	
+	this.offsetX -= filterArea.x;
+	this.offsetY -= filterArea.y;
+
+	
+	var sizeX = this.width;
+	var sizeY = this.height;
+	
+	var offsetX = 0;
+	var offsetY = 0;
+	
+	var buffer = this.buffer;
+	
+	// time to render the filters texture to the previous scene
+	if(this.filterStack.length === 0)
+	{
+		gl.colorMask(true, true, true, this.buffer); 
+	}
+	else
+	{
+		var currentFilter = this.filterStack[this.filterStack.length-1];
+		var filterArea = currentFilter.target.filterArea;
+		
+		sizeX = filterArea.width;
+		sizeY = filterArea.height;
+		
+		offsetX = filterArea.x;
+		offsetY = filterArea.y;
+		
+		buffer =  currentFilter._glFilterTexture.frameBuffer;
+	}
+	
+	
+
+	// TODO need toremove thease global elements..
+	PIXI.projection.x = sizeX/2;
+	PIXI.projection.y = -sizeY/2;
+
+	PIXI.offset.x = offsetX;
+	PIXI.offset.y = offsetY; 
+	
+
+	var filterArea =  filterBlock.target.filterArea;
+	var x = filterArea.x-offsetX;
+	var y = filterArea.y-offsetY;
+	
+	// update the buffers..	
+	// make sure to flip the y!
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	
+	this.vertexArray[0] = x;
+	this.vertexArray[1] = y + filterArea.height;
+	
+	this.vertexArray[2] = x + filterArea.width;
+	this.vertexArray[3] = y + filterArea.height;
+	
+	this.vertexArray[4] = x;
+	this.vertexArray[5] = y;
+	
+	this.vertexArray[6] = x + filterArea.width;
+	this.vertexArray[7] = y;
+
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+
+	this.uvArray[2] = filterArea.width/this.width;
+	this.uvArray[5] = filterArea.height/this.height;
+	this.uvArray[6] = filterArea.width/this.width;
+	this.uvArray[7] = filterArea.height/this.height;
+	
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
+
+	gl.viewport(0, 0, sizeX, sizeY);	
+	// bind the buffer
+	gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
+	
+	// set texture
+    gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+	
+	// apply!
+	//filter.applyFilterPass(sizeX, sizeY);
+	this.applyFilterPass(filter, filterArea, sizeX, sizeY);
+
+	// now restore the regular shader..
+    gl.useProgram(PIXI.defaultShader.program);
+	gl.uniform2f(PIXI.defaultShader.projectionVector, sizeX/2, -sizeY/2);
+	gl.uniform2f(PIXI.defaultShader.offsetVector, -offsetX, -offsetY);
+
+	// return the texture to the pool
+	this.texturePool.push(texture);
+	filterBlock._glFilterTexture = null;	
+}
+
+PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea, width, height)
+{
+	// use program
+	var gl = PIXI.gl;
+
+	if(!filter.shader)
+	{
+		var shader = new PIXI.PixiShader();
+				
+		shader.fragmentSrc = filter.fragmentSrc;
+		shader.uniforms = filter.uniforms;
+		shader.init();
+		
+		filter.shader = shader;
+	}
+
+	var shader = filter.shader;
+	
+	// set the shader
+	gl.useProgram(shader.program);
+
+	gl.uniform2f(shader.projectionVector, width/2, -height/2);
+	gl.uniform2f(shader.offsetVector, 0,0)
+
+	if(filter.uniforms.dimensions)
+	{
+		//console.log(filter.uniforms.dimensions)
+		filter.uniforms.dimensions.value[0] = this.width;//width;
+		filter.uniforms.dimensions.value[1] = this.height;//height;
+		filter.uniforms.dimensions.value[2] = this.vertexArray[0];
+		filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
+	//	console.log(this.vertexArray[5])
+	}
+
+	shader.syncUniforms();
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+   
+   	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
+	
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    
+	// draw the filter...
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+}
+
+PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
+{
+	var gl = PIXI.gl;
+	
+	// create some buffers
+	this.vertexBuffer = gl.createBuffer();	
+	this.uvBuffer = gl.createBuffer();
+	this.indexBuffer = gl.createBuffer();
+	
+	// bind and upload the vertexs..
+	// keep a refferance to the vertexFloatData..
+	this.vertexArray = new Float32Array([0.0, 0.0, 
+								         1.0, 0.0, 
+								         0.0, 1.0, 
+								         1.0, 1.0]);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	gl.bufferData(
+    gl.ARRAY_BUFFER, 
+    this.vertexArray, 
+    gl.STATIC_DRAW);
+    
+    
+    // bind and upload the uv buffer
+	this.uvArray = new Float32Array([0.0, 0.0, 
+								     1.0, 0.0, 
+								     0.0, 1.0, 
+								     1.0, 1.0]);
+								         
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+	gl.bufferData(
+    gl.ARRAY_BUFFER, 
+    this.uvArray, 
+    gl.STATIC_DRAW);
+    
+	// bind and upload the index
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+	gl.bufferData(
+    gl.ELEMENT_ARRAY_BUFFER, 
+    new Uint16Array([0, 1, 2, 1, 3, 2]), 
+    gl.STATIC_DRAW);
+}
+
+PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
+{
+	// time to get the width and height of the object!
+	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index, doTest;
+	var a, b, c, d, tx, ty, x1, x2, x3, x4, y1, y2, y3, y4;
+
+	var tempObject = displayObject.first;
+	var testObject = displayObject.last._iNext;
+	
+	var maxX = -Infinity;
+	var maxY = -Infinity;
+	
+	var minX = Infinity;
+	var minY = Infinity;
+	
+	do	
+	{
+		// TODO can be optimized! - what if there is no scale / rotation?
+		
+		if(tempObject.visible)
+		{
+			if(tempObject instanceof PIXI.Sprite)
+			{
+				width = tempObject.texture.frame.width;
+				height = tempObject.texture.frame.height;
+
+				// TODO trim??
+				aX = tempObject.anchor.x;
+				aY = tempObject.anchor.y;
+				w0 = width * (1-aX);
+				w1 = width * -aX;
+
+				h0 = height * (1-aY);
+				h1 = height * -aY;
+
+				doTest = true;
+			}
+			else if(tempObject instanceof PIXI.Graphics)
+			{
+				tempObject.updateFilterBounds();
+
+				var bounds = tempObject.bounds;
+
+				width = bounds.width;
+				height = bounds.height;
+
+				w0 = bounds.x
+				w1 = bounds.x + bounds.width;
+
+				h0 = bounds.y
+				h1 = bounds.y + bounds.height;
+
+				doTest = true;	
+			}
+		}
+		
+		if(doTest)
+		{
+			worldTransform = tempObject.worldTransform;
+
+			a = worldTransform[0];
+			b = worldTransform[3];
+			c = worldTransform[1];
+			d = worldTransform[4];
+			tx = worldTransform[2];
+			ty = worldTransform[5];
+
+			x1 = a * w1 + c * h1 + tx; 
+			y1 = d * h1 + b * w1 + ty;
+
+			x2 = a * w0 + c * h1 + tx; 
+			y2 = d * h1 + b * w0 + ty; 
+
+			x3 = a * w0 + c * h0 + tx; 
+			y3 = d * h0 + b * w0 + ty; 
+
+			x4 =  a * w1 + c * h0 + tx; 
+			y4 =  d * h0 + b * w1 + ty; 
+
+			minX = x1 < minX ? x1 : minX;
+			minX = x2 < minX ? x2 : minX;
+			minX = x3 < minX ? x3 : minX;
+			minX = x4 < minX ? x4 : minX;
+			
+			minY = y1 < minY ? y1 : minY;
+			minY = y2 < minY ? y2 : minY;
+			minY = y3 < minY ? y3 : minY;
+			minY = y4 < minY ? y4 : minY;
+			
+			maxX = x1 > maxX ? x1 : maxX;
+			maxX = x2 > maxX ? x2 : maxX;
+			maxX = x3 > maxX ? x3 : maxX;
+			maxX = x4 > maxX ? x4 : maxX;
+			
+			maxY = y1 > maxY ? y1 : maxY;
+			maxY = y2 > maxY ? y2 : maxY;
+			maxY = y3 > maxY ? y3 : maxY;
+			maxY = y4 > maxY ? y4 : maxY;
+		}
+
+		doTest = false;
+		tempObject = tempObject._iNext;
+
+	}
+	while(tempObject != testObject)
+	
+	// maximum bounds is the size of the screen..
+	//minX = minX > 0 ? minX : 0;
+	//minY = minY > 0 ? minY : 0;
+
+	displayObject.filterArea.x = minX;
+	displayObject.filterArea.y = minY;
+
+//	console.log(maxX+ " : " + minX)
+	displayObject.filterArea.width = maxX - minX;
+	displayObject.filterArea.height = maxY - minY;
+}
+
+PIXI.FilterTexture = function(width, height)
+{
+	var gl = PIXI.gl;
+	
+    // next time to create a frame buffer and texture
+	this.frameBuffer = gl.createFramebuffer();
+    this.texture = gl.createTexture();
+
+    gl.bindTexture(gl.TEXTURE_2D,  this.texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
+	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+	
+	this.resize(width, height);
+}
+
+PIXI.FilterTexture.prototype.resize = function(width, height)
+{
+	this.width = width;
+	this.height = height;
+
+	var gl = PIXI.gl;
+
+	gl.bindTexture(gl.TEXTURE_2D,  this.texture);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	
+}
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -7162,7 +7625,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(!displayObject.visible)
 		{
-			displayObject = (displayObject.last !== displayObject && displayObject.last instanceof PIXI.FilterBlock) ? displayObject.last : displayObject.last._iNext;
+			displayObject = displayObject.last._iNext;
 			continue;
 		}
 		
@@ -7560,6 +8023,8 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 	var worldAlpha = graphics.worldAlpha;
 
 	var len = graphics.graphicsData.length;
+	if(len === 0)return;
+
 	if(len > 1)
 	{
 		len = 1;
@@ -7858,6 +8323,81 @@ PIXI.Graphics.prototype.clear = function()
 	this.dirty = true;
 	this.clearDirty = true;
 	this.graphicsData = [];
+
+	this.bounds = null//new PIXI.Rectangle();
+}
+
+
+PIXI.Graphics.prototype.updateFilterBounds = function()
+{
+	if(!this.bounds)
+	{
+		var minX = Infinity;
+		var maxX = -Infinity;
+
+		var minY = Infinity;
+		var maxY = -Infinity;
+
+		var points, x, y;
+
+		for (var i = 0; i < this.graphicsData.length; i++) {
+			
+
+			var data = this.graphicsData[i];
+			var type = data.type;
+			var lineWidth = data.lineWidth;
+
+			points = data.points;
+
+			if(type === PIXI.Graphics.RECT)
+			{
+				x = points.x - lineWidth/2;
+				y = points.y - lineWidth/2;
+				var width = points.width + lineWidth;
+				var height = points.height + lineWidth;
+
+				minX = x < minX ? x : minX;
+				maxX = x + width > maxX ? x + width : maxX;
+
+				minY = y < minY ? x : minY;
+				maxY = y + height > maxY ? y + height : maxY;
+			}
+			else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
+			{
+				x = points.x;
+				y = points.y;
+				var radius = points.radius + lineWidth/2;
+				
+				minX = x - radius < minX ? x - radius : minX;
+				maxX = x + radius > maxX ? x + radius : maxX;
+
+				minY = y - radius < minY ? y - radius : minY;
+				maxY = y + radius > maxY ? y + radius : maxY;
+			}
+			else
+			{
+				// POLY
+				for (var j = 0; j < points.length; j+=2) 
+				{
+					
+					x = points[j];
+					y = points[j+1];
+
+					minX = x-lineWidth < minX ? x-lineWidth : minX;
+					maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
+
+					minY = y-lineWidth < minY ? y-lineWidth : minY;
+					maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
+				};
+			}
+
+		};
+
+		this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+
+	}
+
+//	console.log(this.bounds);
 }
 
 // SOME TYPES:
@@ -10300,12 +10840,10 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.baseTexture._glTexture, 0);
 
 	// create a projection matrix..
-	this.projection = new PIXI.Point(this.width/2 , this.height/2);
+	this.projection = new PIXI.Point(this.width/2 , -this.height/2);
 
 	// set the correct render function..
 	this.render = this.renderWebGL;
-
-	
 }
 
 
@@ -10318,7 +10856,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
 	if(PIXI.gl)
 	{
 		this.projection.x = this.width/2
-		this.projection.y = this.height/2;
+		this.projection.y = -this.height/2;
 	
 		var gl = PIXI.gl;
 		gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
@@ -10382,9 +10920,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 	displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
 	// modify to flip...
 	displayObject.worldTransform[4] = -1;
-	displayObject.worldTransform[5] = this.projection.y * 2;
+	displayObject.worldTransform[5] = this.projection.y * -2;
 
-	
 	if(position)
 	{
 		displayObject.worldTransform[2] = position.x;
@@ -10405,18 +10942,18 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 	{
 		if(displayObject == renderGroup.root)
 		{
-			renderGroup.render(this.projection);
+			renderGroup.render(this.projection, this.glFramebuffer);
 		}
 		else
 		{
-			renderGroup.renderSpecific(displayObject, this.projection);
+			renderGroup.renderSpecific(displayObject, this.projection, this.glFramebuffer);
 		}
 	}
 	else
 	{
 		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
 		this.renderGroup.setRenderable(displayObject);
-		this.renderGroup.render(this.projection);
+		this.renderGroup.render(this.projection, this.glFramebuffer);
 	}
 	
 	displayObject.worldTransform = originalWorldTransform;
@@ -11513,6 +12050,884 @@ PIXI.SpineLoader.prototype.onLoaded = function () {
 };
 
 
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * This is the base class for  creating a pixi.js filter. Currently only webGL supports filters.
+ * If you want to make a custom filter this should be your base class.
+ * @class AbstractFilter
+ * @constructor
+ * @param fragmentSrc
+ * @param unifroms  
+ */
+PIXI.AbstractFilter = function(fragmentSrc, unifroms)
+{
+	/**
+	* An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
+	* For example the blur filter has two passes blurX and blurY.
+	* @property passes
+	* @type Array an array of filter objects
+	* @private
+	*/
+	this.passes = [this];
+
+
+	this.dirty = true;
+	this.padding = 0;
+
+	/**
+	@property uniforms
+	@private
+	*/
+	this.uniforms = unifroms || {};
+	
+	this.fragmentSrc = fragmentSrc || [];
+}
+
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * 
+ * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA 
+ * color and alpha values of every pixel on your displayObject to produce a result 
+ * with a new set of RGBA color and alpha values. Its pretty powerful!
+ * @class ColorMatrixFilter
+ * @contructor
+ */
+PIXI.ColorMatrixFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		matrix: {type: 'mat4', value: [1,0,0,0,
+									   0,1,0,0,
+									   0,0,1,0,
+									   0,0,0,1]},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float invert;",
+	  "uniform mat4 matrix;",
+	  "uniform sampler2D uSampler;",
+	  "void main(void) {",
+	    "gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;",
+	    "gl_FragColor = gl_FragColor * vColor;",
+	  "}"
+	];
+	
+}
+
+PIXI.ColorMatrixFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
+
+/**
+ * Sets the matrix of the color matrix filter
+ *
+ * @property matrix
+ * @type Array and array of 26 numbers
+ * @default [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+ */
+Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
+    get: function() {
+        return this.uniforms.matrix.value;
+    },
+    set: function(value) {
+    	this.uniforms.matrix.value = value;
+    }
+});
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * This turns your displayObjects to black and white.
+ * @class GreyFilter
+ * @contructor
+ */
+PIXI.GreyFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		grey: {type: 'f', value: 1},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform sampler2D uSampler;",
+	  "uniform float grey;",
+	  "void main(void) {",
+	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
+		"gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), grey);",
+	    "gl_FragColor = gl_FragColor * vColor;",
+	  "}"
+	];
+}
+
+PIXI.GreyFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.GreyFilter.prototype.constructor = PIXI.GreyFilter;
+
+/**
+The strength of the grey. 1 will make the object black and white, 0 will make the object its normal color
+@property grey
+*/
+Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
+    get: function() {
+        return this.uniforms.grey.value;
+    },
+    set: function(value) {
+    	this.uniforms.grey.value = value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class DisplacementFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
+PIXI.DisplacementFilter = function(texture)
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	texture.baseTexture._powerOf2 = true;
+
+	// set the uniforms
+	//console.log()
+	this.uniforms = {
+		displacementMap: {type: 'sampler2D', value:texture},
+		scale:			 {type: 'f2', value:{x:30, y:30}},
+		offset:			 {type: 'f2', value:{x:0, y:0}},
+		mapDimensions:   {type: 'f2', value:{x:1, y:5112}},
+		dimensions:   {type: 'f4', value:[0,0,0,0]}
+	};
+	
+
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.uniforms.mapDimensions.value.x = texture.width;
+		this.uniforms.mapDimensions.value.y = texture.height;
+	}
+	else
+	{
+		this.boundLoadedFunction = this.onTextureLoaded.bind(this);
+
+		texture.baseTexture.on("loaded", this.boundLoadedFunction);
+	}
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform sampler2D displacementMap;",
+	  "uniform sampler2D uSampler;",
+	  "uniform vec2 scale;",
+	  "uniform vec2 offset;",
+	  "uniform vec4 dimensions;",
+	  "uniform vec2 mapDimensions;",// = vec2(256.0, 256.0);",
+	 // "const vec2 textureDimensions = vec2(750.0, 750.0);",
+	  
+	  "void main(void) {",
+	  	"vec2 mapCords = vTextureCoord.xy;",
+//	  	"mapCords -= ;",
+	 	"mapCords += (dimensions.zw + offset)/ dimensions.xy ;",
+	 	"mapCords.y *= -1.0;",
+	 	"mapCords.y += 1.0;",
+	  	"vec2 matSample = texture2D(displacementMap, mapCords).xy;",
+		"matSample -= 0.5;",	  
+	 	"matSample *= scale;",
+	 	"matSample /= mapDimensions;",
+	    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));",
+		"gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);",
+		"vec2 cord = vTextureCoord;",
+		
+		//"gl_FragColor =  texture2D(displacementMap, cord);",
+	    "gl_FragColor = gl_FragColor * vColor;",
+	    
+	  "}"
+	];
+	
+}
+
+PIXI.DisplacementFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.DisplacementFilter.prototype.constructor = PIXI.DisplacementFilter;
+
+PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
+{
+	
+	this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
+	this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
+
+	this.uniforms.displacementMap.value.baseTexture.off("loaded", this.boundLoadedFunction)
+
+}
+
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
+Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
+    get: function() {
+        return this.uniforms.displacementMap.value;
+    },
+    set: function(value) {
+    	this.uniforms.displacementMap.value = value;
+    }
+});
+
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
+Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
+    get: function() {
+        return this.uniforms.scale.value;
+    },
+    set: function(value) {
+    	this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
+Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.uniforms.offset.value = value;
+    }
+});
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
+PIXI.PixelateFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		invert: {type: 'f', value: 0},
+		dimensions: {type: 'f4', value:new Float32Array([10000, 100, 10, 10])},
+		pixelSize: {type: 'f2', value:{x:10, y:10}},
+	};
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec2 testDim;",
+	  "uniform vec4 dimensions;",
+	  "uniform vec2 pixelSize;",
+	  "uniform sampler2D uSampler;",
+	  "void main(void) {",
+	 	"vec2 coord = vTextureCoord;",
+
+	 	"vec2 size = dimensions.xy/pixelSize;",
+
+	 	"vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;",
+	    "gl_FragColor = texture2D(uSampler, color);",
+	  "}"
+	];
+	
+
+}
+
+PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
+
+/**
+ * 
+ * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * @property size
+ * @type Point
+ */
+Object.defineProperty(PIXI.PixelateFilter.prototype, 'size', {
+    get: function() {
+        return this.uniforms.pixelSize.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.pixelSize.value = value;
+    }
+});
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+PIXI.BlurXFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		blur: {type: 'f', value: 1/512},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float blur;",
+	  "uniform sampler2D uSampler;",
+	    "void main(void) {",
+	  	"vec4 sum = vec4(0.0);",
+
+	  	"sum += texture2D(uSampler, vec2(vTextureCoord.x - 4.0*blur, vTextureCoord.y)) * 0.05;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x - 3.0*blur, vTextureCoord.y)) * 0.09;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x - 2.0*blur, vTextureCoord.y)) * 0.12;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x - blur, vTextureCoord.y)) * 0.15;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y)) * 0.16;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x + blur, vTextureCoord.y)) * 0.15;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x + 2.0*blur, vTextureCoord.y)) * 0.12;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x + 3.0*blur, vTextureCoord.y)) * 0.09;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x + 4.0*blur, vTextureCoord.y)) * 0.05;",
+	 
+		"gl_FragColor = sum;",
+
+	  "}"
+	];
+}
+
+PIXI.BlurXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.BlurXFilter.prototype.constructor = PIXI.BlurXFilter;
+
+
+Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
+    get: function() {
+        return this.uniforms.blur.value / (1/7000);
+    },
+    set: function(value) {
+    
+    	this.dirty = true;
+    	this.uniforms.blur.value = (1/7000) * value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+PIXI.BlurYFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		blur: {type: 'f', value: 1/512},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float blur;",
+	  "uniform sampler2D uSampler;",
+	    "void main(void) {",
+	  	"vec4 sum = vec4(0.0);",
+
+	  	"sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - 4.0*blur)) * 0.05;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - 3.0*blur)) * 0.09;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - 2.0*blur)) * 0.12;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - blur)) * 0.15;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y)) * 0.16;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + blur)) * 0.15;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + 2.0*blur)) * 0.12;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + 3.0*blur)) * 0.09;",
+	    "sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + 4.0*blur)) * 0.05;",
+	 
+		"gl_FragColor = sum;",
+
+	  "}"
+	];
+}
+
+PIXI.BlurYFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.BlurYFilter.prototype.constructor = PIXI.BlurYFilter;
+
+Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
+    get: function() {
+        return this.uniforms.blur.value / (1/7000);
+    },
+    set: function(value) {
+    	//this.padding = value;
+    	this.uniforms.blur.value = (1/7000) * value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * The BlurFilter applies a Gaussian blur to an object. 
+ * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
+ *
+ * @class BlurFilter
+ * @contructor
+ */
+PIXI.BlurFilter = function()
+{
+    
+	this.blurXFilter = new PIXI.BlurXFilter();
+	this.blurYFilter = new PIXI.BlurYFilter();
+
+	this.passes =[this.blurXFilter, this.blurYFilter];
+	
+}
+
+/**
+ * Sets the strength of both the blurX and blurY properties simultaneously
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
+Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
+    get: function() {
+        return this.blurXFilter.blur;
+    },
+    set: function(value) {
+  		this.blurXFilter.blur = this.blurYFilter.blur = value;
+    }
+});
+
+/**
+ * Sets the strength of the blurX property simultaneously
+ *
+ * @property blurX
+ * @type Number the strength of the blurX
+ * @default 2
+ */
+Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
+    get: function() {
+        return this.blurXFilter.blur;
+    },
+    set: function(value) {
+    	this.blurXFilter.blur = value;
+    }
+});
+
+/**
+ * Sets the strength of the blurX property simultaneously
+ *
+ * @property blurY
+ * @type Number the strength of the blurY
+ * @default 2
+ */
+Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
+    get: function() {
+        return this.blurYFilter.blur;
+    },
+    set: function(value) {
+    	this.blurYFilter.blur = value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * 
+ * This inverts your displayObjects colors.
+ * @class InvertFilter
+ * @contructor
+ */
+PIXI.InvertFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		invert: {type: 'f', value: 1},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float invert;",
+	  "uniform sampler2D uSampler;",
+	  "void main(void) {",
+	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
+		"gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);",
+		//"gl_FragColor.rgb = gl_FragColor.rgb  * gl_FragColor.a;",
+	    "gl_FragColor = gl_FragColor * vColor;",
+	  "}"
+	];
+	
+}
+
+PIXI.InvertFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
+
+/**
+The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
+@property invert
+*/
+Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
+    get: function() {
+        return this.uniforms.invert.value;
+    },
+    set: function(value) {
+    	this.uniforms.invert.value = value;
+    }
+});
+/**
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * This applies a sepia effect to your displayObjects.
+ * @class SepiaFilter
+ * @contructor
+ */
+PIXI.SepiaFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		sepia: {type: 'f', value: 1},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float sepia;",
+	  "uniform sampler2D uSampler;",
+	 	   
+	  "const mat3 sepiaMatrix = mat3(0.3588, 0.7044, 0.1368, 0.2990, 0.5870, 0.1140, 0.2392, 0.4696, 0.0912);",
+	  "void main(void) {",
+	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
+		"gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);",
+	    "gl_FragColor = gl_FragColor * vColor;",
+	  "}"
+	];
+	
+}
+
+PIXI.SepiaFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.SepiaFilter.prototype.constructor = PIXI.SepiaFilter;
+
+/**
+The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color
+@property sepia
+*/
+Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
+    get: function() {
+        return this.uniforms.sepia.value;
+    },
+    set: function(value) {
+    	this.uniforms.sepia.value = value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
+PIXI.TwistFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		radius: {type: 'f', value:0.5},
+		angle: {type: 'f', value:5},
+		offset: {type: 'f2', value:{x:0.5, y:0.5}},
+	};
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec4 dimensions;",
+	  "uniform sampler2D uSampler;",
+	  
+	  "uniform float radius;",
+      "uniform float angle;",
+      "uniform vec2 offset;",
+
+	  "void main(void) {",
+	 	"vec2 coord = vTextureCoord - offset;",
+		"float distance = length(coord);",
+	 	
+	 	"if (distance < radius){",
+
+		 	"float ratio = (radius - distance) / radius;",
+		 	"float angleMod = ratio * ratio * angle;",
+		 	"float s = sin(angleMod);",
+		 	"float c = cos(angleMod);",
+		 	"coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);",
+
+	 	"}",
+
+	    "gl_FragColor = texture2D(uSampler, coord+offset);",
+	  "}"
+	];
+}
+
+PIXI.TwistFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
+
+/**
+ * 
+ * This point describes the the offset of the twist
+ * @property size
+ * @type Point
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.offset.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes size of the twist
+ * @property size
+ * @type Number
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
+    get: function() {
+        return this.uniforms.radius.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.radius.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes angle of the twist
+ * @property angle
+ * @type Number
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
+    get: function() {
+        return this.uniforms.angle.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.angle.value = value;
+    }
+});
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * This turns your displayObjects to black and white.
+ * @class GreyFilter
+ * @contructor
+ */
+PIXI.ColorStepFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		step: {type: 'f', value: 5},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform sampler2D uSampler;",
+	  "uniform float step;",
+	  "void main(void) {",
+	    "vec4 color = texture2D(uSampler, vTextureCoord);",
+	    "color = floor(color * step) / step;",
+	    "gl_FragColor = color * vColor;",
+	  "}"
+	];
+}
+
+PIXI.ColorStepFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
+
+/**
+The number of steps.
+@property step
+*/
+Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
+    get: function() {
+        return this.uniforms.step.value;
+    },
+    set: function(value) {
+    	this.uniforms.step.value = value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/fun/dotscreen.js
+ */
+
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
+PIXI.DotScreenFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		scale: {type: 'f', value:1},
+		angle: {type: 'f', value:5},
+		dimensions:   {type: 'f4', value:[0,0,0,0]}
+	};
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec4 dimensions;",
+	  "uniform sampler2D uSampler;",
+
+	    "uniform float angle;",
+	    "uniform float scale;",
+
+	    "float pattern() {",
+	    	"float s = sin(angle), c = cos(angle);",
+	    	"vec2 tex = vTextureCoord * dimensions.xy;",
+	    	"vec2 point = vec2(",
+	    		"c * tex.x - s * tex.y,",
+	    		"s * tex.x + c * tex.y",
+	    	") * scale;",
+	    	"return (sin(point.x) * sin(point.y)) * 4.0;",
+	    "}",
+
+	    "void main() {",
+            "vec4 color = texture2D(uSampler, vTextureCoord);",
+            "float average = (color.r + color.g + color.b) / 3.0;",
+            "gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);",
+        "}",
+	];
+}
+
+PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype );
+PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
+
+/**
+ * 
+ * This describes the the scale
+ * @property scale
+ * @type Number
+ */
+Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
+    get: function() {
+        return this.uniforms.scale.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes angle
+ * @property angle
+ * @type Number
+ */
+Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
+    get: function() {
+        return this.uniforms.angle.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.angle.value = value;
+    }
+});
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */

@@ -168,7 +168,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(!displayObject.visible)
 		{
-			displayObject = (displayObject.last !== displayObject && displayObject.last instanceof PIXI.FilterBlock) ? displayObject.last : displayObject.last._iNext;
+			displayObject = displayObject.last._iNext;
 			continue;
 		}
 		

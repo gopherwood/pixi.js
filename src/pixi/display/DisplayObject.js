@@ -159,11 +159,17 @@ PIXI.DisplayObject = function()
 	 * @private
 	 */
 	this.dynamic = true;
+	
+	this._width = 0;
+	this._width = 0;
 
 	// chach that puppy!
 	this._sr = 0;
 	this._cr = 1;
 
+
+	this.filterArea = new PIXI.Rectangle(0,0,1,1);
+	
 	/*
 	 * MOUSE Callbacks
 	 */
@@ -249,9 +255,10 @@ PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
     get: function() {
-        return 0;
+        return this._width;// * this.scale.x;
     },
     set: function(value) {
+		this._width = value;// / this.scale.x;
     }
 });
 
@@ -263,9 +270,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
     get: function() {
-        return  0;
+        return this._height;// * this.scale.y;
     },
     set: function(value) {
+		this._height = value;// / this.scale.y;
     }
 });
 
@@ -341,13 +349,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 });
 
 /**
- * Sets the filters for the displayObject. Currently there's a few limitations.
- * 1: At the moment only one filter can be applied at a time.. 
- * 2: They cannot be nested.
- * 3: There's no padding yet.
- * 4: this is a webGL only feature.
+ * Sets the filters for the displayObject. 
+ * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+ * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array
+ * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     get: function() {
@@ -355,11 +361,23 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     },
     set: function(value) {
     	
-        //if(value == )
         if(value)
         {
         	if(this._filters)this.removeFilter(this._filters);
-	        this.addFilter(value)
+	        this.addFilter(value);
+
+		    // now put all the passes in one place..
+	        var passes = [];
+	        for (var i = 0; i < value.length; i++) 
+	        {
+	        	var filterPasses = value[i].passes;
+	        	for (var j = 0; j < filterPasses.length; j++) 
+	        	{
+	        		passes.push(filterPasses[j]);
+	        	};
+	        };
+
+	        value.start.filterPasses = passes;
         }
         else
         {
@@ -367,6 +385,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
         }
         
         this._filters = value;
+
+       
+
+        
     }
 });
 
@@ -381,7 +403,9 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 {
 	//if(this.filter)return;
 	//this.filter = true;
+//	data[0].target = this;
 	
+
 	// insert a filter block..
 	// TODO Onject pool thease bad boys..
 	var start = new PIXI.FilterBlock();
@@ -397,6 +421,8 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 	end.first = end.last = this;
 	
 	start.open = true;
+	
+	start.target = this;
 	
 	/*
 	 * insert start

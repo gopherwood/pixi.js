@@ -73,14 +73,18 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 		}
 	}
 
-    PIXI.initDefaultShader();
-    PIXI.initPrimitiveShader();
-    PIXI.initDefaultStripShader();
+    PIXI.initDefaultShaders();
+ 
 
 	
-//    PIXI.activateDefaultShader();
+
+   // PIXI.activateDefaultShader();
 
     var gl = this.gl;
+    
+    gl.useProgram(PIXI.defaultShader.program);
+
+
     PIXI.WebGLRenderer.gl = gl;
 
     this.batch = new PIXI.WebGLBatch(gl);
@@ -91,11 +95,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     gl.colorMask(true, true, true, this.transparent); 
 
     PIXI.projection = new PIXI.Point(400, 300);
+    PIXI.offset = new PIXI.Point(0, 0);
+
+    // TODO remove thease globals..
 
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-	PIXI.pushShader(PIXI.defaultShader);
+	//PIXI.pushShader(PIXI.defaultShader);
 
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
     
@@ -174,15 +181,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		this.__stage = stage;
 		renderGroup.setRenderable(stage);
 	}
-	
-	// TODO not needed now... 
-	// update children if need be
-	// best to remove first!
-	/*for (var i=0; i < stage.__childrenRemoved.length; i++)
-	{
-		var group = stage.__childrenRemoved[i].__renderGroup
-		if(group)group.removeDisplayObject(stage.__childrenRemoved[i]);
-	}*/
 
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
@@ -208,7 +206,11 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// HACK TO TEST
 	
-	//renderGroup.backgroundColor = stage.backgroundColorSplit;
+	renderGroup.backgroundColor = stage.backgroundColorSplit;
+	
+	PIXI.projection.x =  this.width/2;
+	PIXI.projection.y =  -this.height/2;
+	
 	renderGroup.render(PIXI.projection);
 	
 	// interaction
@@ -340,7 +342,10 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	//var projectionMatrix = this.projectionMatrix;
 
 	PIXI.projection.x =  this.width/2;
-	PIXI.projection.y =  this.height/2;
+	PIXI.projection.y =  -this.height/2;
+	
+	//PIXI.size.x =  this.width/2;
+	//PIXI.size.y =  -this.height/2;
 
 //	projectionMatrix[0] = 2/this.width;
 //	projectionMatrix[5] = -2/this.height;

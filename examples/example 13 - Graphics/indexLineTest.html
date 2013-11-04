@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 13 - Graphics</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+
+	<script src="../../bin/pixi.dev.js"></script>
+
+</head>
+<body>
+	<script>
+
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+
+	stage.setInteractive(true);
+
+	// create a renderer instance
+	// the 5the parameter is the anti aliasing
+	var renderer = PIXI.autoDetectRenderer(620, 380, null, false, true);
+
+	// set the canvas width and height to fill the screen
+	//renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	var graphics = new PIXI.Graphics();
+
+	var container = new PIXI.DisplayObjectContainer();
+	var mask_me = new PIXI.DisplayObjectContainer();
+	var mask = new PIXI.Graphics();
+
+	container.addChild(mask_me);
+	container.addChild(mask);
+
+	mask_me.mask = mask;
+
+	stage.addChild(container);
+	renderer.render(stage);
+
+	mask.beginFill();
+	mask.drawRect(0, 0, 100, 100);
+	mask.endFill();
+
+	//renderer.render(stage);
+
+	requestAnimFrame(animate);
+
+	function animate() {
+
+	
+
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>

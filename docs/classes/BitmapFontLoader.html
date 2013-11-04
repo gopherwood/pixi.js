@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,11 +75,17 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -183,10 +199,11 @@
 
 
 <div class="box intro">
-    <p>The xml loader is used to load in XML bitmap font data ("xml" or "fnt")
-To generate the data you can use http://www.angelcode.com/products/bmfont/
+    <p>The xml loader is used to load in XML bitmap font data (&quot;xml&quot; or &quot;fnt&quot;)
+To generate the data you can use <a href="http://www.angelcode.com/products/bmfont/">http://www.angelcode.com/products/bmfont/</a>
 This loader will also load the image file as the data.
-When loaded this class will dispatch a "loaded" event</p>
+When loaded this class will dispatch a &quot;loaded&quot; event</p>
+
 </div>
 
 
@@ -270,6 +287,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
                     <div class="param-description">
                         <p>The url of the sprite sheet JSON file</p>
+
                     </div>
 
                     
@@ -285,6 +303,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
                     <div class="param-description">
                         <p>Whether requests should be treated as crossorigin</p>
+
                     </div>
 
                     
@@ -431,7 +450,7 @@ When loaded this class will dispatch a "loaded" event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l70"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:70</code></a>
+        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l63"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:63</code></a>
         
         </p>
 
@@ -443,6 +462,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>Loads the XML font data</p>
+
     </div>
 
     
@@ -487,7 +507,7 @@ When loaded this class will dispatch a "loaded" event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l272"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:272</code></a>
+        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l153"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:153</code></a>
         
         </p>
 
@@ -499,6 +519,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>Invoked when all files are loaded (xml/fnt and texture)</p>
+
     </div>
 
     
@@ -543,7 +564,7 @@ When loaded this class will dispatch a "loaded" event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l173"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:173</code></a>
+        <a href="../files/src_pixi_loaders_BitmapFontLoader.js.html#l82"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:82</code></a>
         
         </p>
 
@@ -555,6 +576,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>Invoked when XML file is loaded, parses the data</p>
+
     </div>
 
     
@@ -607,6 +629,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>[read-only] The base url of the bitmap font data</p>
+
     </div>
 
     
@@ -651,6 +674,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>[read-only] The texture of the bitmap font</p>
+
     </div>
 
     
@@ -695,6 +719,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>Whether the requests should be treated as cross origin</p>
+
     </div>
 
     
@@ -739,6 +764,7 @@ When loaded this class will dispatch a "loaded" event</p>
 
     <div class="description">
         <p>The url of the bitmap font data</p>
+
     </div>
 
     

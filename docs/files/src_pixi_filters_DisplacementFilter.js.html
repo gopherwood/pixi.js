@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,11 +75,17 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -159,17 +175,45 @@
  */
 
 
-
+/**
+ * 
+ * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class DisplacementFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
 PIXI.DisplacementFilter = function(texture)
 {
-	// set the uniforms
+	PIXI.AbstractFilter.call( this );
 	
+	this.passes = [this];
+	texture.baseTexture._powerOf2 = true;
+
+	// set the uniforms
+	//console.log()
 	this.uniforms = {
 		displacementMap: {type: &#x27;sampler2D&#x27;, value:texture},
 		scale:			 {type: &#x27;f2&#x27;, value:{x:30, y:30}},
-		mapDimensions:   {type: &#x27;f2&#x27;, value:{x:texture.width, y:texture.height}}
+		offset:			 {type: &#x27;f2&#x27;, value:{x:0, y:0}},
+		mapDimensions:   {type: &#x27;f2&#x27;, value:{x:1, y:5112}},
+		dimensions:   {type: &#x27;f4&#x27;, value:[0,0,0,0]}
 	};
 	
+
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.uniforms.mapDimensions.value.x = texture.width;
+		this.uniforms.mapDimensions.value.y = texture.height;
+	}
+	else
+	{
+		this.boundLoadedFunction = this.onTextureLoaded.bind(this);
+
+		texture.baseTexture.on(&quot;loaded&quot;, this.boundLoadedFunction);
+	}
+
 	this.fragmentSrc = [
 	  &quot;precision mediump float;&quot;,
 	  &quot;varying vec2 vTextureCoord;&quot;,
@@ -177,17 +221,26 @@ PIXI.DisplacementFilter = function(texture)
 	  &quot;uniform sampler2D displacementMap;&quot;,
 	  &quot;uniform sampler2D uSampler;&quot;,
 	  &quot;uniform vec2 scale;&quot;,
+	  &quot;uniform vec2 offset;&quot;,
+	  &quot;uniform vec4 dimensions;&quot;,
 	  &quot;uniform vec2 mapDimensions;&quot;,// = vec2(256.0, 256.0);&quot;,
-	  &quot;const vec2 textureDimensions = vec2(245.0, 263.0);&quot;,
+	 // &quot;const vec2 textureDimensions = vec2(750.0, 750.0);&quot;,
 	  
 	  &quot;void main(void) {&quot;,
-	  
-	  	&quot;vec2 matSample = texture2D(displacementMap, vTextureCoord * (textureDimensions/mapDimensions)).xy;&quot;,
+	  	&quot;vec2 mapCords = vTextureCoord.xy;&quot;,
+//	  	&quot;mapCords -= ;&quot;,
+	 	&quot;mapCords += (dimensions.zw + offset)/ dimensions.xy ;&quot;,
+	 	&quot;mapCords.y *= -1.0;&quot;,
+	 	&quot;mapCords.y += 1.0;&quot;,
+	  	&quot;vec2 matSample = texture2D(displacementMap, mapCords).xy;&quot;,
 		&quot;matSample -= 0.5;&quot;,	  
 	 	&quot;matSample *= scale;&quot;,
-	 	&quot;matSample /= textureDimensions;&quot;,
+	 	&quot;matSample /= mapDimensions;&quot;,
 	    &quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));&quot;,
 		&quot;gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);&quot;,
+		&quot;vec2 cord = vTextureCoord;&quot;,
+		
+		//&quot;gl_FragColor =  texture2D(displacementMap, cord);&quot;,
 	    &quot;gl_FragColor = gl_FragColor * vColor;&quot;,
 	    
 	  &quot;}&quot;
@@ -195,6 +248,25 @@ PIXI.DisplacementFilter = function(texture)
 	
 }
 
+PIXI.DisplacementFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.DisplacementFilter.prototype.constructor = PIXI.DisplacementFilter;
+
+PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
+{
+	
+	this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
+	this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
+
+	this.uniforms.displacementMap.value.baseTexture.off(&quot;loaded&quot;, this.boundLoadedFunction)
+
+}
+
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, &#x27;map&#x27;, {
     get: function() {
         return this.uniforms.displacementMap.value;
@@ -204,12 +276,33 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, &#x27;map&#x27;, {
     }
 });
 
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, &#x27;scale&#x27;, {
     get: function() {
         return this.uniforms.scale.value;
     },
     set: function(value) {
     	this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
+Object.defineProperty(PIXI.DisplacementFilter.prototype, &#x27;offset&#x27;, {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.uniforms.offset.value = value;
     }
 });
     </pre>

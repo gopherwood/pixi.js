@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
@@ -49,13 +51,19 @@
             
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
                 <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
             
@@ -67,11 +75,17 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
+                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+            
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -90,6 +104,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -178,10 +194,11 @@
 
 
 <div class="box intro">
-    <p>A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
+    <p>A Text Object will create a line(s) of text using bitmap font. To split a line you can use &quot;\n&quot;, &quot;\r&quot; or &quot;\r\n&quot;
 You can generate the fnt files using
-http://www.angelcode.com/products/bmfont/ for windows or
-http://www.bmglyph.com/ for mac.</p>
+<a href="http://www.angelcode.com/products/bmfont/">http://www.angelcode.com/products/bmfont/</a> for windows or
+<a href="http://www.bmglyph.com/">http://www.bmglyph.com/</a> for mac.</p>
+
 </div>
 
 
@@ -265,6 +282,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The copy that you would like the text to display</p>
+
                     </div>
 
                     
@@ -280,6 +298,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The style parameters</p>
+
                     </div>
 
                     
@@ -292,7 +311,8 @@ http://www.bmglyph.com/ for mac.</p>
                                 
 
                                 <div class="param-description">
-                                    <p>The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)</p>
+                                    <p>The size (optional) and bitmap font id (required) eq &quot;Arial&quot; or &quot;20px Arial&quot; (must have loaded previously)</p>
+
                                 </div>
 
                                 
@@ -306,7 +326,8 @@ http://www.bmglyph.com/ for mac.</p>
                                 
 
                                 <div class="param-description">
-                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                    <p>An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)</p>
+
                                 </div>
 
                                 
@@ -429,13 +450,6 @@ http://www.bmglyph.com/ for mac.</p>
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_removeChildren">removeChildren</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method deprecated inherited">
                                 <a href="#method_setInteractive">setInteractive</a>
 
@@ -501,7 +515,7 @@ http://www.bmglyph.com/ for mac.</p>
                                 
                             </li>
                         
-                            <li class="index-item method private inherited">
+                            <li class="index-item method private">
                                 <a href="#method_updateTransform">updateTransform</a>
 
                                 
@@ -730,6 +744,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>Adds a child to the container.</p>
+
     </div>
 
     
@@ -748,6 +763,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The DisplayObject to add to the container</p>
+
                     </div>
 
                     
@@ -820,6 +836,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown</p>
+
     </div>
 
     
@@ -838,6 +855,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The child to add</p>
+
                     </div>
 
                     
@@ -853,6 +871,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The index to place the child in</p>
+
                     </div>
 
                     
@@ -907,7 +926,7 @@ http://www.bmglyph.com/ for mac.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l171"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:171</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l174"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:174</code></a>
         
         </p>
 
@@ -919,6 +938,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>A callback that is used when the users clicks on the displayObject with their mouse</p>
+
     </div>
 
     
@@ -1057,6 +1077,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>Returns the Child at the specified index</p>
+
     </div>
 
     
@@ -1075,6 +1096,7 @@ http://www.bmglyph.com/ for mac.</p>
 
                     <div class="param-description">
                         <p>The index to get the child from</p>
+
                     </div>
 
                     
@@ -1129,7 +1151,7 @@ http://www.bmglyph.com/ for mac.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l177"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:177</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l180"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:180</code></a>
         
         </p>
 
@@ -1141,6 +1163,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>A callback that is used when the user clicks the mouse down over the sprite</p>
+
     </div>
 
     
@@ -1213,7 +1236,7 @@ http://www.bmglyph.com/ for mac.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l203"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:203</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l206"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:206</code></a>
         
         </p>
 
@@ -1225,6 +1248,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>A callback that is used when the users mouse leaves the displayObject</p>
+
     </div>
 
     
@@ -1297,7 +1321,7 @@ http://www.bmglyph.com/ for mac.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l197"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:197</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l200"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:200</code></a>
         
         </p>
 
@@ -1309,6 +1333,7 @@ http://www.bmglyph.com/ for mac.</p>
 
     <div class="description">
         <p>A callback that is used when the users mouse rolls over the displayObject</p>
+
     </div>
 
     
@@ -1381,7 +1406,7 @@ http://www.bmglyph.com/ for mac.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l183"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:183</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l186"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:186</code></a>
         
         </p>
 
@@ -1394,6 +1419,7 @@ http://www.bmglyph.com/ for mac.</p>
     <div class="description">
         <p>A callback that is used when the user releases the mouse that was over the displayObject
 for this callback to be fired the mouse must have been pressed down over the displayObject</p>
+
     </div>
 
     
@@ -1466,7 +1492,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l190"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:190</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l193"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:193</code></a>
         
         </p>
 
@@ -1479,6 +1505,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
     <div class="description">
         <p>A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
 for this callback to be fired, The touch must have started over the displayObject</p>
+
     </div>
 
     
@@ -1563,6 +1590,7 @@ for this callback to be fired, The touch must have started over the displayObjec
 
     <div class="description">
         <p>Removes a child from the container.</p>
+
     </div>
 
     
@@ -1581,90 +1609,7 @@ for this callback to be fired, The touch must have started over the displayObjec
 
                     <div class="param-description">
                         <p>The DisplayObject to remove</p>
-                    </div>
 
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_removeChildren" class="method item inherited">
-    <h3 class="name"><code>removeChildren</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>leave=0</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/DisplayObjectContainer.html#method_removeChildren">DisplayObjectContainer</a>:
-            
-        
-        
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l340"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:340</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Removes all children from front to back.</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">leave=0</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The number of children at the back to leave. Default is 0.</p>
                     </div>
 
                     
@@ -1721,7 +1666,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l244"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:244</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l247"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:247</code></a>
         
         </p>
 
@@ -1736,6 +1681,7 @@ for this callback to be fired, The touch must have started over the displayObjec
     <div class="description">
         <p>[Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
 Instead of using this function you can now simply set the interactive property to true or false</p>
+
     </div>
 
     
@@ -1823,6 +1769,7 @@ Instead of using this function you can now simply set the interactive property t
 
     <div class="description">
         <p>Set the style of the text</p>
+
     </div>
 
     
@@ -1841,6 +1788,7 @@ Instead of using this function you can now simply set the interactive property t
 
                     <div class="param-description">
                         <p>The style parameters</p>
+
                     </div>
 
                     
@@ -1853,7 +1801,8 @@ Instead of using this function you can now simply set the interactive property t
                                 
 
                                 <div class="param-description">
-                                    <p>The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)</p>
+                                    <p>The size (optional) and bitmap font id (required) eq &quot;Arial&quot; or &quot;20px Arial&quot; (must have loaded previously)</p>
+
                                 </div>
 
                                 
@@ -1867,7 +1816,8 @@ Instead of using this function you can now simply set the interactive property t
                                 
 
                                 <div class="param-description">
-                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                    <p>An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)</p>
+
                                 </div>
 
                                 
@@ -1941,6 +1891,7 @@ Instead of using this function you can now simply set the interactive property t
 
     <div class="description">
         <p>Set the copy for the text object</p>
+
     </div>
 
     
@@ -1959,6 +1910,7 @@ Instead of using this function you can now simply set the interactive property t
 
                     <div class="param-description">
                         <p>The copy that you would like the text to display</p>
+
                     </div>
 
                     
@@ -2033,6 +1985,7 @@ Instead of using this function you can now simply set the interactive property t
 
     <div class="description">
         <p>[NYI] Swaps the depth of 2 displayObjects</p>
+
     </div>
 
     
@@ -2120,7 +2073,7 @@ Instead of using this function you can now simply set the interactive property t
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l214"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:214</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l217"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:217</code></a>
         
         </p>
 
@@ -2133,6 +2086,7 @@ Instead of using this function you can now simply set the interactive property t
     <div class="description">
         <p>A callback that is used when the users taps on the sprite with their finger
 basically a touch version of click</p>
+
     </div>
 
     
@@ -2205,7 +2159,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l227"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:227</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l230"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:230</code></a>
         
         </p>
 
@@ -2217,6 +2171,7 @@ basically a touch version of click</p>
 
     <div class="description">
         <p>A callback that is used when the user releases a touch over the displayObject</p>
+
     </div>
 
     
@@ -2289,7 +2244,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l233"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:233</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l236"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:236</code></a>
         
         </p>
 
@@ -2302,6 +2257,7 @@ basically a touch version of click</p>
     <div class="description">
         <p>A callback that is used when the user releases the touch that was over the displayObject
 for this callback to be fired, The touch must have started over the sprite</p>
+
     </div>
 
     
@@ -2374,7 +2330,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l221"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:221</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l224"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:224</code></a>
         
         </p>
 
@@ -2385,7 +2341,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>A callback that is used when the user touch's over the displayObject</p>
+        <p>A callback that is used when the user touch&#39;s over the displayObject</p>
+
     </div>
 
     
@@ -2419,20 +2376,17 @@ for this callback to be fired, The touch must have started over the sprite</p>
 </div>
 
                 
-                    <div id="method_updateText" class="method item private">
-    <h3 class="name"><code>updateText</code></h3>
+            </div>
+        
 
-    
-        <span class="paren">()</span>
-    
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
+                
+                    <div id="property_alpha" class="property item inherited">
+    <h3 class="name"><code>alpha</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -2445,18 +2399,14 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_alpha">DisplayObject</a>:
             
         
         
-        <a href="../files/src_pixi_text_BitmapText.js.html#l67"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:67</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l47"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:47</code></a>
         
         </p>
-
 
         
 
@@ -2465,6 +2415,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>Renders text</p>
+
     </div>
 
     
@@ -2500,16 +2451,16 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="meta">
         
-            <p>Inherited from
-            <a href="../classes/DisplayObjectContainer.html#method_updateTransform">
-                DisplayObjectContainer
-            </a>
             
-            but overwritten in
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_text_BitmapText.js.html#l161"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:161</code></a>
+        <a href="../files/src_pixi_text_BitmapText.js.html#l142"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:142</code></a>
         
         </p>
 
@@ -2520,7 +2471,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>Updates the transform of this object</p>
+        <p>Updates the transfor of this object</p>
+
     </div>
 
     
@@ -2572,6 +2524,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>[read-only] Whether or not the object is interactive, do not toggle directly! use the <code>interactive</code> property</p>
+
     </div>
 
     
@@ -2613,6 +2566,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>The opacity of the object.</p>
+
     </div>
 
     
@@ -2654,6 +2608,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>This is used to indicate if the displayObject should display a mouse hand cursor on rollover</p>
+
     </div>
 
     
@@ -2695,6 +2650,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>[read-only] The of children of this container.</p>
+
     </div>
 
     
@@ -2738,6 +2694,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>[NYI] Unkown</p>
+
     </div>
 
     
@@ -2781,6 +2738,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>[NYI] Holds whether or not this object is dynamic, for rendering optimization</p>
+
     </div>
 
     
@@ -2793,7 +2751,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                 
                     <div id="property_filters" class="property item inherited">
     <h3 class="name"><code>filters</code></h3>
-    <span class="type">Array</span>
+    <span class="type">Array An array of filters</span>
 
     
 
@@ -2811,7 +2769,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l315"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:315</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l318"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:318</code></a>
         
         </p>
 
@@ -2821,11 +2779,10 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>Sets the filters for the displayObject. Currently there's a few limitations.
-1: At the moment only one filter can be applied at a time.. 
-2: They cannot be nested.
-3: There's no padding yet.
-4: this is a webGL only feature.</p>
+        <p>Sets the filters for the displayObject. 
+* IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+To remove filters simply set this property to &#39;null&#39;</p>
+
     </div>
 
     
@@ -2868,6 +2825,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="description">
         <p>This is the defined area that will pick up mouse / touch events. It is null by default.
 Setting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)</p>
+
     </div>
 
     
@@ -2898,7 +2856,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l257"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:257</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l260"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:260</code></a>
         
         </p>
 
@@ -2909,6 +2867,53 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 
     <div class="description">
         <p>Indicates if the sprite will have touch and mouse interactivity. It is false by default</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> false</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_localTransform" class="property item private inherited">
+    <h3 class="name"><code>localTransform</code></h3>
+    <span class="type">Mat3</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_localTransform">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l135"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:135</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] Current transform of the object locally</p>
+
     </div>
 
     
@@ -2984,7 +2989,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l277"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:277</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l280"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:280</code></a>
         
         </p>
 
@@ -2997,6 +3002,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
         <p>Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
 In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
 To remove a mask, set this property to null.</p>
+
     </div>
 
     
@@ -3038,6 +3044,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] The display object container that contains this display object.</p>
+
     </div>
 
     
@@ -3079,6 +3086,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>The pivot point of the displayObject that it rotates around</p>
+
     </div>
 
     
@@ -3120,6 +3128,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>The coordinate of the object relative to the local coordinates of the parent.</p>
+
     </div>
 
     
@@ -3161,6 +3170,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>Can this object be rendered</p>
+
     </div>
 
     
@@ -3171,9 +3181,9 @@ To remove a mask, set this property to null.</p>
 </div>
 
                 
-                    <div id="property_rotation" class="property item inherited">
-    <h3 class="name"><code>rotation</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_renderable" class="property item inherited">
+    <h3 class="name"><code>renderable</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -3187,11 +3197,11 @@ To remove a mask, set this property to null.</p>
         
             
                 <p>Inherited from
-                <a href="../classes/DisplayObject.html#property_rotation">DisplayObject</a>:
+                <a href="../classes/DisplayObject.html#property_renderable">DisplayObject</a>:
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l39"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:39</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l80"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:80</code></a>
         
         </p>
 
@@ -3202,6 +3212,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>The rotation of the object in radians.</p>
+
     </div>
 
     
@@ -3243,6 +3254,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>The scale factor of the object.</p>
+
     </div>
 
     
@@ -3284,6 +3296,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.</p>
+
     </div>
 
     
@@ -3325,6 +3338,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>The visibility of the object.</p>
+
     </div>
 
     
@@ -3366,6 +3380,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] The multiplied alpha of the displayobject</p>
+
     </div>
 
     
@@ -3409,6 +3424,7 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] Current transform of the object based on world (parent) factors</p>
+
     </div>
 
     
