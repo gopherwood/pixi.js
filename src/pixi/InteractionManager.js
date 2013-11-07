@@ -203,12 +203,14 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		// frequency of 30fps??
 		var now = Date.now();
 		var diff = now - this.last;
-		diff = (diff * 30) / 1000;
+		diff = diff * 0.030;// * 30 / 1000
 		if(diff < 1)return;
 		this.last = now;
 		//
 	}
 	
+	var items = this.interactiveItems;
+	var length = items.length;
 	// ok.. so mouse events??
 	// yes for now :)
 	// OPTIMSE - how often to check??
@@ -216,31 +218,27 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	{
 		this.dirty = false;
 		
-		var len = this.interactiveItems.length;
-		
-		for (var i=0; i < len; i++) {
-		  this.interactiveItems[i].interactiveChildren = false;
+		for (var i=0; i < length; i++) {
+		  items[i].interactiveChildren = false;
 		}
 		
-		this.interactiveItems = [];
+		items.length = 0;
 		
 		if(this.stage.interactive)
 		{
-			this.interactiveItems.push(this.stage);
+			items.push(this.stage);
 			// go through and collect all the objects that are interactive..
 			this.collectInteractiveSprite(this.stage, this.stage);
 		}
+		length = items.length;//update, since this changed
 	}
 	
 	// loop through interactive objects!
-	var length = this.interactiveItems.length;
-	
-	this.interactionDOMElement.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "default";//reset cursor
 				
 	for (var i = 0; i < length; i++)
 	{
-		var item = this.interactiveItems[i];
-		
+		var item = items[i];
 		
 		//if(!item.visible)continue;
 		
