@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-11-07
+ * Compiled: 2013-11-11
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -948,7 +948,7 @@ PIXI.DisplayObject = function()
 	this.dynamic = true;
 	
 	this._width = 0;
-	this._width = 0;
+	this._height = 0;
 
 	// chach that puppy!
 	this._sr = 0;

@@ -161,7 +161,7 @@ PIXI.DisplayObject = function()
 	this.dynamic = true;
 	
 	this._width = 0;
-	this._width = 0;
+	this._height = 0;
 
 	// chach that puppy!
 	this._sr = 0;
