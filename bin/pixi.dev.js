@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-11-11
+ * Compiled: 2013-11-15
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2179,6 +2179,7 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 	this._elapsedTime = frameNumber / this._animFrameRate;
 	this.currentFrame = frameNumber;
 	this.playing = true;
+	this.setTexture(this.textures[this.currentFrame]);
 }
 
 /**
@@ -2217,7 +2218,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
 		//sanity check
 		if(this.currentFrame >= this.textures.length)
 			this.currentFrame = this.textures.length - 1;
-		this.setTexture(this.textures[this.currentFrame]);	
+		this.setTexture(this.textures[this.currentFrame]);
 		if(complete && this.onComplete)
 		{
 			this.onComplete();
