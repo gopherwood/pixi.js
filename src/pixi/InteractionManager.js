@@ -35,14 +35,6 @@ PIXI.InteractionManager = function(stage)
 	 * @type Object
 	 */
 	this.touchs = {};
-
-	this.onMouseMove = this.onMouseMove.bind(this);
-	this.onMouseDown = this.onMouseDown.bind(this);
-	this.onMouseUp = this.onMouseUp.bind(this);
-	this.onMouseOut = this.onMouseOut.bind(this);
-	this.onTouchStart = this.onTouchStart.bind(this);
-	this.onTouchMove = this.onTouchMove.bind(this);
-	this.onTouchEnd = this.onTouchEnd.bind(this);
 	
 	// helpers
 	this.tempPoint = new PIXI.Point();
@@ -60,12 +52,22 @@ PIXI.InteractionManager = function(stage)
 	this.onMouseMove = this.onMouseMove.bind( this );
 	this.onMouseDown = this.onMouseDown.bind(this);
 	this.onMouseOut = this.onMouseOut.bind(this);
+	this.onMouseOver = this.onMouseOver.bind(this);
 	this.onMouseUp = this.onMouseUp.bind(this);
 
 	this.onTouchStart = this.onTouchStart.bind(this);
 	this.onTouchEnd = this.onTouchEnd.bind(this);
 	this.onTouchMove = this.onTouchMove.bind(this);
 	
+	/** The cursor to use for the default cursor. This can be a function (called on changes) or a String CSS value. */
+	this.defaultCursor = "default";
+	/** The cursor to use for the pointer cursor. This can be a function (called on changes) or a String CSS value. */
+	this.pointerCursor = "pointer";
+	/** The current mode of the cursor (always 'default' or 'pointer') */
+	this.currentCursor = "default";
+	
+	this.stageIn = null;
+	this.stageOut = null;
 	
 	this.last = 0;
 }
@@ -180,6 +182,7 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 	domElement.addEventListener('mousemove',  this.onMouseMove, true);
 	domElement.addEventListener('mousedown',  this.onMouseDown, true);
  	domElement.addEventListener('mouseout',   this.onMouseOut, true);
+ 	domElement.addEventListener('mouseover',   this.onMouseOver, true);
 
  	// aint no multi touch just yet!
 	domElement.addEventListener('touchstart', this.onTouchStart, true);
@@ -234,7 +237,7 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	}
 	
 	// loop through interactive objects!
-	this.interactionDOMElement.style.cursor = "default";//reset cursor
+	var mode = "default";
 				
 	for (var i = 0; i < length; i++)
 	{
@@ -255,7 +258,7 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode) this.interactionDOMElement.style.cursor = "pointer";	
+				if(item.buttonMode) mode = "pointer";
 				
 				if(!item.__isOver)
 				{
@@ -276,6 +279,21 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		}
 		
 		// --->
+	}
+	//update cursor status
+	this.updateCursor(mode);
+}
+
+PIXI.InteractionManager.prototype.updateCursor = function(mode)
+{
+	if(mode != this.currentCursor)
+	{
+		this.currentCursor = mode;
+		var cursor = mode == "pointer" ? this.pointerCursor : this.defaultCursor;
+		if(typeof cursor == "function")
+			cursor();
+		else
+			this.interactionDOMElement.style.cursor = cursor;
 	}
 }
 
@@ -361,7 +379,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
 	var length = this.interactiveItems.length;
 	
-	this.interactionDOMElement.style.cursor = "default";	
+	this.updateCursor("default");
 				
 	for (var i = 0; i < length; i++)
 	{
@@ -374,6 +392,15 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 			item.__isOver = false;	
 		}
 	}
+	
+	if(this.stageOut)
+		this.stageOut();
+}
+
+PIXI.InteractionManager.prototype.onMouseOver = function(event)
+{
+	if(this.stageIn)
+		this.stageIn();
 }
 
 /**
