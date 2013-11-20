@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-11-18
+ * Compiled: 2013-11-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2856,19 +2856,19 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 	//remove previouse listeners
 	if( this.interactionDOMElement !== null ) 
 	{
-		this.interactionDOMElement.style['-ms-content-zooming'] = '';
-    	this.interactionDOMElement.style['-ms-touch-action'] = '';
+		var oldDOM = this.interactionDOMElement;
+		oldDOM.style['-ms-content-zooming'] = '';
+    	oldDOM.style['-ms-touch-action'] = '';
 
-		this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
-		this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
-	 	this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+		oldDOM.removeEventListener('mousemove',  this.onMouseMove, true);
+		oldDOM.removeEventListener('mousedown',  this.onMouseDown, true);
+	 	oldDOM.removeEventListener('mouseout',   this.onMouseOut, true);
 
 	 	// aint no multi touch just yet!
-		this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-		this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
-		this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+		oldDOM.removeEventListener('touchstart', this.onTouchStart, true);
+		oldDOM.removeEventListener('touchend', this.onTouchEnd, true);
+		oldDOM.removeEventListener('touchmove', this.onTouchMove, true);
 	}
-
 
 	if (window.navigator.msPointerEnabled) 
 	{
@@ -2892,6 +2892,21 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 	domElement.addEventListener('touchmove', this.onTouchMove, true);
 }
 
+PIXI.InteractionManager.prototype.cleanup = function()
+{
+	if(!this.target) return;
+	var domElement = this.interactionDOMElement;
+	domElement.removeEventListener('mousemove',  this.onMouseMove, true);
+	domElement.removeEventListener('mousedown',  this.onMouseDown, true);
+	domElement.removeEventListener('mouseout',   this.onMouseOut, true);
+ 	domElement.removeEventListener('mouseover',   this.onMouseOver, true);
+	document.body.removeEventListener('mouseup',  this.onMouseUp, true);
+
+	// aint no multi touch just yet!
+	domElement.removeEventListener("touchstart", this.onTouchStart, true);
+	domElement.removeEventListener("touchend", this.onTouchEnd, true);
+	domElement.removeEventListener("touchmove", this.onTouchMove, true);
+}
 
 /**
  * updates the state of interactive objects
