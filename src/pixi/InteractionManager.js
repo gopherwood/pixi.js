@@ -510,19 +510,29 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData, vcou
 	// a sprite with no hitarea defined
 	else if(isSprite)
 	{
-		var width = item.texture.frame.width,
-			height = item.texture.frame.height,
-			x1 = -width * item.anchor.x,
+		var texture = item.texture;
+		var width = texture.frame.width,
+			height = texture.frame.height;
+			
+		var aX = item.anchor.x;
+		var aY = item.anchor.y;
+		if(texture.realSize)
+		{
+			var rs = texture.realSize;
+			aX = (rs.width * aX + rs.x) / width;
+			aY = (rs.height * aY + rs.y) / height;
+		}
+		var x1 = -width * aX,
 			y1;
 		
 		if(x > x1 && x < x1 + width)
 		{
-			y1 = -height * item.anchor.y;
+			y1 = -height * aY;
 		
 			if(y > y1 && y < y1 + height)
 			{
 				// set the target property if a hit is true!
-				interactionData.target = item
+				interactionData.target = item;
 				return true;
 			}
 		}
