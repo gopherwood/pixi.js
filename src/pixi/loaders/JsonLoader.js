@@ -204,12 +204,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 					if (rect)
 					{
 						var t = PIXI.TextureCache[filenameFromUrl(i)] = new PIXI.Texture(this.texture,
-						{
-							x: rect.x,
-							y: rect.y,
-							width: rect.w,
-							height: rect.h
-						});
+						new PIXI.Rectangle(
+							rect.x,
+							rect.y,
+							rect.w,
+							rect.h
+						));
 						if (f.trimmed)
 						{
 							t.realSize = new PIXI.Rectangle(-f.spriteSourceSize.x, -f.spriteSourceSize.y, f.sourceSize.w, f.sourceSize.h);
