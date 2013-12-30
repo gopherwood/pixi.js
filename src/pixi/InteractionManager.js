@@ -468,6 +468,8 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 			item.__isDown = false;	
 		}
 	}
+	if(this.stageUp)
+		this.stageUp(this.mouse.originalEvent);
 }
 
 /**
@@ -711,6 +713,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		this.pool.push(touchData);
 		this.touchs[touchEvent.identifier] = null;
 	}
+	if(this.stageUp)
+		this.stageUp(event);
 }
 
 /**

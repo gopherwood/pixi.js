@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-04
+ * Compiled: 2013-12-30
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3170,6 +3170,8 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 			item.__isDown = false;	
 		}
 	}
+	if(this.stageUp)
+		this.stageUp(this.mouse.originalEvent);
 }
 
 /**
@@ -3413,6 +3415,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		this.pool.push(touchData);
 		this.touchs[touchEvent.identifier] = null;
 	}
+	if(this.stageUp)
+		this.stageUp(event);
 }
 
 /**
