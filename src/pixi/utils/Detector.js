@@ -17,7 +17,7 @@
  *
  * antialias
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, preMultAlpha)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -34,7 +34,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preMultAlpha);
 	}
 
 	return	new PIXI.CanvasRenderer(width, height, view, transparent);

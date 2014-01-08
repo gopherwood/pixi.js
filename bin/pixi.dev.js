@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-30
+ * Compiled: 2014-01-08
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3894,7 +3894,7 @@ PIXI.EventTarget = function () {
  *
  * antialias
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, preMultAlpha)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -3911,7 +3911,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preMultAlpha);
 	}
 
 	return	new PIXI.CanvasRenderer(width, height, view, transparent);
@@ -5001,7 +5001,7 @@ PIXI.gl;
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, preMultAlpha)
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -5034,7 +5034,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 	var options = {
 		alpha: this.transparent,
 		antialias:!!antialias, // SPEED UP??
-		premultipliedAlpha:false,
+		premultipliedAlpha:!!preMultAlpha,
 		stencil:true
 	}
 

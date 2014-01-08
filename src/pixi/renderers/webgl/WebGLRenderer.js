@@ -23,7 +23,7 @@ PIXI.gl;
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, preMultAlpha)
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -56,7 +56,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 	var options = {
 		alpha: this.transparent,
 		antialias:!!antialias, // SPEED UP??
-		premultipliedAlpha:false,
+		premultipliedAlpha:!!preMultAlpha,
 		stencil:true
 	}
 
