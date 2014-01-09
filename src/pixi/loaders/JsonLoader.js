@@ -59,6 +59,51 @@ PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
+//Utility functions borrowed from PreloadJS
+var _parseURI = function(path) {
+	if (!path) { return null; }
+	return path.match(/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/);//a pattern for parsing file URIs
+};
+var _formatQueryString = function(data, query) {
+	if (data == null) {
+		throw new Error('You must specify data.');
+	}
+	var params = [];
+	for (var n in data) {
+		params.push(n+'='+escape(data[n]));
+	}
+	if (query) {
+		params = params.concat(query);
+	}
+	return params.join('&');
+};
+var buildPath = function(src, _basePath, data) {
+	if (_basePath != null) {
+		var match = _parseURI(src);
+		// IE 7,8 Return empty string here.
+		if (match[1] == null || match[1] == '') {
+			src = _basePath + src;
+		}
+	}
+	if (data == null) {
+		return src;
+	}
+
+	var query = [];
+	var idx = src.indexOf('?');
+
+	if (idx != -1) {
+		var q = src.slice(idx+1);
+		query = query.concat(q.split('&'));
+	}
+
+	if (idx != -1) {
+		return src.slice(0, idx) + '?' + _formatQueryString(data, query);
+	} else {
+		return src + '?' + _formatQueryString(data, query);
+	}
+};
+
 /**
  * Loads the JSON data
  *
@@ -78,7 +123,21 @@ PIXI.JsonLoader.prototype.load = function()
 	
 	// Create the request. Fall back to whatever support we have.
 	var req = null;
-	if (this.crossorigin && window.XDomainRequest) {
+	//attempt to only use cross domain requests if needed, because IE9 - code borrowed from PreloadJS
+	if(this.crossorigin)
+	{
+		var target = document.createElement("a");
+		target.href = buildPath(this.url, this.baseUrl);
+		var host = document.createElement("a");
+		host.href = location.href;
+		var crossDomain = (target.hostname != "") &&
+						 	(target.port != host.port ||
+							 target.protocol != host.protocol ||
+							 target.hostname != host.hostname);
+	}
+	else
+		var crossDomain = false;
+	if (crossDomain && window.XDomainRequest) {
 		req = new XDomainRequest(); // Note: IE9 will fail if this is not actually cross-domain.
 	} else if (window.XMLHttpRequest) { // Old IE versions use a different approach
 		req = new XMLHttpRequest();
@@ -108,7 +167,7 @@ PIXI.JsonLoader.prototype.load = function()
 	// Open the request.  Set cross-domain flags if it is supported (XHR level 1 only)
 	req.open("GET", src, true);
 
-	if (this.crossorigin && req instanceof XMLHttpRequest && xhrLevel == 1) {
+	if (crossDomain && req instanceof XMLHttpRequest && xhrLevel == 1) {
 		req.setRequestHeader("Origin", location.origin);
 	}
 
@@ -120,30 +179,29 @@ PIXI.JsonLoader.prototype.load = function()
 		this._loadTimeout = 0;
 	}
 	var scope = this;
-	this._request.onloadstart = function(){};
-	this._request.onprogress = function(){};
+	req.onloadstart = function(){};
+	req.onprogress = function(){};
 	var timeoutFunc = function(){
 		if(window.console)console.error("load of json " + src + " timeout");
 		if(++scope._loadFails <= 3)
 			scope.load();//try loading again
 	};
-	this._request.ontimeout = timeoutFunc
+	req.ontimeout = timeoutFunc;
 	// Set up a timeout if we don't have XHR2
 	if (xhrLevel == 1) {
 		this._loadTimeout = setTimeout(timeoutFunc, 8000);
 	}
-	this._request.onabort = function(){
+	req.onabort = function(){
 		if(window.console)console.log("load of json " + src + " aborted");
 		if(++scope._loadFails <= 3)
 			scope.load();
 	};
-	this._request.onerror = function(){
+	req.onerror = function(){
 		if(window.console)console.log("load of json " + src + " had an error!");
 		if(++scope._loadFails <= 3)
 			scope.load();
 	};
-	this._request.onload = this.onJSONLoaded.bind(this);
-	this._request.onreadystatechange = this.onJSONLoaded.bind(this);
+	req.onload = req.onreadystatechange = this.onJSONLoaded.bind(this);
 	
 	try
 	{
