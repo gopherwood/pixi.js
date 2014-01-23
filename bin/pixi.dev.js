@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-13
+ * Compiled: 2014-01-23
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2771,6 +2771,9 @@ PIXI.InteractionManager = function(stage)
 	this.stageIn = null;
 	this.stageOut = null;
 	
+	//assume mouse is over stage by default - should work with touches or cursors that are over the canvas element when PIXI is created
+	this.mouseInStage = true;
+	
 	this.last = 0;
 }
 
@@ -2953,6 +2956,8 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 		length = items.length;//update, since this changed
 	}
 	
+	if(!this.mouseInStage) return;
+	
 	// loop through interactive objects!
 	var mode = "default";
 				
@@ -2979,7 +2984,6 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 				
 				if(!item.__isOver)
 				{
-					
 					if(item.mouseover)item.mouseover(this.mouse);
 					item.__isOver = true;	
 				}
@@ -3097,7 +3101,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 	var length = this.interactiveItems.length;
 	
 	this.updateCursor("default");
-				
+	
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
@@ -3112,10 +3116,13 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 	
 	if(this.stageOut)
 		this.stageOut();
+	
+	this.mouseInStage = false;
 }
 
 PIXI.InteractionManager.prototype.onMouseOver = function(event)
 {
+	this.mouseInStage = true;
 	if(this.stageIn)
 		this.stageIn();
 }
