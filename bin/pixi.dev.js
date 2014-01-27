@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-23
+ * Compiled: 2014-01-27
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2771,7 +2771,7 @@ PIXI.InteractionManager = function(stage)
 	this.stageIn = null;
 	this.stageOut = null;
 	
-	//assume mouse is over stage by default - should work with touches or cursors that are over the canvas element when PIXI is created
+	//assume mouse is over stage by default - should work with touches
 	this.mouseInStage = true;
 	
 	this.last = 0;
@@ -11058,6 +11058,50 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
   //  PIXI.texturesToUpdate.push(this.baseTexture);
 }
 
+//Utility functions borrowed from PreloadJS
+var _parseURI = function(path) {
+	if (!path) { return null; }
+	return path.match(/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/);//a pattern for parsing file URIs
+};
+var _formatQueryString = function(data, query) {
+	if (data == null) {
+		throw new Error('You must specify data.');
+	}
+	var params = [];
+	for (var n in data) {
+		params.push(n+'='+escape(data[n]));
+	}
+	if (query) {
+		params = params.concat(query);
+	}
+	return params.join('&');
+};
+var buildPath = function(src, _basePath, data) {
+	if (_basePath != null) {
+		var match = _parseURI(src);
+		// IE 7,8 Return empty string here.
+		if (match[1] == null || match[1] == '') {
+			src = _basePath + src;
+		}
+	}
+	if (data == null) {
+		return src;
+	}
+
+	var query = [];
+	var idx = src.indexOf('?');
+
+	if (idx != -1) {
+		var q = src.slice(idx+1);
+		query = query.concat(q.split('&'));
+	}
+
+	if (idx != -1) {
+		return src.slice(0, idx) + '?' + _formatQueryString(data, query);
+	} else {
+		return src + '?' + _formatQueryString(data, query);
+	}
+};
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -11078,7 +11122,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
  *      data formats include "xml" and "fnt".
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
+PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, basePath)
 {
 	PIXI.EventTarget.call(this);
 
@@ -11098,7 +11142,9 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
      */
 	this.crossorigin = crossorigin;
 	
-	this.generateCanvas = generateCanvasFromTexture || false;
+	this.generateCanvas = generateCanvasFromTexture || false;//ignored by any loader that doesn't use it
+	
+	this.basePath = basePath || "";//ignored by any loader that doesn't use it
 	
 	/**
 	 * Maps file extension to loader types
@@ -11159,7 +11205,7 @@ PIXI.AssetLoader.prototype.load = function()
         if(!loaderClass)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
+        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas, this.basePath);
 
         loader.addEventListener("loaded", loadCallback.bind(this, loader));
         loader.load();
@@ -11203,7 +11249,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  * @param url {String} The url of the JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
+PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture, baseUrl) {
 	PIXI.EventTarget.call(this);
 
 	/**
@@ -11229,7 +11275,8 @@ PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 	 * @type String
 	 * @readOnly
 	 */
-	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.baseUrl = baseUrl;
+	this.textureBaseUrl = url.replace(/[^\/]*$/, "");
 
 	/**
 	 * [read-only] Whether the data has loaded yet
@@ -11240,7 +11287,7 @@ PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 	 */
 	this.loaded = false;
 	this.versioning = null;
-	if(url.indexOf("?") != -1)
+	if(url.lastIndexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
 	
 	this.generateCanvas = generateCanvasFromTexture || false;
@@ -11248,51 +11295,6 @@ PIXI.JsonLoader = function (url, crossorigin, generateCanvasFromTexture) {
 
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
-
-//Utility functions borrowed from PreloadJS
-var _parseURI = function(path) {
-	if (!path) { return null; }
-	return path.match(/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/);//a pattern for parsing file URIs
-};
-var _formatQueryString = function(data, query) {
-	if (data == null) {
-		throw new Error('You must specify data.');
-	}
-	var params = [];
-	for (var n in data) {
-		params.push(n+'='+escape(data[n]));
-	}
-	if (query) {
-		params = params.concat(query);
-	}
-	return params.join('&');
-};
-var buildPath = function(src, _basePath, data) {
-	if (_basePath != null) {
-		var match = _parseURI(src);
-		// IE 7,8 Return empty string here.
-		if (match[1] == null || match[1] == '') {
-			src = _basePath + src;
-		}
-	}
-	if (data == null) {
-		return src;
-	}
-
-	var query = [];
-	var idx = src.indexOf('?');
-
-	if (idx != -1) {
-		var q = src.slice(idx+1);
-		query = query.concat(q.split('&'));
-	}
-
-	if (idx != -1) {
-		return src.slice(0, idx) + '?' + _formatQueryString(data, query);
-	} else {
-		return src + '?' + _formatQueryString(data, query);
-	}
-};
 
 /**
  * Loads the JSON data
@@ -11433,8 +11435,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function()
 			{
 				// sprite sheet
 				var scope = this;
-				var textureUrl = this.baseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
-				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas);
+				var textureUrl = this.textureBaseUrl + this.json.meta.image + (this.versioning ? this.versioning : "");
+				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas, this.baseUrl);
 				var frameData = this.json.frames;
 			
 				this.texture = image.texture;
@@ -11687,7 +11689,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
  * @param url {String} The url of the image
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
+PIXI.ImageLoader = function(url, crossorigin, generateCanvas, baseUrl)
 {
     PIXI.EventTarget.call(this);
 
@@ -11697,7 +11699,7 @@ PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
      * @property texture
      * @type Texture
      */
-    this.texture = PIXI.Texture.fromImage(url, crossorigin, generateCanvas);
+    this.texture = PIXI.Texture.fromImage(buildPath(url, baseUrl), crossorigin, generateCanvas);
 
     /**
      * if the image is loaded with loadFramedSpriteSheet
@@ -11805,7 +11807,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.BitmapFontLoader = function(url, crossorigin)
+PIXI.BitmapFontLoader = function(url, crossorigin, generateCanvasFromTexture, baseUrl)
 {
     /*
      * i use texture packer to load the assets..
@@ -11837,7 +11839,8 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * @type String
      * @readOnly
      */
-    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.baseUrl = baseUrl;
+	this.textureBaseUrl = url.replace(/[^\/]*$/, "");
 
     /**
      * [read-only] The texture of the bitmap font
@@ -11849,7 +11852,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 	
 	this.versioning = null;
-	if(url.indexOf("?") != -1)
+	if(url.lastIndexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
 	
 	this._loadFails = 0;
@@ -11857,51 +11860,6 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 // constructor
 PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
-
-//Utility functions borrowed from PreloadJS
-var _parseURI = function(path) {
-	if (!path) { return null; }
-	return path.match(/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/);//a pattern for parsing file URIs
-};
-var _formatQueryString = function(data, query) {
-	if (data == null) {
-		throw new Error('You must specify data.');
-	}
-	var params = [];
-	for (var n in data) {
-		params.push(n+'='+escape(data[n]));
-	}
-	if (query) {
-		params = params.concat(query);
-	}
-	return params.join('&');
-};
-var buildPath = function(src, _basePath, data) {
-	if (_basePath != null) {
-		var match = _parseURI(src);
-		// IE 7,8 Return empty string here.
-		if (match[1] == null || match[1] == '') {
-			src = _basePath + src;
-		}
-	}
-	if (data == null) {
-		return src;
-	}
-
-	var query = [];
-	var idx = src.indexOf('?');
-
-	if (idx != -1) {
-		var q = src.slice(idx+1);
-		query = query.concat(q.split('&'));
-	}
-
-	if (idx != -1) {
-		return src.slice(0, idx) + '?' + _formatQueryString(data, query);
-	} else {
-		return src + '?' + _formatQueryString(data, query);
-	}
-};
 
 /**
  * Loads the XML font data
@@ -12057,8 +12015,8 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 					}
 				}
 			}
-			var textureUrl = this.baseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
-			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+			var textureUrl = this.textureBaseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
+			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas, this.baseUrl);
 			this.texture = image.texture;
 
 			var data = {};
@@ -12154,7 +12112,7 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
  * @param url {String} The url of the JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.SpineLoader = function(url, crossorigin)
+PIXI.SpineLoader = function(url, crossorigin, generateCanvas, baseUrl)
 {
 	PIXI.EventTarget.call(this);
 
@@ -12164,7 +12122,7 @@ PIXI.SpineLoader = function(url, crossorigin)
 	 * @property url
 	 * @type String
 	 */
-	this.url = url;
+	this.url = buildPath(url, baseUrl);
 
 	/**
 	 * Whether the requests should be treated as cross origin

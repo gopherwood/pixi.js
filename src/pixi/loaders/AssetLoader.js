@@ -18,7 +18,7 @@
  *      data formats include "xml" and "fnt".
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
+PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, basePath)
 {
 	PIXI.EventTarget.call(this);
 
@@ -38,7 +38,9 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture)
      */
 	this.crossorigin = crossorigin;
 	
-	this.generateCanvas = generateCanvasFromTexture || false;
+	this.generateCanvas = generateCanvasFromTexture || false;//ignored by any loader that doesn't use it
+	
+	this.basePath = basePath || "";//ignored by any loader that doesn't use it
 	
 	/**
 	 * Maps file extension to loader types
@@ -99,7 +101,7 @@ PIXI.AssetLoader.prototype.load = function()
         if(!loaderClass)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas);
+        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas, this.basePath);
 
         loader.addEventListener("loaded", loadCallback.bind(this, loader));
         loader.load();

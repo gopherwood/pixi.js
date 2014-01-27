@@ -52,6 +52,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/textures/RenderTexture.js',
+            '<%= dirs.src %>/loaders/LoaderUtils.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
             '<%= dirs.src %>/loaders/JsonLoader.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',

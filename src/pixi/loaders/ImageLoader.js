@@ -13,7 +13,7 @@
  * @param url {String} The url of the image
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
+PIXI.ImageLoader = function(url, crossorigin, generateCanvas, baseUrl)
 {
     PIXI.EventTarget.call(this);
 
@@ -23,7 +23,7 @@ PIXI.ImageLoader = function(url, crossorigin, generateCanvas)
      * @property texture
      * @type Texture
      */
-    this.texture = PIXI.Texture.fromImage(url, crossorigin, generateCanvas);
+    this.texture = PIXI.Texture.fromImage(buildPath(url, baseUrl), crossorigin, generateCanvas);
 
     /**
      * if the image is loaded with loadFramedSpriteSheet

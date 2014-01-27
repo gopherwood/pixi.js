@@ -14,7 +14,7 @@
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.BitmapFontLoader = function(url, crossorigin)
+PIXI.BitmapFontLoader = function(url, crossorigin, generateCanvasFromTexture, baseUrl)
 {
     /*
      * i use texture packer to load the assets..
@@ -46,7 +46,8 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * @type String
      * @readOnly
      */
-    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.baseUrl = baseUrl;
+	this.textureBaseUrl = url.replace(/[^\/]*$/, "");
 
     /**
      * [read-only] The texture of the bitmap font
@@ -58,7 +59,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 	
 	this.versioning = null;
-	if(url.indexOf("?") != -1)
+	if(url.lastIndexOf("?") != -1)
 		this.versioning = url.substring(url.indexOf("?"));
 	
 	this._loadFails = 0;
@@ -66,51 +67,6 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 // constructor
 PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
-
-//Utility functions borrowed from PreloadJS
-var _parseURI = function(path) {
-	if (!path) { return null; }
-	return path.match(/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/);//a pattern for parsing file URIs
-};
-var _formatQueryString = function(data, query) {
-	if (data == null) {
-		throw new Error('You must specify data.');
-	}
-	var params = [];
-	for (var n in data) {
-		params.push(n+'='+escape(data[n]));
-	}
-	if (query) {
-		params = params.concat(query);
-	}
-	return params.join('&');
-};
-var buildPath = function(src, _basePath, data) {
-	if (_basePath != null) {
-		var match = _parseURI(src);
-		// IE 7,8 Return empty string here.
-		if (match[1] == null || match[1] == '') {
-			src = _basePath + src;
-		}
-	}
-	if (data == null) {
-		return src;
-	}
-
-	var query = [];
-	var idx = src.indexOf('?');
-
-	if (idx != -1) {
-		var q = src.slice(idx+1);
-		query = query.concat(q.split('&'));
-	}
-
-	if (idx != -1) {
-		return src.slice(0, idx) + '?' + _formatQueryString(data, query);
-	} else {
-		return src + '?' + _formatQueryString(data, query);
-	}
-};
 
 /**
  * Loads the XML font data
@@ -266,8 +222,8 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 					}
 				}
 			}
-			var textureUrl = this.baseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
-			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+			var textureUrl = this.textureBaseUrl + xml.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue + (this.versioning ? this.versioning : "");
+			var image = new PIXI.ImageLoader(textureUrl, this.crossorigin, this.generateCanvas, this.baseUrl);
 			this.texture = image.texture;
 
 			var data = {};

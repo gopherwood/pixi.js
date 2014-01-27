@@ -21,7 +21,7 @@
  * @param url {String} The url of the JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.SpineLoader = function(url, crossorigin)
+PIXI.SpineLoader = function(url, crossorigin, generateCanvas, baseUrl)
 {
 	PIXI.EventTarget.call(this);
 
@@ -31,7 +31,7 @@ PIXI.SpineLoader = function(url, crossorigin)
 	 * @property url
 	 * @type String
 	 */
-	this.url = url;
+	this.url = buildPath(url, baseUrl);
 
 	/**
 	 * Whether the requests should be treated as cross origin
