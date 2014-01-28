@@ -127,7 +127,7 @@ PIXI.BitmapFontLoader.prototype.load = function()
 	// Determine the XHR level
 	var xhrLevel = (typeof req.responseType === "string") ? 2 : 1;
 
-	var src = this.url;
+	var src = buildPath(this.url, this.baseUrl);
 
 	// Open the request.  Set cross-domain flags if it is supported (XHR level 1 only)
 	req.open("GET", src, true);
