@@ -129,6 +129,57 @@ PIXI.Point.prototype.scaleBy = function(value)
 	this.y *= value;
 }
 
+PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
+{
+	var append = PIXI.mat3.create();
+	append[6] = localX;//tX
+	append[7] = localY;//tY
+	var mat = PIXI.mat3.clone(displayObject.worldTransform);
+	mat = PIXI.mat3.multiply(mat, append);//it's changing mat anyway
+	var x = mat[6];//tX
+	var y = mat[7];//tY
+	if(outPoint)
+	{
+		outPoint.x = x;
+		outPoint.y = y;
+		return outPoint;
+	}
+	else
+		return new PIXI.Point(x, y);
+}
+
+PIXI.Point.globalToLocal = function(displayObject, globalX, globalY, outPoint)
+{
+	var worldTransform = displayObject.worldTransform;
+	
+	// do a cheeky transform to get the mouse coords;
+	var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+        a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+        id = 1 / (a00 * a11 + a01 * -a10);
+	// set the mouse coords...
+	var x = a11 * id * globalX + -a01 * id * globalX + (a12 * a01 - a02 * a11) * id;
+	var y = a00 * id * globalY + -a10 * id * globalY + (-a12 * a00 + a02 * a10) * id;
+	if(outPoint)
+	{
+		outPoint.x = x;
+		outPoint.y = y;
+		return outPoint;
+	}
+	else
+		return new PIXI.Point(x, y);
+}
+
+PIXI.Point.localToLocal = function(sourceDisplayObject, targetDisplayObject, x, y, outPoint)
+{
+	outPoint = PIXI.Point.localToGlobal(sourceDisplayObject, x, y, outPoint);
+	return PIXI.Point.globalToLocal(targetDisplayObject, x, y, outPoint);
+}
+
+PIXI.Point.prototype.toString = function()
+{
+	return "(" + this.x + ", " + this.y + ")";
+}
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
 
