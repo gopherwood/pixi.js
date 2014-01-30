@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <project name="pixi.js" default="build" basedir="./">
 	<target name="build" description="Compile with grunt">
-		<exec executable="grunt" failonerror="true">
+		<exec osfamily="mac" executable="grunt" failonerror="true">
+			<arg line="build" />
+		</exec>
+		<exec osfamily="windows" executable="cmd.exe" failonerror="true">
+			<arg line="/c" />
+			<arg line="grunt" />
 			<arg line="build" />
 		</exec>
 	</target>

@@ -160,12 +160,12 @@ PIXI.Point.prototype.scaleBy = function(value)
 PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 {
 	var append = PIXI.mat3.create();
-	append[6] = localX;//tX
-	append[7] = localY;//tY
+	append[2] = localX;//tX
+	append[5] = localY;//tY
 	var mat = PIXI.mat3.clone(displayObject.worldTransform);
 	mat = PIXI.mat3.multiply(mat, append);//it's changing mat anyway
-	var x = mat[6];//tX
-	var y = mat[7];//tY
+	var x = mat[2];//tX
+	var y = mat[5];//tY
 	if(outPoint)
 	{
 		outPoint.x = x;
@@ -200,7 +200,7 @@ PIXI.Point.globalToLocal = function(displayObject, globalX, globalY, outPoint)
 PIXI.Point.localToLocal = function(sourceDisplayObject, targetDisplayObject, x, y, outPoint)
 {
 	outPoint = PIXI.Point.localToGlobal(sourceDisplayObject, x, y, outPoint);
-	return PIXI.Point.globalToLocal(targetDisplayObject, x, y, outPoint);
+	return PIXI.Point.globalToLocal(targetDisplayObject, outPoint.x, outPoint.y, outPoint);
 }
 
 PIXI.Point.prototype.toString = function()
