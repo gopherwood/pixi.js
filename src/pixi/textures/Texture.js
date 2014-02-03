@@ -173,11 +173,11 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
  * @param frameId {String} The frame id of the texture
  * @return Texture
  */
-PIXI.Texture.fromFrame = function(frameId)
+PIXI.Texture.fromFrame = function(frameId, suppressError)
 {
 	var id = filenameFromUrl(frameId);
 	var texture = PIXI.TextureCache[id];
-	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache - id was converted to " + id);
+	if(!texture && !suppressError)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache - id was converted to " + id);
 	return texture;
 }
 
