@@ -70,7 +70,9 @@ PIXI.Text.prototype.setStyle = function(style)
  */
 PIXI.Text.prototype.setText = function(text)
 {
-    this.text = text.toString() || " ";
+	text = text.toString();
+	if(this.text == text) return;
+    this.text = text || " ";
     this.dirty = true;
 };
 
@@ -117,7 +119,8 @@ PIXI.Text.prototype.updateText = function()
 	this.context.lineWidth = this.style.strokeThickness;
 
 	this.context.textBaseline = "top";
-
+	
+	var a = this.style.align;
 	//draw lines line by line
 	var linePosition = new PIXI.Point(this.style.strokeThickness * 0.5, 0);
 	for (i = 0; i < lines.length; i++)
@@ -125,11 +128,11 @@ PIXI.Text.prototype.updateText = function()
 		linePosition.x = 0;
 		linePosition.y = this.style.strokeThickness * 0.5 + i * lineHeight;
 	
-		if(this.style.align == "right")
+		if(a == "right")
 		{
 			linePosition.x += maxLineWidth - lineWidths[i];
 		}
-		else if(this.style.align == "center")
+		else if(a == "center")
 		{
 			linePosition.x += (maxLineWidth - lineWidths[i]) * 0.5;
 		}
@@ -146,6 +149,19 @@ PIXI.Text.prototype.updateText = function()
 	}
 
     this.updateTexture();
+
+	switch(a)//have the entire text area be positioned based on the alignment, to make it easy to center text
+	{
+		case "center":
+			this.pivot.x = this._width * 0.5;
+			break;
+		case "right":
+			this.pivot.x = this._width;
+			break;
+		default://left or unspecified
+			this.pivot.x = 0;
+			break;
+	}
 };
 
 /**

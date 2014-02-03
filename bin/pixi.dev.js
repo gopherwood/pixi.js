@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-29
+ * Compiled: 2014-02-03
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2361,7 +2361,9 @@ PIXI.Text.prototype.setStyle = function(style)
  */
 PIXI.Text.prototype.setText = function(text)
 {
-    this.text = text.toString() || " ";
+	text = text.toString();
+	if(this.text == text) return;
+    this.text = text || " ";
     this.dirty = true;
 };
 
@@ -2408,7 +2410,8 @@ PIXI.Text.prototype.updateText = function()
 	this.context.lineWidth = this.style.strokeThickness;
 
 	this.context.textBaseline = "top";
-
+	
+	var a = this.style.align;
 	//draw lines line by line
 	var linePosition = new PIXI.Point(this.style.strokeThickness * 0.5, 0);
 	for (i = 0; i < lines.length; i++)
@@ -2416,11 +2419,11 @@ PIXI.Text.prototype.updateText = function()
 		linePosition.x = 0;
 		linePosition.y = this.style.strokeThickness * 0.5 + i * lineHeight;
 	
-		if(this.style.align == "right")
+		if(a == "right")
 		{
 			linePosition.x += maxLineWidth - lineWidths[i];
 		}
-		else if(this.style.align == "center")
+		else if(a == "center")
 		{
 			linePosition.x += (maxLineWidth - lineWidths[i]) * 0.5;
 		}
@@ -2437,6 +2440,19 @@ PIXI.Text.prototype.updateText = function()
 	}
 
     this.updateTexture();
+
+	switch(a)//have the entire text area be positioned based on the alignment, to make it easy to center text
+	{
+		case "center":
+			this.pivot.x = this._width * 0.5;
+			break;
+		case "right":
+			this.pivot.x = this._width;
+			break;
+		default://left or unspecified
+			this.pivot.x = 0;
+			break;
+	}
 };
 
 /**
@@ -2614,6 +2630,7 @@ PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
  */
 PIXI.BitmapText.prototype.setText = function(text)
 {
+	if(this.text == text) return;//don't update if the test already reads that way
     this.text = text || " ";
     this.dirty = true;
 };
@@ -2690,6 +2707,18 @@ PIXI.BitmapText.prototype.updateText = function()
 
     var lineAlignOffsets = [];
 	var a = this.style.align;
+	switch(a)//have the entire text area be positioned based on the alignment, to make it easy to center text
+	{
+		case "center":
+			this.pivot.x = maxLineWidth * 0.5 * scale;
+			break;
+		case "right":
+			this.pivot.x = maxLineWidth * scale;
+			break;
+		default://left or unspecified
+			this.pivot.x = 0;
+			break;
+	}
     for(i = 0; i <= line; i++)
     {
         var alignOffset = 0;
@@ -2706,14 +2735,15 @@ PIXI.BitmapText.prototype.updateText = function()
 
     for(i = 0; i < chars.length; i++)
     {
-        var c = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
-        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
-        c.position.y = chars[i].position.y * scale;
+		var tempChar = chars[i];
+        var c = new PIXI.Sprite(tempChar.texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
+        c.position.x = (tempChar.position.x + lineAlignOffsets[tempChar.line]) * scale;
+        c.position.y = tempChar.position.y * scale;
         c.scale.x = c.scale.y = scale;
         this.addChild(c);
     }
 	
-    this.width = pos.x * scale;
+    this.width = maxLineWidth * scale;//pos.x * scale;
     this.height = (pos.y + data.lineHeight) * scale;
 };
 

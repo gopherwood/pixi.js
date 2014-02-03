@@ -39,6 +39,7 @@ PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
  */
 PIXI.BitmapText.prototype.setText = function(text)
 {
+	if(this.text == text) return;//don't update if the test already reads that way
     this.text = text || " ";
     this.dirty = true;
 };
@@ -115,6 +116,18 @@ PIXI.BitmapText.prototype.updateText = function()
 
     var lineAlignOffsets = [];
 	var a = this.style.align;
+	switch(a)//have the entire text area be positioned based on the alignment, to make it easy to center text
+	{
+		case "center":
+			this.pivot.x = maxLineWidth * 0.5 * scale;
+			break;
+		case "right":
+			this.pivot.x = maxLineWidth * scale;
+			break;
+		default://left or unspecified
+			this.pivot.x = 0;
+			break;
+	}
     for(i = 0; i <= line; i++)
     {
         var alignOffset = 0;
@@ -131,14 +144,15 @@ PIXI.BitmapText.prototype.updateText = function()
 
     for(i = 0; i < chars.length; i++)
     {
-        var c = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
-        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
-        c.position.y = chars[i].position.y * scale;
+		var tempChar = chars[i];
+        var c = new PIXI.Sprite(tempChar.texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
+        c.position.x = (tempChar.position.x + lineAlignOffsets[tempChar.line]) * scale;
+        c.position.y = tempChar.position.y * scale;
         c.scale.x = c.scale.y = scale;
         this.addChild(c);
     }
 	
-    this.width = pos.x * scale;
+    this.width = maxLineWidth * scale;//pos.x * scale;
     this.height = (pos.y + data.lineHeight) * scale;
 };
 
