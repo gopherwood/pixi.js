@@ -2144,6 +2144,8 @@ PIXI.MovieClip = function(textures)
 	 * @private
 	 */
 	this._animDuration = 0;
+	
+	this.updateDuration();
 }
 
 // constructor
