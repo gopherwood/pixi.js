@@ -168,7 +168,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(!displayObject.visible)
 		{
-			displayObject = displayObject.last._iNext;
+			//fixes issues with non visible objects being masked (inverts mask to be on all objects, permanently).
+			displayObject = (displayObject.last !== displayObject && displayObject.last instanceof PIXI.FilterBlock) ? displayObject.last : displayObject.last._iNext;
 			continue;
 		}
 		
