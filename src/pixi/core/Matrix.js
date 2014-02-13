@@ -102,9 +102,9 @@ PIXI.mat3.multiply = function (mat, mat2, dest)
 	return dest;
 }
 
-PIXI.mat3.clone = function(mat)
+PIXI.mat3.clone = function(mat, dest)
 {
-	var matrix = new PIXI.Matrix(9);
+	var matrix = dest || new PIXI.Matrix(9);
 
 	matrix[0] = mat[0];
 	matrix[1] = mat[1];

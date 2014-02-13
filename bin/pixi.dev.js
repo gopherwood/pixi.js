@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-06
+ * Compiled: 2014-02-13
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -157,15 +157,21 @@ PIXI.Point.prototype.scaleBy = function(value)
 	this.y *= value;
 }
 
+var helperMatrix = null;
+var helperMatrix2 = null;
+
 PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 {
-	var append = PIXI.mat3.create();
-	append[2] = localX;//tX
-	append[5] = localY;//tY
-	var mat = PIXI.mat3.clone(displayObject.worldTransform);
-	mat = PIXI.mat3.multiply(mat, append);//it's changing mat anyway
-	var x = mat[2];//tX
-	var y = mat[5];//tY
+	//set up helperMatrix to be our append matrix
+	if(!helperMatrix) helperMatrix = PIXI.mat3.create();
+	else
+		PIXI.mat3.identity(helperMatrix);
+	helperMatrix[2] = localX;//tX
+	helperMatrix[5] = localY;//tY
+ 	helperMatrix2 = PIXI.mat3.clone(displayObject.worldTransform, helperMatrix2);//initialize helperMatrix2, creating it if it doesn't exist
+	helperMatrix2 = PIXI.mat3.multiply(helperMatrix2, helperMatrix);//it's changing helperMatrix2 anyway
+	var x = helperMatrix2[2];//tX
+	var y = helperMatrix2[5];//tY
 	if(outPoint)
 	{
 		outPoint.x = x;
@@ -646,9 +652,9 @@ PIXI.mat3.multiply = function (mat, mat2, dest)
 	return dest;
 }
 
-PIXI.mat3.clone = function(mat)
+PIXI.mat3.clone = function(mat, dest)
 {
-	var matrix = new PIXI.Matrix(9);
+	var matrix = dest || new PIXI.Matrix(9);
 
 	matrix[0] = mat[0];
 	matrix[1] = mat[1];
