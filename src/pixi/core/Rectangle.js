@@ -81,6 +81,11 @@ PIXI.Rectangle.prototype.contains = function(x, y)
 	return false;
 }
 
+PIXI.Rectangle.prototype.toString = function()
+{
+	return "(" + this.x + ", " + this.y + ", " + this.width + ", " + this.height + ")";
+}
+
 // constructor
 PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 

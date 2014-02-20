@@ -129,21 +129,20 @@ PIXI.Point.prototype.scaleBy = function(value)
 	this.y *= value;
 }
 
-var helperMatrix = null;
-var helperMatrix2 = null;
-
 PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 {
-	//set up helperMatrix to be our append matrix
-	if(!helperMatrix) helperMatrix = PIXI.mat3.create();
-	else
-		PIXI.mat3.identity(helperMatrix);
-	helperMatrix[2] = localX;//tX
-	helperMatrix[5] = localY;//tY
- 	helperMatrix2 = PIXI.mat3.clone(displayObject.worldTransform, helperMatrix2);//initialize helperMatrix2, creating it if it doesn't exist
-	helperMatrix2 = PIXI.mat3.multiply(helperMatrix2, helperMatrix);//it's changing helperMatrix2 anyway
-	var x = helperMatrix2[2];//tX
-	var y = helperMatrix2[5];//tY
+	//append translation
+	var worldTransform = displayObject.worldTransform;
+	//save variables for shortcuts/clearer math
+ 	var a1 = worldTransform[0];
+	var b1 = worldTransform[1];
+	var c1 = worldTransform[3];
+	var d1 = worldTransform[4];
+	var tx1 = worldTransform[2];
+	var ty1 = worldTransform[5];
+
+	var x = localX * a1 + localY * c1 + tx1;
+	var y = localX * b1 + localY * d1 + ty1;
 	if(outPoint)
 	{
 		outPoint.x = x;
