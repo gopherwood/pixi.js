@@ -1,15 +1,4 @@
 /**
- * @license
- * Pixi.JS - v1.3.0
- * Copyright (c) 2012, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-06-16
- *
- * Pixi.JS is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -398,8 +387,8 @@ PIXI.Polygon.prototype.constructor = PIXI.Polygon;
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
- * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this circle
+ * @param x {Number} The X coord of the center of this circle
+ * @param y {Number} The Y coord of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
@@ -430,7 +419,7 @@ PIXI.Circle = function(x, y, radius)
  * Creates a clone of this Circle instance
  *
  * @method clone
- * @return {Circle} a copy of the polygon
+ * @return {Circle} a copy of the cricle
  */
 PIXI.Circle.prototype.clone = function()
 {
@@ -443,7 +432,7 @@ PIXI.Circle.prototype.clone = function()
  * @method contains
  * @param x {Number} The X coord of the point to test
  * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this polygon
+ * @return {Boolean} if the x/y coords are within this circle
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {
@@ -463,6 +452,112 @@ PIXI.Circle.prototype.contains = function(x, y)
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
 
+
+
+    var RAD_TO_DEGREES = 180 / Math.PI;
+
+    /**
+     * @author Andrew Start <andrew@cloudkid.com>
+     */
+
+    /**
+     * The Sector object can be used to specify a hit area for displayobjects.
+     * It represents a sector of a circle, with angles expressed in degrees going 
+     * counterclockwise.
+     *
+     * @class Sector
+     * @constructor
+     * @param x {Number} The X coord of the center of the circle this sector is on
+     * @param y {Number} The Y coord of the center of the circle this sector is on
+     * @param radius {Number} The radius of the circle
+     * @param startAngle {Number} The starting angle of the sector, in degrees
+     * @param endAngle {Number} The ending angle of the sector, in degrees
+     */
+    PIXI.Sector = function(x, y, radius, startAngle, endAngle)
+    {
+        /**
+         * @property x
+         * @type Number
+         * @default 0
+         */
+        this.x = x || 0;
+
+        /**
+         * @property y
+         * @type Number
+         * @default 0
+         */
+        this.y = y || 0;
+
+        /**
+         * @property radius
+         * @type Number
+         * @default 0
+         */
+        this.radius = radius || 0;
+
+        /**
+         * @property startAngle
+         * @type Number
+         * @default 0
+         */
+        this.startAngle = startAngle || 0;
+        //for math purposes, ensure that this is greater than 0
+        while(this.startAngle < 0)
+            this.startAngle += 360;
+
+        /**
+         * @property endAngle
+         * @type Number
+         * @default 0
+         */
+        this.endAngle = endAngle || 0;
+        //for math purposes, ensure that this is greater than startAngle
+        if(this.endAngle < this.startAngle)
+            this.endAngle += 360;
+    }
+
+    /**
+     * Creates a clone of this Sector instance
+     *
+     * @method clone
+     * @return {Sector} a copy of the polygon
+     */
+    PIXI.Sector.prototype.clone = function()
+    {
+        return new Sector(this.x, this.y, this.radius, this.startAngle, this.endAngle);
+    }
+
+    /**
+     * Checks if the x, and y coords passed to this function are contained within this circle
+     *
+     * @method contains
+     * @param x {Number} The X coord of the point to test
+     * @param y {Number} The Y coord of the point to test
+     * @return {Boolean} if the x/y coords are within this polygon
+     */
+    PIXI.Sector.prototype.contains = function(x, y)
+    {
+        if(this.radius <= 0)
+            return false;
+
+        var dx = (this.x - x),
+            dy = (this.y - y),
+            r2 = this.radius * this.radius;
+
+        dx *= dx;
+        dy *= dy;
+
+        if(dx + dy > r2) return false;
+
+        var angle = Math.atan2(y - this.y, x - this.x) * RAD_TO_DEGREES;
+        //make the angle in the same space as the sector
+        while(angle < this.startAngle) angle += 360;
+        return angle >= this.startAngle && angle <= this.endAngle;
+    }
+
+    // constructor
+    PIXI.Sector.prototype.constructor = PIXI.Sector;
 
 /**
  * @author Chad Engler <chad@pantherdev.com>
@@ -13214,3 +13309,4 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//@ sourceMappingURL=pixi.dev.js.map

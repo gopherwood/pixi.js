@@ -7,8 +7,8 @@
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
- * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this circle
+ * @param x {Number} The X coord of the center of this circle
+ * @param y {Number} The Y coord of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
@@ -39,7 +39,7 @@ PIXI.Circle = function(x, y, radius)
  * Creates a clone of this Circle instance
  *
  * @method clone
- * @return {Circle} a copy of the polygon
+ * @return {Circle} a copy of the cricle
  */
 PIXI.Circle.prototype.clone = function()
 {
@@ -52,7 +52,7 @@ PIXI.Circle.prototype.clone = function()
  * @method contains
  * @param x {Number} The X coord of the point to test
  * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this polygon
+ * @return {Boolean} if the x/y coords are within this circle
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {

@@ -17,6 +17,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/core/Rectangle.js',
             '<%= dirs.src %>/core/Polygon.js',
             '<%= dirs.src %>/core/Circle.js',
+            '<%= dirs.src %>/core/Sector.js',
             '<%= dirs.src %>/core/Ellipse.js',
             '<%= dirs.src %>/core/Matrix.js',
             '<%= dirs.src %>/display/DisplayObject.js',
