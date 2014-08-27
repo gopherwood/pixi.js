@@ -125,7 +125,7 @@ PIXI.JsonLoader.prototype.load = function()
 	this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
 	try
 	{
-		setTimeout(function(){this.ajaxRequest.send();}, 0);
+		setTimeout(function(){scope.ajaxRequest.send();}, 0);
 	}
 	catch(e)
 	{
