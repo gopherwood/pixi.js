@@ -2,37 +2,37 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
 /**
- * 
- * This turns your displayObjects to black and white.
- * @class GreyFilter
+ *
+ * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
+ * @class ColorStepFilter
  * @contructor
  */
 PIXI.ColorStepFilter = function()
 {
-	PIXI.AbstractFilter.call( this );
-	
-	this.passes = [this];
-	
-	// set the uniforms
-	this.uniforms = {
-		step: {type: 'f', value: 5},
-	};
-	
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform sampler2D uSampler;",
-	  "uniform float step;",
-	  "void main(void) {",
-	    "vec4 color = texture2D(uSampler, vTextureCoord);",
-	    "color = floor(color * step) / step;",
-	    "gl_FragColor = color * vColor;",
-	  "}"
-	];
-}
+    PIXI.AbstractFilter.call( this );
+
+    this.passes = [this];
+
+    // set the uniforms
+    this.uniforms = {
+        step: {type: '1f', value: 5}
+    };
+
+    this.fragmentSrc = [
+        'precision mediump float;',
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+        'uniform sampler2D uSampler;',
+        'uniform float step;',
+
+        'void main(void) {',
+        '   vec4 color = texture2D(uSampler, vTextureCoord);',
+        '   color = floor(color * step) / step;',
+        '   gl_FragColor = color;',
+        '}'
+    ];
+};
 
 PIXI.ColorStepFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
@@ -46,6 +46,6 @@ Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
         return this.uniforms.step.value;
     },
     set: function(value) {
-    	this.uniforms.step.value = value;
+        this.uniforms.step.value = value;
     }
 });

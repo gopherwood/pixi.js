@@ -3,12 +3,12 @@
  */
 
 /**
- * The Circle object can be used to specify a hit area for displayobjects
+ * The Circle object can be used to specify a hit area for displayObjects
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coord of the center of this circle
- * @param y {Number} The Y coord of the center of this circle
+ * @param x {Number} The X coordinate of the center of this circle
+ * @param y {Number} The Y coordinate of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
@@ -33,7 +33,7 @@ PIXI.Circle = function(x, y, radius)
      * @default 0
      */
     this.radius = radius || 0;
-}
+};
 
 /**
  * Creates a clone of this Circle instance
@@ -44,15 +44,15 @@ PIXI.Circle = function(x, y, radius)
 PIXI.Circle.prototype.clone = function()
 {
     return new PIXI.Circle(this.x, this.y, this.radius);
-}
+};
 
 /**
- * Checks if the x, and y coords passed to this function are contained within this circle
+ * Checks whether the x, and y coordinates passed to this function are contained within this circle
  *
  * @method contains
- * @param x {Number} The X coord of the point to test
- * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this circle
+ * @param x {Number} The X coordinate of the point to test
+ * @param y {Number} The Y coordinate of the point to test
+ * @return {Boolean} Whether the x/y coordinates are within this circle
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {
@@ -67,7 +67,18 @@ PIXI.Circle.prototype.contains = function(x, y)
     dy *= dy;
 
     return (dx + dy <= r2);
-}
+};
+
+/**
+* Returns the framing rectangle of the circle as a PIXI.Rectangle object
+*
+* @method getBounds
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Circle.prototype.getBounds = function()
+{
+    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+};
 
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;

@@ -3,9 +3,8 @@
  */
 
 
-
 PIXI.FilterBlock = function()
 {
-	this.visible = true;
-	this.renderable = true;
-}
+    this.visible = true;
+    this.renderable = true;
+};

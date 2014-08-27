@@ -6,29 +6,29 @@
  * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
  * assets have been loaded they are added to the PIXI Texture cache and can be accessed
  * easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
- * When all items have been loaded this class will dispatch a "onLoaded" event
- * As each individual item is loaded this class will dispatch a "onProgress" event
+ * When all items have been loaded this class will dispatch a 'onLoaded' event
+ * As each individual item is loaded this class will dispatch a 'onProgress' event
  *
  * @class AssetLoader
  * @constructor
  * @uses EventTarget
  * @param {Array<String>} assetURLs an array of image/sprite sheet urls that you would like loaded
- *      supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported
- *      sprite sheet data formats only include "JSON" at this time. Supported bitmap font
- *      data formats include "xml" and "fnt".
+ *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
+ *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
+ *      data formats include 'xml' and 'fnt'.
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, basePath)
+PIXI.AssetLoader = function(assetURLs, crossorigin, basePath)
 {
-	PIXI.EventTarget.call(this);
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The array of asset URLs that are going to be loaded
+    /**
+     * The array of asset URLs that are going to be loaded
      *
-	 * @property assetURLs
-	 * @type Array<String>
-	 */
-	this.assetURLs = assetURLs;
+     * @property assetURLs
+     * @type Array<String>
+     */
+    this.assetURLs = assetURLs;
 
     /**
      * Whether the requests should be treated as cross origin
@@ -38,9 +38,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, b
      */
 	this.crossorigin = crossorigin;
 	
-	this.generateCanvas = generateCanvasFromTexture || false;//ignored by any loader that doesn't use it
-	
-	this.basePath = basePath || "";//ignored by any loader that doesn't use it
+	this.basePath = basePath || '';//ignored by any loader that doesn't use it
 	
 	/**
 	 * Maps file extension to loader types
@@ -50,16 +48,17 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, b
 	 */
 	if(!PIXI.AssetLoader.loadersByType)
 	{
-		PIXI.AssetLoader.loadersByType = {
-		    "jpg":  PIXI.ImageLoader,
-		    "jpeg": PIXI.ImageLoader,
-		    "png":  PIXI.ImageLoader,
-		    "gif":  PIXI.ImageLoader,
-		    "json": PIXI.JsonLoader,
-		    "anim": PIXI.SpineLoader,
-		    "xml":  PIXI.BitmapFontLoader,
-		    "fnt":  PIXI.BitmapFontLoader
-		};
+        PIXI.AssetLoader.loadersByType = {
+            'jpg':  PIXI.ImageLoader,
+            'jpeg': PIXI.ImageLoader,
+            'png':  PIXI.ImageLoader,
+            'gif':  PIXI.ImageLoader,
+            'json': PIXI.JsonLoader,
+            'atlas': PIXI.AtlasLoader,
+            'anim': PIXI.SpineLoader,
+            'xml':  PIXI.BitmapFontLoader,
+            'fnt':  PIXI.BitmapFontLoader
+        };
 	}
 };
 
@@ -77,35 +76,73 @@ PIXI.AssetLoader = function(assetURLs, crossorigin, generateCanvasFromTexture, b
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
+ * Given a filename, returns its extension, wil
+ *
+ * @method _getDataType
+ * @param str {String} the name of the asset
+ */
+PIXI.AssetLoader.prototype._getDataType = function(str)
+{
+    var test = 'data:';
+    //starts with 'data:'
+    var start = str.slice(0, test.length).toLowerCase();
+    if (start === test) {
+        var data = str.slice(test.length);
+
+        var sepIdx = data.indexOf(',');
+        if (sepIdx === -1) //malformed data URI scheme
+            return null;
+
+        //e.g. 'image/gif;base64' => 'image/gif'
+        var info = data.slice(0, sepIdx).split(';')[0];
+
+        //We might need to handle some special cases here...
+        //standardize text/plain to 'txt' file extension
+        if (!info || info.toLowerCase() === 'text/plain')
+            return 'txt';
+
+        //User specified mime type, try splitting it by '/'
+        return info.split('/').pop().toLowerCase();
+    }
+
+    return null;
+};
+
+/**
  * Starts loading the assets sequentially
  *
  * @method load
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-	this.loadCount = this.assetURLs.length;
-	
-	var loadCallback = function(load)
-    {
-        this.onAssetLoaded();
-		load.removeAllListeners();
-    };
+    var scope = this;
+
+    function onLoad(evt) {
+        scope.onAssetLoaded(evt.content);
+		evt.content.removeAllEventListeners();
+    }
+
+    this.loadCount = this.assetURLs.length;
+
     for (var i=0; i < this.assetURLs.length; i++)
-	{
-		var fileName = this.assetURLs[i];
-		var fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-		if(fileType.indexOf("?") != -1)
-			fileType = fileType.substring(0, fileType.indexOf("?"));
+    {
+        var fileName = this.assetURLs[i];
+        //first see if we have a data URI scheme..
+        var fileType = this._getDataType(fileName);
 
-        var loaderClass = PIXI.AssetLoader.loadersByType[fileType];
-        if(!loaderClass)
-            throw new Error(fileType + " is an unsupported file type");
+        //if not, assume it's a file URI
+        if (!fileType)
+            fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
 
-        var loader = new loaderClass(fileName, this.crossorigin, this.generateCanvas, this.basePath);
+        var Constructor = PIXI.AssetLoader.loadersByType[fileType];
+        if(!Constructor)
+            throw new Error(fileType + ' is an unsupported file type');
 
-        loader.addEventListener("loaded", loadCallback.bind(this, loader));
+        var loader = new Constructor(fileName, this.crossorigin, this.basePath);
+
+        loader.addEventListener('loaded', onLoad);
         loader.load();
-	}
+    }
 };
 
 /**
@@ -114,18 +151,16 @@ PIXI.AssetLoader.prototype.load = function()
  * @method onAssetLoaded
  * @private
  */
-PIXI.AssetLoader.prototype.onAssetLoaded = function()
+PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-	if(this.hasEventListener("onProgress"))
-		this.dispatchEvent({type: "onProgress", content: this});
-	if(this.onProgress) this.onProgress();
+	if(this.hasEventListener('onProgress'))
+		this.dispatchEvent({type: 'onProgress', content: this, loader: loader });
+	if(this.onProgress) this.onProgress(loader);
 
-	if(this.loadCount == 0)
-	{
-		if(this.hasEventListener("onComplete"))
-			this.dispatchEvent({type: "onComplete", content: this});
-		if(this.onComplete) this.onComplete();
-	}
+    if (!this.loadCount)
+    {
+        this.dispatchEvent({type: 'onComplete', content: this});
+        if(this.onComplete) this.onComplete();
+    }
 };
-

@@ -3,7 +3,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use '\n', '\r' or '\r\n'
  * You can generate the fnt files using
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
@@ -13,25 +13,25 @@
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param style {Object} The style parameters
- * @param style.font {String} The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
- * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
+ * @param style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
+ * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  */
 PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
 
+    this._pool = [];
+
     this.setText(text);
     this.setStyle(style);
     this.updateText();
-    this.dirty = false
-
+    this.dirty = false;
 };
 
 // constructor
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
-PIXI.BitmapText._charSpritePool = [];//pool for character sprites
 PIXI.BitmapText._charDataPool = [];//pool for temporary character data
 PIXI.BitmapText._charDataArr = [];//reusable array for temporary character data
 PIXI.BitmapText._lineWidthsArr = [];//reusable array for line widths
@@ -46,34 +46,35 @@ PIXI.BitmapText._helperPoint = new PIXI.Point();
  */
 PIXI.BitmapText.prototype.setText = function(text)
 {
-	if(this.text == text) return;//don't update if the test already reads that way
-    this.text = text || " ";
+	if(this.text === text) return;//don't update if the text already reads that way
+    this.text = text || ' ';
     this.dirty = true;
 };
 
 /**
  * Set the style of the text
+ * style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
+ * [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  *
  * @method setStyle
- * @param style {Object} The style parameters
- * @param style.font {String} The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
- * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
+ * @param style {Object} The style parameters, contained as properties of an object
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
     style = style || {};
-    style.align = style.align || "left";
+    style.align = style.align || 'left';
     this.style = style;
 
-    var font = style.font.split(" ");
+    var font = style.font.split(' ');
     this.fontName = font[font.length - 1];
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
 
     this.dirty = true;
+    this.tint = style.tint;
 };
 
 /**
- * Renders text
+ * Renders text and updates it when needed
  *
  * @method updateText
  * @private
@@ -91,11 +92,12 @@ PIXI.BitmapText.prototype.updateText = function()
     lineWidths.length = 0;
     var line = 0;
     var scale = this.fontSize / data.size;
-	var text = this.text;
-	var newLineTest = /(?:\r\n|\r|\n)/;
+    var text = this.text;
+    var newLineTest = /(?:\r\n|\r|\n)/;
     var dataPool = PIXI.BitmapText._charDataPool;
     var poolIndex = 0;//keep track of what object from the pool should be used
-    for(var i = 0, len = text.length; i < len; i++)
+
+    for(var i = 0, textLength = text.length; i < textLength; i++)
     {
         if(newLineTest.test(text.charAt(i)))
         {
@@ -109,13 +111,13 @@ PIXI.BitmapText.prototype.updateText = function()
             continue;
         }
         
-	    var charCode = text.charCodeAt(i);
+        var charCode = text.charCodeAt(i);
 		var charData = data.chars[charCode];
 		if(!charData) continue;
 
 		if(prevCharCode && charData[prevCharCode])
         {
-           pos.x += charData.kerning[prevCharCode];
+            pos.x += charData.kerning[prevCharCode];
         }
         var charDataObj;
         if(poolIndex <= dataPool.length)
@@ -147,10 +149,10 @@ PIXI.BitmapText.prototype.updateText = function()
 	var a = this.style.align;
 	switch(a)//have the entire text area be positioned based on the alignment, to make it easy to center text
 	{
-		case "center":
+		case 'center':
 			this.pivot.x = maxLineWidth * 0.5 * scale;
 			break;
-		case "right":
+		case 'right':
 			this.pivot.x = maxLineWidth * scale;
 			break;
 		default://left or unspecified
@@ -160,37 +162,63 @@ PIXI.BitmapText.prototype.updateText = function()
     for(i = 0; i <= line; i++)
     {
         var alignOffset = 0;
-        if(a == "right")
+        if(a === 'right')
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if(a == "center")
+        else if(a === 'center')
         {
             alignOffset = (maxLineWidth - lineWidths[i]) * 0.5;
         }
         lineAlignOffsets.push(alignOffset);
     }
 
-    var spritePool = PIXI.BitmapText._charSpritePool;
-    for(i = 0; i < chars.length; i++)
+    var lenChildren = this.children.length;
+    var lenChars = chars.length;
+    var tint = this.tint || 0xFFFFFF;
+    for(i = 0; i < lenChars; i++)
     {
 		var tempChar = chars[i];
-        var c;
-        if(spritePool.length)
-        {
-            c = spritePool.pop();
-            c.setTexture(tempChar.texture);
-        }
-        else
-            c = new PIXI.Sprite(tempChar.texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
+        var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
+
+        if (c) c.setTexture(tempChar.texture); // check if got one before.
+        else c = new PIXI.Sprite(tempChar.texture); // if no create new one.
+
         c.position.x = (tempChar.position.x + lineAlignOffsets[tempChar.line]) * scale;
         c.position.y = tempChar.position.y * scale;
         c.scale.x = c.scale.y = scale;
-        this.addChild(c);
+        c.tint = tint;
+        if (!c.parent) this.addChild(c);
     }
-	
-    this.width = maxLineWidth * scale;//pos.x * scale;
+
+    // remove unnecessary children.
+    // and put their into the pool.
+    while(this.children.length > lenChars)
+    {
+        var child = this.getChildAt(this.children.length - 1);
+        this._pool.push(child);
+        this.removeChild(child);
+    }
+
+	this.width = maxLineWidth * scale;//pos.x * scale;
     this.height = (pos.y + data.lineHeight) * scale;
+    /**
+     * [read-only] The width of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @property textWidth
+     * @type Number
+     */
+    this.textWidth = maxLineWidth * scale;
+
+    /**
+     * [read-only] The height of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @property textHeight
+     * @type Number
+     */
+    this.textHeight = (pos.y + data.lineHeight) * scale;
 };
 
 /**
@@ -199,33 +227,26 @@ PIXI.BitmapText.prototype.updateText = function()
  */
 PIXI.BitmapText.prototype.forceUpdateText = function()
 {
-	var c = this.children;
-    var pool = PIXI.BitmapText._charSpritePool;
-	while(c.length > 0)
-    {
-        var child = this.getChildAt(0);
-        this.removeChild(child);
-        pool.push(child);
-    }
     this.updateText();
 
     this.dirty = false;
-}
+};
 
 /**
- * Updates the transform of this object
+ * Updates the transfor of this object
  *
  * @method updateTransform
  * @private
  */
 PIXI.BitmapText.prototype.updateTransform = function()
 {
-	if(this.dirty)
-	{
-        this.forceUpdateText();
-	}
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
 
-	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
 
 PIXI.BitmapText.fonts = {};

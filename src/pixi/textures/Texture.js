@@ -5,6 +5,8 @@
 PIXI.TextureCache = {};
 PIXI.FrameCache = {};
 
+PIXI.TextureCacheIdGenerator = 0;
+
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
@@ -17,8 +19,15 @@ PIXI.FrameCache = {};
  */
 PIXI.Texture = function(baseTexture, frame)
 {
-	PIXI.EventTarget.call( this );
-
+    PIXI.EventTarget.call( this );
+	
+	/**
+     * Does this Texture have any frame data assigned to it?
+     *
+     * @property noFrame
+     * @type Boolean
+     */
+    this.noFrame = false;
 	if(!frame)
 	{
 		this.noFrame = true;
@@ -49,19 +58,66 @@ PIXI.Texture = function(baseTexture, frame)
 	 */
 	this.frame = frame;
 
-	if(baseTexture.hasLoaded)
-	{
-		if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-		//console.log(frame)
+    /**
+     * The trim point
+     *
+     * @property trim
+     * @type Rectangle
+     */
+    this.trim = null;
 
-		this.setFrame(frame);
-	}
-	else
-	{
-		var scope = this;
-		baseTexture.addEventListener( 'loaded', function(){ scope.onBaseTextureLoaded()} );
-	}
-}
+    /**
+     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
+     *
+     * @property valid
+     * @type Boolean
+     */
+    this.valid = false;
+
+    /**
+     * The WebGL UV data cache.
+     *
+     * @private
+     * @property _uvs
+     * @type Object
+     */
+    this._uvs = null;
+
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @property width
+     * @type Number
+     */
+    this.width = 0;
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @property height
+     * @type Number
+     */
+    this.height = 0;
+
+    /**
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     *
+     * @property crop
+     * @type Rectangle
+     */
+    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+
+    if (baseTexture.hasLoaded)
+    {
+        if (this.noFrame) frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+        this.setFrame(frame);
+    }
+    else
+    {
+        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+    }
+};
 
 PIXI.Texture.prototype.constructor = PIXI.Texture;
 
@@ -72,27 +128,17 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
  * @param event
  * @private
  */
-PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
+PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
-	var baseTexture = this.baseTexture;
-	baseTexture.removeEventListener( 'loaded', this.onLoaded );
+    var baseTexture = this.baseTexture;
+    baseTexture.removeEventListener('loaded', this.onLoaded);
 
-	if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-	this.noFrame = false;
-	if(this.realSize)
-	{
-		this.width = this.realSize.width;
-		this.height = this.realSize.height;
-	}
-	else
-	{
-		this.width = this.frame.width;
-		this.height = this.frame.height;
-	}
-	
-	if(this.hasEventListener("update"))
-		this.dispatchEvent( { type: 'update', content: this } );
-}
+    if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+
+    this.setFrame(this.frame);
+
+    this.dispatchEvent( { type: 'update', content: this } );
+};
 
 /**
  * Destroys this texture
@@ -102,43 +148,76 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
  */
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
-	if(destroyBase)this.baseTexture.destroy();
-	this.baseTexture = null;
-	this.frame = null;
-	this.realSize = null;
-	this.removeAllListeners(true);
-}
+    if (destroyBase) this.baseTexture.destroy();
+
+    this.valid = false;
+};
 
 /**
- * Specifies the rectangle region of the baseTexture
+ * Specifies the region of the baseTexture that this texture will use.
  *
  * @method setFrame
  * @param frame {Rectangle} The frame of the texture to set it to
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
-	this.frame = frame;
-	if(this.realSize)
-	{
-		this.width = this.realSize.width;
-		this.height = this.realSize.height;
-	}
-	else
-	{
-		this.width = frame.width;
-		this.height = frame.height;
-	}
-	
-	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
-	{
-		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
-	}
+    this.noFrame = false;
 
-	this.updateFrame = true;
+    this.frame = frame;
+    this.width = frame.width;
+    this.height = frame.height;
 
-	PIXI.Texture.frameUpdates.push(this);
-	//this.dispatchEvent( { type: 'update', content: this } );
-}
+    this.crop.x = frame.x;
+    this.crop.y = frame.y;
+    this.crop.width = frame.width;
+    this.crop.height = frame.height;
+
+    if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+    {
+        throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
+    }
+
+    this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+
+    if (this.trim)
+    {
+        this.width = this.trim.width;
+        this.height = this.trim.height;
+        this.frame.width = this.trim.width;
+        this.frame.height = this.trim.height;
+    }
+
+    if (this.valid) PIXI.Texture.frameUpdates.push(this);
+
+};
+
+/**
+ * Updates the internal WebGL UV cache.
+ *
+ * @method _updateWebGLuvs
+ * @private
+ */
+PIXI.Texture.prototype._updateWebGLuvs = function()
+{
+    if(!this._uvs)this._uvs = new PIXI.TextureUvs();
+
+    var frame = this.crop;
+    var tw = this.baseTexture.width;
+    var th = this.baseTexture.height;
+
+    this._uvs.x0 = frame.x / tw;
+    this._uvs.y0 = frame.y / th;
+
+    this._uvs.x1 = (frame.x + frame.width) / tw;
+    this._uvs.y1 = frame.y / th;
+
+    this._uvs.x2 = (frame.x + frame.width) / tw;
+    this._uvs.y2 = (frame.y + frame.height) / th;
+
+    this._uvs.x3 = frame.x / tw;
+    this._uvs.y3 = (frame.y + frame.height) / th;
+
+};
 
 /**
  * Helper function that returns a texture based on an image url
@@ -148,21 +227,22 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
-	var id = filenameFromUrl(imageUrl);
-	var texture = PIXI.TextureCache[id];
-	
-	if(!texture)
-	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, generateCanvas));
-		PIXI.TextureCache[id] = texture;
-	}
+	var id = PIXI.filenameFromUrl(imageUrl);
+    var texture = PIXI.TextureCache[id];
 
-	return texture;
-}
+    if(!texture)
+    {
+        texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
+        PIXI.TextureCache[id] = texture;
+    }
+
+    return texture;
+};
 
 /**
  * Helper function that returns a texture based on a frame id
@@ -175,11 +255,11 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, generateCanvas)
  */
 PIXI.Texture.fromFrame = function(frameId, suppressError)
 {
-	var id = filenameFromUrl(frameId);
-	var texture = PIXI.TextureCache[id];
-	if(!texture && !suppressError)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache - id was converted to " + id);
-	return texture;
-}
+	var id = PIXI.filenameFromUrl(frameId);
+    var texture = PIXI.TextureCache[id];
+    if(!suppressError && !texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
+    return texture;
+};
 
 /**
  * Helper function that returns a texture based on a canvas element
@@ -188,14 +268,15 @@ PIXI.Texture.fromFrame = function(frameId, suppressError)
  * @static
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
-PIXI.Texture.fromCanvas = function(canvas)
+PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-	var	baseTexture = new PIXI.BaseTexture(canvas);
-	return new PIXI.Texture(baseTexture);
-}
+    var baseTexture = PIXI.BaseTexture.fromCanvas(canvas, scaleMode);
 
+    return new PIXI.Texture( baseTexture );
+};
 
 /**
  * Adds a texture to the textureCache.
@@ -207,8 +288,8 @@ PIXI.Texture.fromCanvas = function(canvas)
  */
 PIXI.Texture.addTextureToCache = function(texture, id)
 {
-	PIXI.TextureCache[id] = texture;
-}
+    PIXI.TextureCache[id] = texture;
+};
 
 /**
  * Remove a texture from the textureCache.
@@ -221,13 +302,14 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 PIXI.Texture.removeTextureFromCache = function(id)
 {
 	var texture = PIXI.TextureCache[id];
-	PIXI.TextureCache[id] = null;
+    delete PIXI.TextureCache[id];
+    delete PIXI.BaseTextureCache[id];
 	return texture;
-}
+};
 
 PIXI.Texture.destroyTexture = function(id)
 {
-	id = filenameFromUrl(id);
+	id = PIXI.filenameFromUrl(id);
 	var tc = PIXI.TextureCache;
 	var texture = tc[id];
 	if(!texture) return;
@@ -238,13 +320,13 @@ PIXI.Texture.destroyTexture = function(id)
 	for(id in tc)
 	{
 		texture = tc[id];
-		if(texture.baseTexture == base)
+		if(texture.baseTexture === base)
 		{
 			delete tc[id];
 			texture.destroy();
 		}
 	}
-}
+};
 
 PIXI.Texture.destroyAllTextures = function()
 {
@@ -257,8 +339,22 @@ PIXI.Texture.destroyAllTextures = function()
 		if(texture)
 			texture.destroy(true);
 	}
-}
+};
 
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
 
+PIXI.TextureUvs = function()
+{
+    this.x0 = 0;
+    this.y0 = 0;
+
+    this.x1 = 0;
+    this.y1 = 0;
+
+    this.x2 = 0;
+    this.y2 = 0;
+
+    this.x3 = 0;
+    this.y3 = 0;
+};

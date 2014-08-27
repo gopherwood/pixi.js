@@ -1,8 +1,9 @@
-Pixi Renderer
+Pixi Renderer 
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
 
+[<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
 
 The aim of this project is to provide a fast lightweight 2D library that works
@@ -14,15 +15,23 @@ If you’re interested in pixi.js then feel free to follow me on twitter
 of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
 any breakthroughs will be posted up there too!
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 ### Demos ###
 
-- [Run pixi run](<http://www.goodboydigital.com/runpixierun/>)
+- [WebGL Filters!](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
+
+- [Run pixie run](<http://www.goodboydigital.com/runpixierun/>)
 
 - [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
 
 - [Flash vs HTML](<http://flashvhtml.com>)
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
+ 
+- [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
+
+- [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
 
 - [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
 
@@ -53,7 +62,6 @@ last 2 examples and allowing us to share the source code :)
 ### Road Map ###
 
 * Create a Typescript definition file for Pixi.js
-* Implement Filters (currently being worked on by @GoodBoyDigital)
 * Implement Flash animation to pixi
 * Update Loader so that it support XHR2 if it is available
 * Improve the Documentation of the Project
@@ -66,9 +74,12 @@ last 2 examples and allowing us to share the source code :)
 Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
 Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
 
+Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+before submitting changes.
+
 ### How to build ###
 
-PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+PixiJS is built with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
 
 ```
 $> npm install -g grunt-cli
@@ -107,15 +118,7 @@ It also copies the non-minified version to the examples.
 - Spine support
 - Primitive Drawing
 - Masking
-
-### Coming soon ###
-
-- Filters ( wip : [storm brewing](<http://www.goodboydigital.com/pixijs/storm/>) )
-
-
-### Coming later ###
-
-- Awesome Post processing effects
+- Filters
 
 ### Usage ###
 
@@ -152,12 +155,13 @@ It also copies the non-minified version to the examples.
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
+[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
+
 
 ### Changes from CloudKid ###
 - Spine skeletons and textures are stored by filename, not url.
 - Spine animations are framerate independent.
+- MovieClips and Spine animations must be animated externally via updateAnim().
 - Added some url checks in loaders to be able to handle stuff like "?v=4".
 - Added removeChildren() to DisplayObjectContainer;
-- Added clearView to both renderers, this allows the skipping of the stage color wipe step if it isn't needed
 - Optimizations in the form of caching variables within functions if they are accessed a lot.
-- Minor bug fixes where they when they were found.

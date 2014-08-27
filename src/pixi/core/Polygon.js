@@ -29,8 +29,8 @@ PIXI.Polygon = function(points)
         points = p;
     }
 
-	this.points = points;
-}
+    this.points = points;
+};
 
 /**
  * Creates a clone of this polygon
@@ -40,21 +40,21 @@ PIXI.Polygon = function(points)
  */
 PIXI.Polygon.prototype.clone = function()
 {
-	var points = [];
-	for (var i=0; i<this.points.length; i++) {
-		points.push(this.points[i].clone());
-	}
+    var points = [];
+    for (var i=0; i<this.points.length; i++) {
+        points.push(this.points[i].clone());
+    }
 
-	return new PIXI.Polygon(points);
-}
+    return new PIXI.Polygon(points);
+};
 
 /**
- * Checks if the x, and y coords passed to this function are contained within this polygon
+ * Checks whether the x and y coordinates passed to this function are contained within this polygon
  *
  * @method contains
- * @param x {Number} The X coord of the point to test
- * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this polygon
+ * @param x {Number} The X coordinate of the point to test
+ * @param y {Number} The Y coordinate of the point to test
+ * @return {Boolean} Whether the x/y coordinates are within this polygon
  */
 PIXI.Polygon.prototype.contains = function(x, y)
 {
@@ -67,13 +67,13 @@ PIXI.Polygon.prototype.contains = function(x, y)
 		var pi = p[i], pj = p[j];
         var xi = pi.x, yi = pi.y,
             xj = pj.x, yj = pj.y,
-            intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 
         if(intersect) inside = !inside;
     }
 
     return inside;
-}
+};
 
 // constructor
 PIXI.Polygon.prototype.constructor = PIXI.Polygon;

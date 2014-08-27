@@ -7,25 +7,25 @@
  *
  * @class Point
  * @constructor
- * @param x {Number} position of the point
- * @param y {Number} position of the point
+ * @param x {Number} position of the point on the x axis
+ * @param y {Number} position of the point on the y axis
  */
 PIXI.Point = function(x, y)
 {
-	/**
-	 * @property x
-	 * @type Number
-	 * @default 0
-	 */
-	this.x = x || 0;
+    /**
+     * @property x
+     * @type Number
+     * @default 0
+     */
+    this.x = x || 0;
 
-	/**
-	 * @property y
-	 * @type Number
-	 * @default 0
-	 */
-	this.y = y || 0;
-}
+    /**
+     * @property y
+     * @type Number
+     * @default 0
+     */
+    this.y = y || 0;
+};
 
 /**
  * Creates a clone of this point
@@ -35,8 +35,22 @@ PIXI.Point = function(x, y)
  */
 PIXI.Point.prototype.clone = function()
 {
-	return new PIXI.Point(this.x, this.y);
-}
+    return new PIXI.Point(this.x, this.y);
+};
+
+/**
+ * Sets the point to a new x and y position.
+ * If y is ommited, both x and y will be set to x.
+ * 
+ * @method set
+ * @param [x=0] {Number} position of the point on the x axis
+ * @param [y=0] {Number} position of the point on the y axis
+ */
+PIXI.Point.prototype.set = function(x, y)
+{
+    this.x = x || 0;
+    this.y = y || ( (y !== 0) ? this.x : 0 ) ;
+};
 
 /**
  * Returns the dot product between this point and another one.
@@ -47,7 +61,7 @@ PIXI.Point.prototype.clone = function()
 PIXI.Point.prototype.dotProd = function(other)
 {
 	return this.x * other.x + this.y * other.y;
-}
+};
 
 /**
  * Returns the length (or magnitude) of this point.
@@ -57,7 +71,7 @@ PIXI.Point.prototype.dotProd = function(other)
 PIXI.Point.prototype.length = function()
 {
 	return Math.sqrt(this.x * this.x + this.y * this.y);
-}
+};
 
 /**
  * Returns the squared length (or magnitude) of this point. This is faster than length().
@@ -67,7 +81,7 @@ PIXI.Point.prototype.length = function()
 PIXI.Point.prototype.lengthSq = function()
 {
 	return this.x * this.x + this.y * this.y;
-}
+};
 
 /**
  * Reduces the point to a length of 1.
@@ -78,7 +92,7 @@ PIXI.Point.prototype.normalize = function()
 	var oneOverLen = 1 / this.length();
 	this.x *= oneOverLen;
 	this.y *= oneOverLen;
-}
+};
 
 /**
  * Subtracts the x and y values of a point from this point.
@@ -89,7 +103,7 @@ PIXI.Point.prototype.subtract = function(other)
 {
 	this.x -= other.x;
 	this.y -= other.y;
-}
+};
 
 /**
  * Adds the x and y values of a point to this point.
@@ -100,7 +114,7 @@ PIXI.Point.prototype.add = function(other)
 {
 	this.x += other.x;
 	this.y += other.y;
-}
+};
 
 /**
  * Truncate the length of the point to a maximum.
@@ -114,9 +128,9 @@ PIXI.Point.prototype.truncate = function(maxLength)
 	{
 		var maxOverLen = maxLength / l;
 		this.x *= maxOverLen;
-		this.y *= maxOverLen;	
+		this.y *= maxOverLen;
 	}
-}
+};
 
 /**
  * Multiplies the x and y values of this point by a value.
@@ -127,14 +141,14 @@ PIXI.Point.prototype.scaleBy = function(value)
 {
 	this.x *= value;
 	this.y *= value;
-}
+};
 
 PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 {
 	//append translation
 	var worldTransform = displayObject.worldTransform;
 	//save variables for shortcuts/clearer math
- 	var a1 = worldTransform[0];
+	var a1 = worldTransform[0];
 	var b1 = worldTransform[1];
 	var c1 = worldTransform[3];
 	var d1 = worldTransform[4];
@@ -151,7 +165,7 @@ PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 	}
 	else
 		return new PIXI.Point(x, y);
-}
+};
 
 PIXI.Point.globalToLocal = function(displayObject, globalX, globalY, outPoint)
 {
@@ -172,19 +186,18 @@ PIXI.Point.globalToLocal = function(displayObject, globalX, globalY, outPoint)
 	}
 	else
 		return new PIXI.Point(x, y);
-}
+};
 
 PIXI.Point.localToLocal = function(sourceDisplayObject, targetDisplayObject, x, y, outPoint)
 {
 	outPoint = PIXI.Point.localToGlobal(sourceDisplayObject, x, y, outPoint);
 	return PIXI.Point.globalToLocal(targetDisplayObject, outPoint.x, outPoint.y, outPoint);
-}
+};
 
 PIXI.Point.prototype.toString = function()
 {
 	return "(" + this.x + ", " + this.y + ")";
-}
+};
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
-
