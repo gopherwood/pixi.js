@@ -7189,9 +7189,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
         PIXI.blendModesWebGL[PIXI.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 
-
-
-
     this.projection = new PIXI.Point();
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
@@ -15165,7 +15162,7 @@ PIXI.JsonLoader.prototype.load = function()
         this.ajaxRequest = new window.XDomainRequest();
 	else
 		this.ajaxRequest = new PIXI.AjaxRequest();
-    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
+    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
 
 	var src = PIXI.buildPath(this.url, this.baseUrl);
     this.ajaxRequest.open('GET', src, true);

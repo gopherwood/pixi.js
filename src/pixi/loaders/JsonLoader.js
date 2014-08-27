@@ -69,7 +69,7 @@ PIXI.JsonLoader.prototype.load = function()
         this.ajaxRequest = new window.XDomainRequest();
 	else
 		this.ajaxRequest = new PIXI.AjaxRequest();
-    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
+    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
 
 	var src = PIXI.buildPath(this.url, this.baseUrl);
     this.ajaxRequest.open('GET', src, true);
