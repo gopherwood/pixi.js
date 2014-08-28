@@ -1234,10 +1234,13 @@ PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
     get: function() {
-        return this._width;// * this.scale.x;
+        return this._width * this.scale.x;
     },
     set: function(value) {
-		this._width = value;// / this.scale.x;
+        if(this._width === 0)
+            this._width = value / this.scale.x;
+        else
+            this.scale.x = value / this._width;
     }
 });
 
@@ -1249,10 +1252,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
     get: function() {
-        return this._height;// * this.scale.y;
+        return this._height * this.scale.y;
     },
     set: function(value) {
-		this._height = value;// / this.scale.y;
+        if(this._height === 0)
+            this._height = value / this.scale.y;
+        else
+            this.scale.y = value / this._height;
     }
 });
 
@@ -1659,6 +1665,14 @@ PIXI.DisplayObjectContainer = function()
      * @readOnly
      */
     this.children = [];
+
+    /**
+     * Determines if width and height will calculate bounds of all children using getLocalBounds(),
+     * or only use the internal _width or _height. This should really only be set once, when the display object is initialized.
+     * @property useBoundsForSize
+     * @type {Boolean}
+     */
+    this.useBoundsForSize = false;
 };
 
 // constructor
@@ -1671,27 +1685,37 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * @property width
  * @type Number
  */
-
- 
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.getLocalBounds().width;
+        if(this.useBoundsForSize)
+            return this.scale.x * this.getLocalBounds().width;
+        else
+            return this.scale.x * this._width;
     },
     set: function(value) {
         
-        var width = this.getLocalBounds().width;
-
-        if(width !== 0)
+        if(this.useBoundsForSize)
         {
-            this.scale.x = value / ( width/this.scale.x );
+            var width = this.getLocalBounds().width;
+
+            if(width !== 0)
+            {
+                this.scale.x = value / ( width/this.scale.x );
+            }
+            else
+            {
+                this.scale.x = 1;
+            }
+            
+            this._width = value;
         }
         else
         {
-            this.scale.x = 1;
+            if(this._width === 0)
+                this._width = value / this.scale.x;
+            else
+                this.scale.x = value / this._width;
         }
-
-        
-        this._width = value;
     }
 });
 
@@ -1702,25 +1726,37 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
  * @property height
  * @type Number
  */
-
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.getLocalBounds().height;
+        if(this.useBoundsForSize)
+            return this.scale.y * this.getLocalBounds().height;
+        else
+            return this.scale.y * this._height;
     },
     set: function(value) {
 
-        var height = this.getLocalBounds().height;
-
-        if(height !== 0)
+        if(this.useBoundsForSize)
         {
-            this.scale.y = value / ( height/this.scale.y );
+            var height = this.getLocalBounds().height;
+
+            if(height !== 0)
+            {
+                this.scale.y = value / ( height/this.scale.y );
+            }
+            else
+            {
+                this.scale.y = 1;
+            }
+
+            this._height = value;
         }
         else
         {
-            this.scale.y = 1;
+            if(this._height === 0)
+                this._height = value / this.scale.y;
+            else
+                this.scale.y = value / this._height;
         }
-
-        this._height = value;
     }
 });
 
@@ -3651,8 +3687,8 @@ PIXI.BitmapText.prototype.updateText = function()
         this.removeChild(child);
     }
 
-	this.width = maxLineWidth * scale;//pos.x * scale;
-    this.height = (pos.y + data.lineHeight) * scale;
+	this._width = maxLineWidth * scale;//pos.x * scale;
+    this._height = (pos.y + data.lineHeight) * scale;
     /**
      * [read-only] The width of the overall text, different from fontSize,
      * which is defined in the style object

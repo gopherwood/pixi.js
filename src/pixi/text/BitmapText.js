@@ -200,8 +200,8 @@ PIXI.BitmapText.prototype.updateText = function()
         this.removeChild(child);
     }
 
-	this.width = maxLineWidth * scale;//pos.x * scale;
-    this.height = (pos.y + data.lineHeight) * scale;
+	this._width = maxLineWidth * scale;//pos.x * scale;
+    this._height = (pos.y + data.lineHeight) * scale;
     /**
      * [read-only] The width of the overall text, different from fontSize,
      * which is defined in the style object

@@ -315,10 +315,13 @@ PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
     get: function() {
-        return this._width;// * this.scale.x;
+        return this._width * this.scale.x;
     },
     set: function(value) {
-		this._width = value;// / this.scale.x;
+        if(this._width === 0)
+            this._width = value / this.scale.x;
+        else
+            this.scale.x = value / this._width;
     }
 });
 
@@ -330,10 +333,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'width', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'height', {
     get: function() {
-        return this._height;// * this.scale.y;
+        return this._height * this.scale.y;
     },
     set: function(value) {
-		this._height = value;// / this.scale.y;
+        if(this._height === 0)
+            this._height = value / this.scale.y;
+        else
+            this.scale.y = value / this._height;
     }
 });
 
