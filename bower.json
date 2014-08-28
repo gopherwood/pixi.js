@@ -1,0 +1,23 @@
+{
+    "name": "pixi.js",
+    "version": "1.6.2",
+
+    "main": "bin/pixi.js",
+
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "src",
+        "tasks",
+        "trim",
+        "Gruntfile.js",
+        "package.json",
+        "examples"
+    ],
+    "dependencies": {
+    },
+    "devDependencies": {
+    }
+}
