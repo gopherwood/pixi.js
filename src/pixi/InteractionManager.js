@@ -293,6 +293,8 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 	{
         var item = items[i];
 
+        if(!item) continue;
+
         // OPTIMISATION - only calculate every time if the mousemove function exists..
         // OK so.. does the object have any other interactive functions?
         // hit-test the clip!
@@ -388,6 +390,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     {
         var item = this.interactiveItems[i];
 
+        if(!item) continue;
+
         if(item.mousemove)
         {
             //call the function!
@@ -433,6 +437,8 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     {
         var item = this.interactiveItems[i];
 
+        if(!item) continue;
+
         if(item[downFunction] || item[clickFunction])
         {
             item[buttonIsDown] = true;
@@ -473,6 +479,8 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
+
+        if(!item) continue;
 		
 		if(item.__isOver)
 		{
@@ -532,6 +540,8 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
+
+        if(!item) continue;
 
         if(item[clickFunction] || item[upFunction] || item[upOutsideFunction])
         {
@@ -680,6 +690,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+            if(!item) continue;
 			if(item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
 		}
 	}
@@ -728,6 +739,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+            if(!item) continue;
 			
 			if(item.touchstart || item.tap)
 			{
@@ -784,6 +796,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+
+            if(!item) continue;
 		
 			if(item.__touchData && item.__touchData[touchEvent.identifier]) {
 

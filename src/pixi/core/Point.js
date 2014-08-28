@@ -148,12 +148,12 @@ PIXI.Point.localToGlobal = function(displayObject, localX, localY, outPoint)
 	//append translation
 	var worldTransform = displayObject.worldTransform;
 	//save variables for shortcuts/clearer math
-	var a1 = worldTransform[0];
-	var b1 = worldTransform[1];
-	var c1 = worldTransform[3];
-	var d1 = worldTransform[4];
-	var tx1 = worldTransform[2];
-	var ty1 = worldTransform[5];
+	var a1 = worldTransform.a;
+	var b1 = worldTransform.b;
+	var c1 = worldTransform.c;
+	var d1 = worldTransform.d;
+	var tx1 = worldTransform.tx;
+	var ty1 = worldTransform.ty;
 
 	var x = localX * a1 + localY * c1 + tx1;
 	var y = localX * b1 + localY * d1 + ty1;
@@ -172,8 +172,8 @@ PIXI.Point.globalToLocal = function(displayObject, globalX, globalY, outPoint)
 	var worldTransform = displayObject.worldTransform;
 	
 	// do a cheeky transform to get the mouse coords;
-	var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-        a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+	var a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
+        a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10);
 	// set the mouse coords...
 	var x = a11 * id * globalX + -a01 * id * globalX + (a12 * a01 - a02 * a11) * id;
