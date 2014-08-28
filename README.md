@@ -163,5 +163,7 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 - Spine animations are framerate independent.
 - MovieClips and Spine animations must be animated externally via updateAnim().
 - Added some url checks in loaders to be able to handle stuff like "?v=4".
-- Added removeChildren() to DisplayObjectContainer;
+- Changed loaders to use code from PreloadJS, since that seemed to be more reliable in cross domain stuff.
 - Optimizations in the form of caching variables within functions if they are accessed a lot.
+- Gave DisplayObject default width/height properties, and changed the children bounds version of width/height on DisplayObjectContainer to be optional
+- Pivot points of text are based on their alignment, e.g. the pivot point of right aligned fields is at the right edge of the text.
