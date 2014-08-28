@@ -14199,7 +14199,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         }
         image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
-        baseTexture.imageUrl = imageUrl;
+        baseTexture.imageUrl = id;
         PIXI.BaseTextureCache[id] = baseTexture;
     }
 
