@@ -143,7 +143,7 @@ PIXI.BaseTexture.prototype.destroy = function()
     }
     this.source = null;
     PIXI.texturesToDestroy.push(this);
-	this.removeAllListeners(true);
+	this.removeAllEventListeners();
 };
 
 /**
