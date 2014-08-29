@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-08-28
+ * Compiled: 2014-08-29
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4950,6 +4950,8 @@ PIXI.AjaxRequest = function()
  */
 PIXI.filenameFromUrl = function(url)
 {
+    if(url.indexOf('data:') === 0)
+        return url;
 	var name = url.substring(url.lastIndexOf('/') + 1);
 	var i = name.lastIndexOf('.');
 	if(i !== -1)
@@ -14949,6 +14951,8 @@ var _formatQueryString = function(data, query) {
 	return params.join('&');
 };
 PIXI.buildPath = function(src, _basePath, data) {
+	if(src.indexOf('data:') === 0)
+		return src;
 	if (_basePath !== null) {
 		var match = _parseURI(src);
 		// IE 7,8 Return empty string here.
