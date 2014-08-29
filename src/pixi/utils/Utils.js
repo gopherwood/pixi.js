@@ -143,6 +143,8 @@ PIXI.AjaxRequest = function()
  */
 PIXI.filenameFromUrl = function(url)
 {
+    if(url.indexOf('data:') === 0)
+        return url;
 	var name = url.substring(url.lastIndexOf('/') + 1);
 	var i = name.lastIndexOf('.');
 	if(i !== -1)

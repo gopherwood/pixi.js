@@ -17,6 +17,8 @@ var _formatQueryString = function(data, query) {
 	return params.join('&');
 };
 PIXI.buildPath = function(src, _basePath, data) {
+	if(src.indexOf('data:') === 0)
+		return src;
 	if (_basePath !== null) {
 		var match = _parseURI(src);
 		// IE 7,8 Return empty string here.
