@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-08-29
+ * Compiled: 2014-09-16
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4042,6 +4042,8 @@ PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.re
 	oldDOM.removeEventListener('touchend', this.onTouchEnd, true);
 	oldDOM.removeEventListener('touchmove', this.onTouchMove, true);
 
+    oldDOM.style.cursor = 'inherit';
+
     this.interactionDOMElement = null;
 
     window.removeEventListener('mouseup',  this.onMouseUp, true);
@@ -4160,6 +4162,8 @@ PIXI.InteractionManager.prototype.rebuildInteractiveGraph = function()
 
 PIXI.InteractionManager.prototype.updateCursor = function(mode)
 {
+    if(!this.interactionDOMElement) return;
+
 	if(mode !== this.currentCursor)
 	{
 		this.currentCursor = mode;
