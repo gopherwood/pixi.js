@@ -3945,8 +3945,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(!child.visible) continue;
-		
 		// push all interactive bits
 		if(child._interactive)
 		{
