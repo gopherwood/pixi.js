@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-16
+ * Compiled: 2014-10-01
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -14357,7 +14357,8 @@ PIXI.Texture = function(baseTexture, frame)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        this.onLoaded = this.onBaseTextureLoaded.bind(this);
+        baseTexture.addEventListener('loaded', this.onLoaded);
     }
 };
 
@@ -14374,6 +14375,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
+    delete this.onLoaded;
 
     if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
 
@@ -15335,6 +15337,13 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							var actualSize = f.sourceSize;
 							var realSize = f.spriteSourceSize;
 							t.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+							//if the base texture has loaded already, then the frame
+							//needs to be set so that the texture gets the proper
+							//size
+							if(t.baseTexture.hasLoaded)
+							{
+								t.setFrame(t.frame);
+							}
 						}
 					}
 				}

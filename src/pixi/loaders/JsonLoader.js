@@ -186,6 +186,13 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							var actualSize = f.sourceSize;
 							var realSize = f.spriteSourceSize;
 							t.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+							//if the base texture has loaded already, then the frame
+							//needs to be set so that the texture gets the proper
+							//size
+							if(t.baseTexture.hasLoaded)
+							{
+								t.setFrame(t.frame);
+							}
 						}
 					}
 				}

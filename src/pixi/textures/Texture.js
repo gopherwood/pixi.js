@@ -115,7 +115,8 @@ PIXI.Texture = function(baseTexture, frame)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        this.onLoaded = this.onBaseTextureLoaded.bind(this);
+        baseTexture.addEventListener('loaded', this.onLoaded);
     }
 };
 
@@ -132,6 +133,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
+    delete this.onLoaded;
 
     if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
 
