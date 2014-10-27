@@ -41,7 +41,7 @@ PIXI.InteractionManager = function(stage)
     this.tempPoint = new PIXI.Point();
 
     /**
-     * 
+     *
      * @property mouseoverEnabled
      * @type Boolean
      * @default
@@ -50,7 +50,7 @@ PIXI.InteractionManager = function(stage)
 
     /**
      * tiny little interactiveData pool !
-     * 
+     *
      * @property pool
      * @type Array
      */
@@ -374,6 +374,8 @@ PIXI.InteractionManager.prototype.updateCursor = function(mode)
  */
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+    if(!this.target) return;
+    
     if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -464,7 +466,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
  *
  * @method onMouseOut
  * @param event {Event} The DOM event of a mouse button being moved out
- * @private 
+ * @private
  */
 PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
@@ -664,6 +666,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -707,6 +711,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -771,6 +777,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
