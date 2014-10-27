@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-16
+ * Compiled: 2014-10-27
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3849,7 +3849,7 @@ PIXI.InteractionManager = function(stage)
     this.tempPoint = new PIXI.Point();
 
     /**
-     * 
+     *
      * @property mouseoverEnabled
      * @type Boolean
      * @default
@@ -3858,7 +3858,7 @@ PIXI.InteractionManager = function(stage)
 
     /**
      * tiny little interactiveData pool !
-     * 
+     *
      * @property pool
      * @type Array
      */
@@ -4182,6 +4182,8 @@ PIXI.InteractionManager.prototype.updateCursor = function(mode)
  */
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+    if(!this.target) return;
+    
     if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -4272,7 +4274,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
  *
  * @method onMouseOut
  * @param event {Event} The DOM event of a mouse button being moved out
- * @private 
+ * @private
  */
 PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
@@ -4472,6 +4474,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -4515,6 +4519,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -4579,6 +4585,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+    if(!this.target) return;
+    
 	if(this.dirty)
     {
         this.rebuildInteractiveGraph();
@@ -14357,7 +14365,8 @@ PIXI.Texture = function(baseTexture, frame)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        this.onLoaded = this.onBaseTextureLoaded.bind(this);
+        baseTexture.addEventListener('loaded', this.onLoaded);
     }
 };
 
@@ -14374,6 +14383,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
+    delete this.onLoaded;
 
     if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
 
@@ -15335,6 +15345,13 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							var actualSize = f.sourceSize;
 							var realSize = f.spriteSourceSize;
 							t.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+							//if the base texture has loaded already, then the frame
+							//needs to be set so that the texture gets the proper
+							//size
+							if(t.baseTexture.hasLoaded)
+							{
+								t.setFrame(t.frame);
+							}
 						}
 					}
 				}
