@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.6.7
+ * pixi.js - v1.6.8
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-10-27
+ * Compiled: 2014-10-31
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3774,6 +3774,14 @@ PIXI.InteractionData = function()
      * @type Event
      */
     this.originalEvent = null;
+    
+    /**
+     * The touch identifier from the browser, or -1 if it is a mouse event.
+     *
+     * @property id
+     * @type int
+     */
+    this.id = -1;
 };
 
 /**
@@ -4539,6 +4547,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
 		
+        touchData.id = touchEvent.identifier;
 		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;

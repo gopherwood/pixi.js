@@ -731,6 +731,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
 		
+        touchData.id = touchEvent.identifier;
 		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;
