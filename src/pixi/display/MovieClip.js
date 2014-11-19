@@ -8,7 +8,7 @@
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array(Texture)} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
@@ -18,7 +18,7 @@ PIXI.MovieClip = function(textures)
      * The array of textures that make up the animation
      *
      * @property textures
-     * @type Array
+     * @type Array(Texture)
      */
     this.textures = textures;
 
@@ -134,7 +134,6 @@ Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
 	}
 });
 
-
 /**
  * Stops the MovieClip
  *
@@ -226,7 +225,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
 			this.onComplete();
 		}
 	}
-	PIXI.Sprite.prototype.updateTransform.call(this);
+	this.displayObjectContainerUpdateTransform();
 };
 
 /**
@@ -252,7 +251,7 @@ PIXI.MovieClip.fromFrames = function(frames)
  * A short hand way of creating a movieclip from an array of image ids
  *
  * @static
- * @method fromFrames
+ * @method fromImages
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
  */
 PIXI.MovieClip.fromImages = function(images)

@@ -1361,9 +1361,8 @@ PIXI.AnimCache = {};
  * @extends DisplayObjectContainer
  * @constructor
  * @param url {String} The url of the spine anim file to be used
- * @param textureScale {Number} (CloudKid change) The scale to apply to all textures to size them properly for the animation.
  */
-PIXI.Spine = function(url, textureScale)
+PIXI.Spine = function(url)
 {
     PIXI.DisplayObjectContainer.call(this);
     
@@ -1373,8 +1372,6 @@ PIXI.Spine = function(url, textureScale)
     {
         throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
     }
-    
-    this.textureScale = textureScale || 1;//CLOUDKID CHANGE
     
     this.skeleton = new spine.Skeleton(this.spineData);
     this.skeleton.updateWorldTransform();
@@ -1440,7 +1437,7 @@ PIXI.Spine.prototype.updateTransform = function () {
                 if (slot.sprites[spriteName] !== undefined) {
                     slot.sprites[spriteName].visible = true;
                 } else {
-                    var sprite = this.createSprite(slot, attachment.rendererObject, this.textureScale);
+                    var sprite = this.createSprite(slot, attachment.rendererObject,);
                     slotContainer.addChild(sprite);
                 }
                 slot.currentSprite = slot.sprites[spriteName];
@@ -1466,11 +1463,11 @@ PIXI.Spine.prototype.updateTransform = function () {
 };
 
 
-PIXI.Spine.prototype.createSprite = function (slot, descriptor, textureScale) {
+PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
     var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
     var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(PIXI.filenameFromUrl(name)));
-    sprite.scale.x = descriptor.scale.x * textureScale;
-    sprite.scale.y = descriptor.scale.y * textureScale;
+    sprite.scale.x = descriptor.scale.x;
+    sprite.scale.y = descriptor.scale.y;
     sprite.rotation = descriptor.rotation;
     sprite.anchor.x = sprite.anchor.y = 0.5;
 
