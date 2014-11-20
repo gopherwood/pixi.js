@@ -14,7 +14,6 @@
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.JsonLoader = function (url, crossorigin, baseUrl) {
-	PIXI.EventTarget.call(this);
 
 	/**
      * The url of the bitmap font data
@@ -58,6 +57,8 @@ PIXI.JsonLoader = function (url, crossorigin, baseUrl) {
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
+PIXI.EventTarget.mixin(PIXI.JsonLoader.prototype);
+
 /**
  * Loads the JSON data
  *
@@ -72,6 +73,7 @@ PIXI.JsonLoader.prototype.load = function()
     this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
 
 	var src = PIXI.buildPath(this.url, this.baseUrl);
+        // XDomainRequest has a few quirks. Occasionally it will abort requests
     this.ajaxRequest.open('GET', src, true);
     if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
 	// Determine the XHR level
@@ -139,7 +141,7 @@ PIXI.JsonLoader.prototype.load = function()
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the JSON file is loaded.
  *
  * @method onJSONLoaded
  * @private
@@ -172,28 +174,18 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 					var f = frameData[i];
 					var rect = f.frame;
 					if (rect) {
-						var t = PIXI.TextureCache[PIXI.filenameFromUrl(i)] = new PIXI.Texture(this.texture,
-						new PIXI.Rectangle(
-							rect.x,
-							rect.y,
-							rect.w,
-							rect.h
-						));
-						t.crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        var textureSize = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        var crop = textureSize.clone();
+                        var trim = null;
+                
 						//  Check to see if the sprite is trimmed
 						if (f.trimmed)
 						{
 							var actualSize = f.sourceSize;
 							var realSize = f.spriteSourceSize;
-							t.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
-							//if the base texture has loaded already, then the frame
-							//needs to be set so that the texture gets the proper
-							//size
-							if(t.baseTexture.hasLoaded)
-							{
-								t.setFrame(t.frame);
-							}
-						}
+                            trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                        }
+                        PIXI.TextureCache[PIXI.filenameFromUrl(i)] = new PIXI.Texture(this.texture, textureSize, crop, trim);
 					}
 				}
 
@@ -221,7 +213,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 };
 
 /**
- * Invoke when json file loaded
+ * Invoked when the json file has loaded.
  *
  * @method onLoaded
  * @private
@@ -235,7 +227,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
 };
 
 /**
- * Invoke when error occured
+ * Invoked if an error occurs.
  *
  * @method onError
  * @private

@@ -3,7 +3,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text using bitmap font. To split a line you can use '\n', '\r' or '\r\n'
+ * A BitmapText object will create a line or multiple lines of text using bitmap font. To split a line you can use '\n', '\r' or '\r\n' in your string.
  * You can generate the fnt files using
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
@@ -20,11 +20,42 @@ PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
 
+    /**
+     * [read-only] The width of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @property textWidth
+     * @type Number
+     * @readOnly
+     */
+    this.textWidth = 0;
+
+    /**
+     * [read-only] The height of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @property textHeight
+     * @type Number
+     * @readOnly
+     */
+    this.textHeight = 0;
+
+    /**
+     * @property _pool
+     * @type Array
+     * @private
+     */
     this._pool = [];
 
     this.setText(text);
     this.setStyle(style);
     this.updateText();
+
+    /**
+     * The dirty state of this object.
+     * @property dirty
+     * @type Boolean
+     */
     this.dirty = false;
 };
 
@@ -39,10 +70,10 @@ PIXI.BitmapText._lineOffsetsArr = [];//reusable array for line align offsets
 PIXI.BitmapText._helperPoint = new PIXI.Point();
 
 /**
- * Set the copy for the text object
+ * Set the text string to be rendered.
  *
  * @method setText
- * @param text {String} The copy that you would like the text to display
+ * @param text {String} The text that you would like displayed
  */
 PIXI.BitmapText.prototype.setText = function(text)
 {
@@ -54,7 +85,7 @@ PIXI.BitmapText.prototype.setText = function(text)
 /**
  * Set the style of the text
  * style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
- * [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single lines of text
  *
  * @method setStyle
  * @param style {Object} The style parameters, contained as properties of an object
@@ -100,6 +131,7 @@ PIXI.BitmapText.prototype.updateText = function()
     for(var i = 0, textLength = text.length; i < textLength; i++)
     {
         if(newLineTest.test(text.charAt(i)))
+
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
@@ -113,9 +145,10 @@ PIXI.BitmapText.prototype.updateText = function()
         
         var charCode = text.charCodeAt(i);
 		var charData = data.chars[charCode];
+
 		if(!charData) continue;
 
-		if(prevCharCode && charData[prevCharCode])
+        if(prevCharCode && charData.kerning[prevCharCode])
         {
             pos.x += charData.kerning[prevCharCode];
         }
@@ -176,6 +209,7 @@ PIXI.BitmapText.prototype.updateText = function()
     var lenChildren = this.children.length;
     var lenChars = chars.length;
     var tint = this.tint || 0xFFFFFF;
+
     for(i = 0; i < lenChars; i++)
     {
 		var tempChar = chars[i];
@@ -202,22 +236,7 @@ PIXI.BitmapText.prototype.updateText = function()
 
 	this._width = maxLineWidth * scale;//pos.x * scale;
     this._height = (pos.y + data.lineHeight) * scale;
-    /**
-     * [read-only] The width of the overall text, different from fontSize,
-     * which is defined in the style object
-     *
-     * @property textWidth
-     * @type Number
-     */
     this.textWidth = maxLineWidth * scale;
-
-    /**
-     * [read-only] The height of the overall text, different from fontSize,
-     * which is defined in the style object
-     *
-     * @property textHeight
-     * @type Number
-     */
     this.textHeight = (pos.y + data.lineHeight) * scale;
 };
 
@@ -233,7 +252,7 @@ PIXI.BitmapText.prototype.forceUpdateText = function()
 };
 
 /**
- * Updates the transfor of this object
+ * Updates the transform of this object
  *
  * @method updateTransform
  * @private
