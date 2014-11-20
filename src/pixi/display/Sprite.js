@@ -108,10 +108,12 @@ PIXI.Sprite.prototype.constructor = PIXI.Sprite;
  */
 Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.texture.width;
+        var resolution = this.texture.baseTexture.resolution;
+        return this.scale.x * this.texture.width / resolution;
     },
     set: function(value) {
-        this.scale.x = value / this.texture.width;
+        var resolution = this.texture.baseTexture.resolution;
+        this.scale.x = value / (this.texture.width / resolution);
         this._width = value;
     }
 });
@@ -124,10 +126,12 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
  */
 Object.defineProperty(PIXI.Sprite.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.texture.height;
+        var resolution = this.texture.baseTexture.resolution;
+        return  this.scale.y * (this.texture.height / resolution);
     },
     set: function(value) {
-        this.scale.y = value / this.texture.height;
+        var resolution = this.texture.baseTexture.resolution;
+        this.scale.y = value / (this.texture.height / resolution);
         this._height = value;
     }
 });
@@ -154,9 +158,10 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function()
 {
+    var resolution = this.texture.baseTexture.resolution;
     // so if _width is 0 then width was not set..
-    if(this._width)this.scale.x = this._width / this.texture.frame.width;
-    if(this._height)this.scale.y = this._height / this.texture.frame.height;
+    if(this._width)this.scale.x = this._width / (this.texture.frame.width / resolution);
+    if(this._height)this.scale.y = this._height / (this.texture.frame.height / resolution);
 
     //this.updateFrame = true;
 };
@@ -170,8 +175,9 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 */
 PIXI.Sprite.prototype.getBounds = function(matrix)
 {
-    var width = this.texture.frame.width;
-    var height = this.texture.frame.height;
+    var resolution = this.texture.baseTexture.resolution;
+    var width = this.texture.frame.width / resolution;
+    var height = this.texture.frame.height / resolution;
 
     var w0 = width * (1-this.anchor.x);
     var w1 = width * -this.anchor.x;
@@ -201,7 +207,7 @@ PIXI.Sprite.prototype.getBounds = function(matrix)
         if(d < 0)d *= -1;
 
         // this means there is no rotation going on right? RIGHT?
-        // if thats the case then we can avoid checking the bound values! yay         
+        // if thats the case then we can avoid checking the bound values! yay
         minX = a * w1 + tx;
         maxX = a * w0 + tx;
         minY = d * h1 + ty;

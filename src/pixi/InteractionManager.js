@@ -699,8 +699,9 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	// a sprite with no hitarea defined
     else if(item instanceof PIXI.Sprite)
 	{
-        var width = item.texture.frame.width;
-        var height = item.texture.frame.height;
+        var resolution = item.texture.baseTexture.resolution;
+        var width = item.texture.frame.width / resolution;
+        var height = item.texture.frame.height / resolution;
         var x1 = -width * item.anchor.x;
         var y1;
 		
