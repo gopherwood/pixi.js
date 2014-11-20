@@ -23,7 +23,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     {
         for (var i in PIXI.defaultRenderOptions)
         {
-            if (typeof options[i] === "undefined") options[i] = PIXI.defaultRenderOptions[i];
+            if (typeof options[i] === 'undefined') options[i] = PIXI.defaultRenderOptions[i];
         }
     }
     else
@@ -120,7 +120,7 @@ PIXI.CanvasRenderer = function(width, height, options)
 	 * @property view
 	 * @type HTMLCanvasElement
 	 */
-    this.view = options.view || document.createElement( "canvas" );
+    this.view = options.view || document.createElement( 'canvas' );
 
     /**
      * The canvas 2d context that everything is drawn with
@@ -177,16 +177,16 @@ PIXI.CanvasRenderer = function(width, height, options)
     
     this.resize(width, height);
 
-    if("imageSmoothingEnabled" in this.context)
-        this.renderSession.smoothProperty = "imageSmoothingEnabled";
-    else if("webkitImageSmoothingEnabled" in this.context)
-        this.renderSession.smoothProperty = "webkitImageSmoothingEnabled";
-    else if("mozImageSmoothingEnabled" in this.context)
-        this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
-    else if("oImageSmoothingEnabled" in this.context)
-        this.renderSession.smoothProperty = "oImageSmoothingEnabled";
-    else if ("msImageSmoothingEnabled" in this.context)
-        this.renderSession.smoothProperty = "msImageSmoothingEnabled";
+    if('imageSmoothingEnabled' in this.context)
+        this.renderSession.smoothProperty = 'imageSmoothingEnabled';
+    else if('webkitImageSmoothingEnabled' in this.context)
+        this.renderSession.smoothProperty = 'webkitImageSmoothingEnabled';
+    else if('mozImageSmoothingEnabled' in this.context)
+        this.renderSession.smoothProperty = 'mozImageSmoothingEnabled';
+    else if('oImageSmoothingEnabled' in this.context)
+        this.renderSession.smoothProperty = 'oImageSmoothingEnabled';
+    else if ('msImageSmoothingEnabled' in this.context)
+        this.renderSession.smoothProperty = 'msImageSmoothingEnabled';
 };
 
 // constructor
@@ -255,7 +255,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
  */
 PIXI.CanvasRenderer.prototype.destroy = function(removeView)
 {
-    if (typeof removeView === "undefined") { removeView = true; }
+    if (typeof removeView === 'undefined') { removeView = true; }
 
     if (removeView && this.view.parent)
     {
@@ -285,8 +285,8 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
     this.view.height = this.height;
 
     if (this.autoResize) {
-        this.view.style.width = this.width / this.resolution + "px";
-        this.view.style.height = this.height / this.resolution + "px";
+        this.view.style.width = this.width / this.resolution + 'px';
+        this.view.style.height = this.height / this.resolution + 'px';
     }
 };
 
@@ -319,44 +319,44 @@ PIXI.CanvasRenderer.prototype.mapBlendModes = function()
 
         if(PIXI.canUseNewCanvasBlendModes())
         {
-            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
-            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
-            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "screen";
-            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = "overlay";
-            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = "darken";
-            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = "lighten";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = "color-dodge";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = "color-burn";
-            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = "hard-light";
-            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = "soft-light";
-            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = "difference";
-            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = "exclusion";
-            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = "hue";
-            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = "saturation";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = "color";
-            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = "luminosity";
+            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = 'lighter'; //IS THIS OK???
+            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = 'multiply';
+            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = 'screen';
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = 'overlay';
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = 'darken';
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = 'lighten';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = 'color-dodge';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = 'color-burn';
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = 'hard-light';
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = 'soft-light';
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = 'difference';
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = 'exclusion';
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = 'hue';
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = 'saturation';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = 'color';
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = 'luminosity';
         }
         else
         {
-            // this means that the browser does not support the cool new blend modes in canvas "cough" ie "cough"
-            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
-            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = "source-over";
-            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = "source-over";
+            // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
+            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = 'lighter'; //IS THIS OK???
+            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = 'source-over';
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = 'source-over';
         }
     }
 };

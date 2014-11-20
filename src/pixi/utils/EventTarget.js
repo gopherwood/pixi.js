@@ -173,7 +173,7 @@ PIXI.EventTarget = {
         obj.hasEventListener = function(type)
         {
             return this._listeners[type] ? this._listeners[type].length > 0 : false;
-        }
+        };
 
         /**
          * Remove all listeners or only the listeners for the specified event.
@@ -183,6 +183,12 @@ PIXI.EventTarget = {
          */
         obj.removeAllListeners = function removeAllListeners(eventName) {
             this._listeners = this._listeners || {};
+            
+            if(!eventName)
+            {
+                this._listeners = {};
+                return this;
+            }
 
             if(!this._listeners[eventName])
                 return this;
@@ -277,7 +283,6 @@ PIXI.Event = function(target, name, data) {
  */
 PIXI.Event.prototype.stopPropagation = function stopPropagation() {
     this.stopped = true;
-			listeners = {};
 };
 
 /**

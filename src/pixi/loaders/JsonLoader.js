@@ -174,18 +174,18 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 					var f = frameData[i];
 					var rect = f.frame;
 					if (rect) {
-                var textureSize = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
-                var crop = textureSize.clone();
-                var trim = null;
+                        var textureSize = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        var crop = textureSize.clone();
+                        var trim = null;
                 
 						//  Check to see if the sprite is trimmed
 						if (f.trimmed)
 						{
 							var actualSize = f.sourceSize;
 							var realSize = f.spriteSourceSize;
-                    trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
-                }
-                PIXI.TextureCache[i] = new PIXI.Texture(this.texture, textureSize, crop, trim);
+                            trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                        }
+                        PIXI.TextureCache[PIXI.filenameFromUrl(i)] = new PIXI.Texture(this.texture, textureSize, crop, trim);
 					}
 				}
 

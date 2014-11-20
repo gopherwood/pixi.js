@@ -60,7 +60,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 
             if(width !== 0)
             {
-            this.scale.x = value / width;
+                this.scale.x = value / width;
             }
             else
             {
@@ -100,7 +100,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
 
             if(height !== 0)
             {
-            this.scale.y = value / height ;
+                this.scale.y = value / height ;
             }
             else
             {
@@ -456,7 +456,7 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
@@ -515,7 +515,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)

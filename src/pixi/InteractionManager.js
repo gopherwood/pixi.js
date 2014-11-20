@@ -302,13 +302,13 @@ PIXI.InteractionManager.prototype.update = function(forceUpdate)
 {
 	if(!forceUpdate)
 	{
-    if (!this.target) return;
+        if (!this.target) return;
 	
 		// frequency of 30fps??
 		var now = Date.now();
 		var diff = now - this.last;
 		diff = diff * 0.030;// * 30 / 1000
-    if (diff < 1) return;
+        if (diff < 1) return;
 		this.last = now;
 		//
 	}

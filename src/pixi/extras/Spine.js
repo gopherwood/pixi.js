@@ -1437,7 +1437,7 @@ PIXI.Spine.prototype.updateTransform = function () {
                 if (slot.sprites[spriteName] !== undefined) {
                     slot.sprites[spriteName].visible = true;
                 } else {
-                    var sprite = this.createSprite(slot, attachment.rendererObject,);
+                    var sprite = this.createSprite(slot, attachment.rendererObject);
                     slotContainer.addChild(sprite);
                 }
                 slot.currentSprite = slot.sprites[spriteName];

@@ -120,7 +120,7 @@ PIXI.AssetLoader.prototype.load = function()
 
     function onLoad(evt) {
         scope.onAssetLoaded(evt.data.content);
-		evt.content.removeAllListeners();
+		evt.data.content.removeAllListeners();
     }
 
     this.loadCount = this.assetURLs.length;
