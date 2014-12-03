@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-11-20
+ * Compiled: 2014-12-03
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3327,7 +3327,7 @@ PIXI.MovieClip = function(textures)
 	this.playing = false;
 	
 	/**
-	 * This is the MovieClip's target animation rate - the rate at which the animation was created. 
+	 * This is the MovieClip's target animation rate - the rate at which the animation was created.
 	 * @property _animFrameRate
 	 * @type Number
 	 * @default 0
@@ -3346,12 +3346,12 @@ PIXI.MovieClip = function(textures)
 	
 	/**
 	 * This is the total time for the animation.
-	 * @property _animDuration
+	 * @property _duration
 	 * @type Number
 	 * @default 0
 	 * @private
 	 */
-	this._animDuration = 0;
+	this._duration = 0;
 	
 	this.updateDuration();
 };

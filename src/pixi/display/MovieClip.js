@@ -68,7 +68,7 @@ PIXI.MovieClip = function(textures)
 	this.playing = false;
 	
 	/**
-	 * This is the MovieClip's target animation rate - the rate at which the animation was created. 
+	 * This is the MovieClip's target animation rate - the rate at which the animation was created.
 	 * @property _animFrameRate
 	 * @type Number
 	 * @default 0
@@ -87,12 +87,12 @@ PIXI.MovieClip = function(textures)
 	
 	/**
 	 * This is the total time for the animation.
-	 * @property _animDuration
+	 * @property _duration
 	 * @type Number
 	 * @default 0
 	 * @private
 	 */
-	this._animDuration = 0;
+	this._duration = 0;
 	
 	this.updateDuration();
 };
