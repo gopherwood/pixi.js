@@ -312,8 +312,11 @@ PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.re
 	oldDOM.removeEventListener('touchstart', this.onTouchStart, true);
 	oldDOM.removeEventListener('touchend', this.onTouchEnd, true);
 	oldDOM.removeEventListener('touchmove', this.onTouchMove, true);
-
-    oldDOM.style.cursor = 'inherit';
+    
+    //only reset the cursor if the cursor settings were strings, otherwise we break stuff
+    //if custom cursor stuff was used
+    if(typeof this.defaultCursor === 'string' && typeof this.pointerCursor === 'string')
+        oldDOM.style.cursor = 'inherit';
 
     this.interactionDOMElement = null;
 
