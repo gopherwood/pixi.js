@@ -132,8 +132,37 @@ PIXI.InteractionManager = function(stage)
 	/** The current mode, __not style__ of the cursor (always 'default' or 'pointer') */
 	this.currentCursor = 'default';
 	
-	this.stageIn = null;
-	this.stageOut = null;
+    /**
+     * Global callback for when the mouse (not touches) enters the stage.
+     * @property stageIn
+     * @type Function
+     */
+    this.stageIn = null;
+    /**
+     * Global callback for when the mouse (not touches) leaves the stage.
+     * @property stageOut
+     * @type Function
+     */
+    this.stageOut = null;
+    /**
+     * Global callback for mouse up or touch end events. Passes the InteractionData for the input.
+     * @property stageUp
+     * @type Function
+     */
+    this.stageUp = null;
+    /**
+     * Global callback for mouse down or touch start events. Passes the InteractionData for the
+     * input.
+     * @property stageDown
+     * @type Function
+     */
+    this.stageDown = null;
+    /**
+     * Global callback for mouse or touch move events. Passes the InteractionData for the input.
+     * @property stageMove
+     * @type Function
+     */
+    this.stageMove = null;
 	
 	//assume mouse is over stage by default - should work with touches
 	this.mouseInStage = true;
@@ -457,6 +486,9 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
     this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
     this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
+    
+    if(this.stageMove)
+        this.stageMove(this.mouse);
 
     var length = this.interactiveItems.length;
 
@@ -507,6 +539,9 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     var clickFunction = isRightButton ? 'rightclick' : 'click';
     var buttonIsDown = isRightButton ? '__rightIsDown' : '__mouseIsDown';
     var isDown = isRightButton ? '__isRightDown' : '__isDown';
+    
+    if(this.stageDown)
+        this.stageDown(this.mouse);
 
     // while
     // hit test
@@ -619,6 +654,9 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     var clickFunction = isRightButton ? 'rightclick' : 'click';
     var upOutsideFunction = isRightButton ? 'rightupoutside' : 'mouseupoutside';
     var isDown = isRightButton ? '__isRightDown' : '__isDown';
+    
+	if(this.stageUp)
+		this.stageUp(this.mouse);
 
     for (var i = 0; i < length; i++)
     {
@@ -661,8 +699,6 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
             item[isDown] = false;
         }
     }
-	if(this.stageUp)
-		this.stageUp(this.mouse.originalEvent);
 };
 
 /**
@@ -787,6 +823,9 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
+        
+        if(this.stageMove)
+            this.stageMove(touchData);
 	
 		var length = this.interactiveItems.length;
 		for (var j = 0; j < length; j++)
@@ -847,6 +886,9 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
+        
+        if(this.stageDown)
+            this.stageDown(touchData);
 		
 		var length = this.interactiveItems.length;
 		
@@ -908,6 +950,9 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
+        
+        if(this.stageUp)
+            this.stageUp(touchData);
 		
 		var length = this.interactiveItems.length;
 		for (var j = 0; j < length; j++)
@@ -958,6 +1003,4 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		this.pool.push(touchData);
         this.touches[touchEvent.identifier] = null;
 	}
-	if(this.stageUp)
-		this.stageUp(event);
 };
