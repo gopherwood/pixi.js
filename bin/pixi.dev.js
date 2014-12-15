@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.1.2
+ * pixi.js - v2.1.3
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-12-08
+ * Compiled: 2014-12-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4636,6 +4636,13 @@ PIXI.InteractionManager = function(stage)
      * @type Boolean
      */
     this.mouseOut = false;
+    
+    /**
+     * If update() should do anything. Is set to false when there is no interactive target.
+     * @property doUpdate
+     * @type Boolean
+     */
+    this.doUpdate = false;
 
     /**
      * @property resolution
@@ -4740,6 +4747,8 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
     domElement.addEventListener('touchend', this.onTouchEnd, true);
     domElement.addEventListener('touchmove', this.onTouchMove, true);
     window.addEventListener('mouseup',  this.onMouseUp, true);
+    
+    this.doUpdate = true;
 };
 
 /**
@@ -4749,6 +4758,8 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.removeEvents = function()
 {
     if (!this.interactionDOMElement) return;
+    
+    this.updateCursor('default');
 
     var oldDOM = this.interactionDOMElement;
 	oldDOM.style['-ms-content-zooming'] = '';
@@ -4757,6 +4768,7 @@ PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.re
 	oldDOM.removeEventListener('mousemove',  this.onMouseMove, true);
 	oldDOM.removeEventListener('mousedown',  this.onMouseDown, true);
 	oldDOM.removeEventListener('mouseout',   this.onMouseOut, true);
+    oldDOM.removeEventListener('mouseover',  this.onMouseOver, true);
 
 	// aint no multi touch just yet!
 	oldDOM.removeEventListener('touchstart', this.onTouchStart, true);
@@ -4771,6 +4783,40 @@ PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.re
     this.interactionDOMElement = null;
 
     window.removeEventListener('mouseup',  this.onMouseUp, true);
+    
+    this.doUpdate = false;
+};
+
+/**
+ * Removes mouse click/touch related events, leaving mouse move events listeners, so that you can
+ * disable all input while allowing a custom (on stage) cursor to keep moving around.
+ * @method removeInteractionEvents
+ */
+PIXI.InteractionManager.prototype.removeInteractionEvents = function()
+{
+    if (!this.interactionDOMElement) return;
+    
+    this.updateCursor('default');
+
+    var oldDOM = this.interactionDOMElement;
+	oldDOM.style['-ms-content-zooming'] = '';
+    oldDOM.style['-ms-touch-action'] = '';
+
+	oldDOM.removeEventListener('mousedown',  this.onMouseDown, true);
+
+	// aint no multi touch just yet!
+	oldDOM.removeEventListener('touchstart', this.onTouchStart, true);
+	oldDOM.removeEventListener('touchend', this.onTouchEnd, true);
+	oldDOM.removeEventListener('touchmove', this.onTouchMove, true);
+    
+    //only reset the cursor if the cursor settings were strings, otherwise we break stuff
+    //if custom cursor stuff was used
+    if(typeof this.defaultCursor === 'string' && typeof this.pointerCursor === 'string')
+        oldDOM.style.cursor = 'inherit';
+
+    window.removeEventListener('mouseup',  this.onMouseUp, true);
+    
+    this.doUpdate = false;
 };
 
 
@@ -4782,6 +4828,8 @@ PIXI.InteractionManager.prototype.cleanup = PIXI.InteractionManager.prototype.re
  */
 PIXI.InteractionManager.prototype.update = function(forceUpdate)
 {
+    if(!this.doUpdate) return;
+    
 	if(!forceUpdate)
 	{
         if (!this.target) return;
