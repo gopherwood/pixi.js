@@ -133,7 +133,11 @@ PIXI.AssetLoader.prototype.load = function()
 
         //if not, assume it's a file URI
         if (!fileType)
-            fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
+        {
+            fileType = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+            if(fileType.indexOf('?') !== -1)
+                fileType = fileType.substring(0, fileType.indexOf('?'));
+        }
 
         var Constructor = PIXI.AssetLoader.loadersByType[fileType];
         if(!Constructor)

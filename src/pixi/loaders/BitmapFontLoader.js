@@ -52,7 +52,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin, baseUrl)
 
 	
 	this.versioning = null;
-	if(url.lastIndexOf('?') !== -1)
+	if(url.lastIndexOf('?') > url.lastIndexOf('.'))
 		this.versioning = url.substring(url.indexOf('?'));
 	
 	this._loadFails = 0;
