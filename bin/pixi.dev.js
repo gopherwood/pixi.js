@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-12-15
+ * Compiled: 2015-01-16
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -16794,7 +16794,7 @@ var _formatQueryString = function(data, query) {
 PIXI.buildPath = function(src, _basePath, data) {
 	if(src.indexOf('data:') === 0)
 		return src;
-	if (_basePath !== null) {
+	if (_basePath !== null && src.indexOf(_basePath) === -1) {
 		var match = _parseURI(src);
 		// IE 7,8 Return empty string here.
 		if (match[1] === null || match[1] === '') {
@@ -17123,7 +17123,11 @@ PIXI.AssetLoader.prototype.load = function()
 
         //if not, assume it's a file URI
         if (!fileType)
-            fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
+        {
+            fileType = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+            if(fileType.indexOf('?') !== -1)
+                fileType = fileType.substring(0, fileType.indexOf('?'));
+        }
 
         var Constructor = PIXI.AssetLoader.loadersByType[fileType];
         if(!Constructor)
@@ -17207,8 +17211,8 @@ PIXI.JsonLoader = function (url, crossorigin, baseUrl) {
 	 */
 	this.loaded = false;
 	this.versioning = null;
-	if(url.lastIndexOf('?') !== -1)
-		this.versioning = url.substring(url.indexOf('?'));
+	if(url.lastIndexOf('?') > url.lastIndexOf('.'))
+		this.versioning = url.substring(url.lastIndexOf('?'));
 };
 
 // constructor
@@ -17849,7 +17853,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin, baseUrl)
 
 	
 	this.versioning = null;
-	if(url.lastIndexOf('?') !== -1)
+	if(url.lastIndexOf('?') > url.lastIndexOf('.'))
 		this.versioning = url.substring(url.indexOf('?'));
 	
 	this._loadFails = 0;

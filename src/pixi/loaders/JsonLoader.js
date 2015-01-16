@@ -50,8 +50,8 @@ PIXI.JsonLoader = function (url, crossorigin, baseUrl) {
 	 */
 	this.loaded = false;
 	this.versioning = null;
-	if(url.lastIndexOf('?') !== -1)
-		this.versioning = url.substring(url.indexOf('?'));
+	if(url.lastIndexOf('?') > url.lastIndexOf('.'))
+		this.versioning = url.substring(url.lastIndexOf('?'));
 };
 
 // constructor
