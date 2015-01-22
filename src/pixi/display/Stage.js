@@ -10,12 +10,12 @@
  * @constructor
  * @param backgroundColor {Number} the background color of the stage, you have to pass this in is in hex format
  *      like: 0xFFFFFF for white
- * 
- * Creating a stage is a mandatory process when you use Pixi, which is as simple as this : 
+ *
+ * Creating a stage is a mandatory process when you use Pixi, which is as simple as this :
  * var stage = new PIXI.Stage(0xFFFFFF);
  * where the parameter given is the background colour of the stage, in hex
  * you will use this stage instance to add your sprites to it and therefore to the renderer
- * Here is how to add a sprite to the stage : 
+ * Here is how to add a sprite to the stage :
  * stage.addChild(sprite);
  */
 PIXI.Stage = function(backgroundColor)
@@ -91,7 +91,7 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
 PIXI.Stage.prototype.updateTransform = function()
 {
 	//update the interaction manager first, so it detects stuff based on the frame that was just shown
-	//this also fixes issues when it triggers changes to sprite anchor points, as opposed to updating 
+	//this also fixes issues when it triggers changes to sprite anchor points, as opposed to updating
 	//the interaction manager after updating tranforms on all children
 	if(this.interactive)this.interactionManager.update();
 	this.worldAlpha = 1;
@@ -148,7 +148,7 @@ PIXI.Stage.prototype.getMousePosition = function()
 
 PIXI.Stage.prototype.destroy = function()
 {
-	this.removeChildren(true);
+	this.removeChildren();
 	this.stage = null;
 	this.hitArea = null;
 	this.interactionManager.cleanup();
