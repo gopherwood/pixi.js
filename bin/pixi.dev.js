@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.1.5
+ * pixi.js - v2.1.6
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-01-22
+ * Compiled: 2015-02-04
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -17227,19 +17227,7 @@ PIXI.EventTarget.mixin(PIXI.JsonLoader.prototype);
  */
 PIXI.JsonLoader.prototype.load = function()
 {
-	if(window.XDomainRequest && this.crossorigin)
-        this.ajaxRequest = new window.XDomainRequest();
-	else
-		this.ajaxRequest = new PIXI.AjaxRequest();
-    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
-
-	var src = PIXI.buildPath(this.url, this.baseUrl);
-        // XDomainRequest has a few quirks. Occasionally it will abort requests
-    this.ajaxRequest.open('GET', src, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-	// Determine the XHR level
-	var xhrLevel = (typeof this.ajaxRequest.responseType === 'string') ? 2 : 1;
-	//attempt to only use cross domain requests if needed, because IE9 - code borrowed from PreloadJS
+    //attempt to only use cross domain requests if needed, because IE9 - code borrowed from PreloadJS
 	var crossDomain = false;
 	if(this.crossorigin)
 	{
@@ -17252,6 +17240,19 @@ PIXI.JsonLoader.prototype.load = function()
 						target.protocol !== host.protocol ||
 						target.hostname !== host.hostname);
 	}
+	if(window.XDomainRequest && crossDomain)
+        this.ajaxRequest = new window.XDomainRequest();
+	else
+		this.ajaxRequest = new PIXI.AjaxRequest();
+    this.ajaxRequest.onload = this.ajaxRequest.onreadystatechange = this.onJSONLoaded.bind(this);
+
+	var src = PIXI.buildPath(this.url, this.baseUrl);
+        // XDomainRequest has a few quirks. Occasionally it will abort requests
+    this.ajaxRequest.open('GET', src, true);
+    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
+	// Determine the XHR level
+	var xhrLevel = (typeof this.ajaxRequest.responseType === 'string') ? 2 : 1;
+	//make sure of the request header
 	if (crossDomain && this.ajaxRequest instanceof XMLHttpRequest && xhrLevel === 1) {
 		this.ajaxRequest.setRequestHeader('Origin', location.origin);
 	}
@@ -17261,6 +17262,7 @@ PIXI.JsonLoader.prototype.load = function()
 		clearTimeout(this._loadTimeout);
 		this._loadTimeout = 0;
 	}
+    this._loadFails = 0;
 	var scope = this;
 	this.ajaxRequest.onloadstart = function(){};
 	this.ajaxRequest.onprogress = function(){};
