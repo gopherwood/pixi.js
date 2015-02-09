@@ -11,7 +11,7 @@
 
 /**
  * A polyfill for requestAnimationFrame
- * You can actually use both requestAnimationFrame and requestAnimFrame, 
+ * You can actually use both requestAnimationFrame and requestAnimFrame,
  * you will still benefit from the polyfill
  *
  * @method requestAnimationFrame
@@ -113,26 +113,15 @@ if (typeof Function.prototype.bind !== 'function') {
  */
 PIXI.AjaxRequest = function()
 {
-    var activexmodes = ['Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.3.0', 'Microsoft.XMLHTTP']; //activeX versions to check for in IE
-
-    if (window.ActiveXObject)
-    { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
-        for (var i=0; i<activexmodes.length; i++)
-        {
-            try{
-                return new window.ActiveXObject(activexmodes[i]);
-            }
-            catch(e) {
-                //suppress error
-            }
-        }
-    }
-    else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+    //Only test for XMLHttpRequest first because we don't care about earlier versions of IE than 9
+    if (window.XMLHttpRequest) // if Mozilla, Safari etc
     {
         return new window.XMLHttpRequest();
     }
     else
     {
+        if(window.console)
+            window.console.error('XMLHttpRequest is not supported!');
         return false;
     }
 };
