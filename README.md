@@ -1,4 +1,4 @@
-Pixi Renderer 
+Pixi Renderer
 =============
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
@@ -6,24 +6,24 @@ Pixi Renderer
 A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
 
 1: Creating a renderer now accepts an options parameter that you can add specific settings to:
-``` 
+```
 // an optional object that contains the settings for the renderer
 var options = {
     view:myCanvas,
     resolution:1
 };
 
-var renderer = new PIXI.WebGLRenderer(800, 600, options) 
+var renderer = new PIXI.WebGLRenderer(800, 600, options)
 ```
 
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility: 
+2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility:
 
 ``` myRenderTexture.render(myDisplayObject, myMatrix) ```
 
 Check out the docs for more info!
 
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
@@ -189,3 +189,4 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 - Optimizations in the form of caching variables within functions if they are accessed a lot.
 - Gave DisplayObject default width/height properties, and changed the children bounds version of width/height on DisplayObjectContainer to be optional
 - Pivot points of text are based on their alignment, e.g. the pivot point of right aligned fields is at the right edge of the text.
+- Dropped use of ActiveXObject in PIXI.AjaxRequest because we don't care aobut old versions of IE.
