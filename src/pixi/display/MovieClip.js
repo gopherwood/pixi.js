@@ -8,7 +8,7 @@
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array(Texture)} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
@@ -18,7 +18,7 @@ PIXI.MovieClip = function(textures)
      * The array of textures that make up the animation
      *
      * @property textures
-     * @type Array
+     * @type Array(Texture)
      */
     this.textures = textures;
 
@@ -68,7 +68,7 @@ PIXI.MovieClip = function(textures)
 	this.playing = false;
 	
 	/**
-	 * This is the MovieClip's target animation rate - the rate at which the animation was created. 
+	 * This is the MovieClip's target animation rate - the rate at which the animation was created.
 	 * @property _animFrameRate
 	 * @type Number
 	 * @default 0
@@ -87,12 +87,12 @@ PIXI.MovieClip = function(textures)
 	
 	/**
 	 * This is the total time for the animation.
-	 * @property _animDuration
+	 * @property _duration
 	 * @type Number
 	 * @default 0
 	 * @private
 	 */
-	this._animDuration = 0;
+	this._duration = 0;
 	
 	this.updateDuration();
 };
@@ -133,7 +133,6 @@ Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
 		return this.textures.length;
 	}
 });
-
 
 /**
  * Stops the MovieClip
@@ -226,7 +225,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
 			this.onComplete();
 		}
 	}
-	PIXI.Sprite.prototype.updateTransform.call(this);
+	this.displayObjectContainerUpdateTransform();
 };
 
 /**
@@ -252,7 +251,7 @@ PIXI.MovieClip.fromFrames = function(frames)
  * A short hand way of creating a movieclip from an array of image ids
  *
  * @static
- * @method fromFrames
+ * @method fromImages
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
  */
 PIXI.MovieClip.fromImages = function(images)
