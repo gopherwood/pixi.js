@@ -18,7 +18,7 @@ PIXI.BaseTextureCacheIdGenerator = 0;
 PIXI.BaseTexture = function(source, scaleMode)
 {
     /**
-     * The Resolution of the texture. 
+     * The Resolution of the texture.
      *
      * @property resolution
      * @type Number
@@ -45,7 +45,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * The scale mode to apply when scaling this texture
-     * 
+     *
      * @property scaleMode
      * @type {Number}
      * @default PIXI.scaleModes.LINEAR
@@ -127,7 +127,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
         this.source.onerror = function() {
             scope.dispatchEvent( { type: 'error', content: scope } );
-			scope.soure.onload = scope.source.onerror = null;
+			scope.source.onload = scope.source.onerror = null;
         };
     }
 
