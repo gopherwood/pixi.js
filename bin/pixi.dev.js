@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.1.6
+ * pixi.js - v2.1.7
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-02-09
+ * Compiled: 2015-03-10
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -15780,7 +15780,7 @@ PIXI.BaseTextureCacheIdGenerator = 0;
 PIXI.BaseTexture = function(source, scaleMode)
 {
     /**
-     * The Resolution of the texture. 
+     * The Resolution of the texture.
      *
      * @property resolution
      * @type Number
@@ -15807,7 +15807,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * The scale mode to apply when scaling this texture
-     * 
+     *
      * @property scaleMode
      * @type {Number}
      * @default PIXI.scaleModes.LINEAR
@@ -15889,7 +15889,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
         this.source.onerror = function() {
             scope.dispatchEvent( { type: 'error', content: scope } );
-			scope.soure.onload = scope.source.onerror = null;
+			scope.source.onload = scope.source.onerror = null;
         };
     }
 
