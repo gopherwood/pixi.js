@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.1.7
+ * pixi.js - v2.1.8
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-03-10
+ * Compiled: 2015-03-17
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -5405,10 +5405,11 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                 if (item.__hit)
 				{
 					//call the function!
-                    if (item.touchstart)item.touchstart(touchData);
 					item.__isDown = true;
                     item.__touchData = item.__touchData || {};
                     item.__touchData[touchEvent.identifier] = touchData;
+                    
+                    if (item.touchstart)item.touchstart(touchData);
 					
                     if (!item.interactiveChildren) break;
 				}
