@@ -190,3 +190,4 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 - Gave DisplayObject default width/height properties, and changed the children bounds version of width/height on DisplayObjectContainer to be optional
 - Pivot points of text are based on their alignment, e.g. the pivot point of right aligned fields is at the right edge of the text.
 - Dropped use of ActiveXObject in PIXI.AjaxRequest because we don't care aobut old versions of IE.
+- Moved touchstart callback to come after setting touch data to make it easier to transfer a touch between display objects.
