@@ -88,6 +88,8 @@ module.exports = function ()
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                     core.utils.TextureCache[id] = resource.textures[id];
 
+                    }
+
                     frameIndex++;
                 }
             }
