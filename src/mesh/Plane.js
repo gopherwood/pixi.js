@@ -14,8 +14,8 @@ var Mesh = require('./Mesh');
  * @extends PIXI.mesh.Mesh
  * @memberof PIXI.mesh
  * @param {PIXI.Texture} texture - The texture to use on the Plane.
- * @param {int} segmentsX - The number ox x segments
- * @param {int} segmentsY - The number of y segments
+ * @param {number} segmentsX - The number ox x segments
+ * @param {number} segmentsY - The number of y segments
  *
  */
 function Plane(texture, segmentsX, segmentsY)
@@ -58,14 +58,10 @@ Plane.prototype.refresh = function()
     var indices = [];
     var texture = this.texture;
 
-  //  texture.width = 800 texture.width || 800;
- //   texture.height = 800//texture.height || 800;
-
     var segmentsXSub = this.segmentsX - 1;
     var segmentsYSub = this.segmentsY - 1;
     var i = 0;
 
-    // TODO MAP UVS..
     var sizeX = texture.width / segmentsXSub;
     var sizeY = texture.height / segmentsYSub;
 
@@ -78,8 +74,9 @@ Plane.prototype.refresh = function()
         verts.push((x * sizeX),
                    (y * sizeY));
 
-        uvs.push(x / (this.segmentsX-1), y/ (this.segmentsY-1));
-    }
+        // this works for rectangular textures.
+        uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.segmentsX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.segmentsY-1)));
+      }
 
     //  cons
 
@@ -106,6 +103,8 @@ Plane.prototype.refresh = function()
     this.uvs = new Float32Array(uvs);
     this.colors = new Float32Array(colors);
     this.indices = new Uint16Array(indices);
+
+    this.indexDirty = true;
 };
 
 /**

@@ -1,11 +1,10 @@
 Pixi.js — A 2D JavaScript Renderer
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
 
-[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
 
-## Pixi.js ##
+
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
@@ -20,6 +19,16 @@ and we will keep you posted! You can also check back on [our site](http://www.go
 as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
+
+[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
+
+### What to Use Pixi.js for and When to Use It
+
+Pixi.js is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
+
+Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, Pixi.js is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degredation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some Pixi.js magic!
+
+**Boost your development and feel free to use your imagination!**
 
 ### Demos ###
 
@@ -88,10 +97,13 @@ document.body.appendChild(renderer.view);
 // You need to create a root container that will hold the scene you want to draw.
 var stage = new PIXI.Container();
 
+// Declare a global variable for our sprite so that the animate function can access it.
+var bunny = null;
+
 // load the texture we need
 PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
     // This creates a texture from a 'bunny.png' image.
-    var bunny = new PIXI.Sprite(resources.bunny.texture);
+    bunny = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position and scale of the bunny
     bunny.position.x = 400;

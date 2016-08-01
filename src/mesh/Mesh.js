@@ -1,4 +1,6 @@
 var core = require('../core'),
+    glCore = require('pixi-gl-core'),
+    Shader = require('./webgl/MeshShader'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
 
@@ -8,7 +10,7 @@ var core = require('../core'),
  * @extends PIXI.Container
  * @memberof PIXI.mesh
  * @param texture {PIXI.Texture} The texture to use
- * @param [vertices] {Float32Arrif you want to specify the vertices
+ * @param [vertices] {Float32Array} if you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
  * @param [indices] {Uint16Array} if you want to specify the indices
  * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
@@ -57,6 +59,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {boolean}
      */
     this.dirty = true;
+    this.indexDirty = true;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -91,6 +94,17 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {PIXI.Shader}
      */
     this.shader = null;
+
+
+    /**
+     * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     */
+    this.tintRgb = new Float32Array([1, 1, 1]);
+
+    this._glDatas = [];
 }
 
 // constructor
@@ -132,6 +146,21 @@ Object.defineProperties(Mesh.prototype, {
                 }
             }
         }
+    },
+    /**
+     * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     * @default 0xFFFFFF
+     */
+    tint: {
+        get: function() {
+            return core.utils.rgb2hex(this.tintRgb);
+        },
+        set: function(value) {
+            this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+        }
     }
 });
 
@@ -143,8 +172,64 @@ Object.defineProperties(Mesh.prototype, {
  */
 Mesh.prototype._renderWebGL = function (renderer)
 {
-    renderer.setObjectRenderer(renderer.plugins.mesh);
-    renderer.plugins.mesh.render(this);
+    // get rid of any thing that may be batching.
+    renderer.flush();
+
+    //  renderer.plugins.mesh.render(this);
+    var gl = renderer.gl;
+    var glData = this._glDatas[renderer.CONTEXT_UID];
+
+    if(!glData)
+    {
+        glData = {
+            shader:new Shader(gl),
+            vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
+            uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
+            indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
+            // build the vao object that will render..
+            vao:new glCore.VertexArrayObject(gl)
+        };
+
+        // build the vao object that will render..
+        glData.vao = new glCore.VertexArrayObject(gl)
+        .addIndex(glData.indexBuffer)
+        .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+        .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+
+        this._glDatas[renderer.CONTEXT_UID] = glData;
+
+
+        this.indexDirty = false;
+    }
+
+    if(this.dirty)
+    {
+        this.dirty = false;
+        glData.uvBuffer.upload();
+
+    }
+
+    if(this.indexDirty)
+    {
+        this.indexDirty = false;
+        glData.indexBuffer.upload();
+    }
+
+    glData.vertexBuffer.upload();
+
+    renderer.bindShader(glData.shader);
+    renderer.bindTexture(this._texture, 0);
+    renderer.state.setBlendMode(this.blendMode);
+
+    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.alpha = this.worldAlpha;
+    glData.shader.uniforms.tint = this.tintRgb;
+
+    var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+
+    glData.vao.bind()
+    .draw(drawMode, this.indices.length)
+    .unbind();
 };
 
 /**
@@ -158,14 +243,15 @@ Mesh.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
 
     var transform = this.worldTransform;
+    var res = renderer.resolution;
 
     if (renderer.roundPixels)
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
     }
     else
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
     }
 
     if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
@@ -238,15 +324,16 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this._texture.baseTexture.source;
-    var textureWidth = this._texture.baseTexture.width;
-    var textureHeight = this._texture.baseTexture.height;
+    var base = this._texture.baseTexture;
+    var textureSource = base.source;
+    var textureWidth = base.width;
+    var textureHeight = base.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
 
-    var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
-    var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
+    var u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
+    var v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
 
     if (this.canvasPadding > 0)
     {
@@ -304,7 +391,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
         deltaB / delta, deltaE / delta,
         deltaC / delta, deltaF / delta);
 
-    context.drawImage(textureSource, 0, 0);
+    context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
     context.restore();
 };
 
@@ -346,68 +433,23 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @param event
  * @private
  */
 Mesh.prototype._onTextureUpdate = function ()
 {
-    this.updateFrame = true;
+
 };
 
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Mesh.prototype.getBounds = function (matrix)
+Mesh.prototype._calculateBounds = function ()
 {
-    if (!this._currentBounds) {
-        var worldTransform = matrix || this.worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var vertices = this.vertices;
-        for (var i = 0, n = vertices.length; i < n; i += 2) {
-            var rawX = vertices[i], rawY = vertices[i + 1];
-            var x = (a * rawX) + (c * rawY) + tx;
-            var y = (d * rawY) + (b * rawX) + ty;
-
-            minX = x < minX ? x : minX;
-            minY = y < minY ? y : minY;
-
-            maxX = x > maxX ? x : maxX;
-            maxY = y > maxY ? y : maxY;
-        }
-
-        if (minX === -Infinity || maxY === Infinity) {
-            return core.Rectangle.EMPTY;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
+    //TODO - we can cache local bounds and use them if they are dirty (like graphics)
+    this._bounds_.addVertices(this.transform, this.vertices, 0, this.vertices.length);
 };
 
 /**
@@ -424,36 +466,20 @@ Mesh.prototype.containsPoint = function( point ) {
 
     var vertices = this.vertices;
     var points = tempPolygon.points;
-    var i, len;
 
-    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
-        var indices = this.indices;
-        len = this.indices.length;
-        //TODO: inline this.
-        for (i=0;i<len;i+=3) {
-            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0+1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1+1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2+1];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
-        }
-    } else {
-        len = vertices.length;
-        for (i=0;i<len;i+=6) {
-            points[0] = vertices[i];
-            points[1] = vertices[i+1];
-            points[2] = vertices[i+2];
-            points[3] = vertices[i+3];
-            points[4] = vertices[i+4];
-            points[5] = vertices[i+5];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
+    var indices = this.indices;
+    var len = this.indices.length;
+    var step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
+    for (var i=0;i+2<len;i+=step) {
+        var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+        points[0] = vertices[ind0];
+        points[1] = vertices[ind0+1];
+        points[2] = vertices[ind1];
+        points[3] = vertices[ind1+1];
+        points[4] = vertices[ind2];
+        points[5] = vertices[ind2+1];
+        if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+            return true;
         }
     }
     return false;

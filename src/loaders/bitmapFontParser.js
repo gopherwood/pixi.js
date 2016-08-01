@@ -46,7 +46,10 @@ function parse(resource, texture) {
         var second = parseInt(kernings[i].getAttribute('second'), 10);
         var amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
-        data.chars[second].kerning[first] = amount;
+        if(data.chars[second])
+        {
+            data.chars[second].kerning[first] = amount;
+        }
     }
 
     resource.bitmapFont = data;
@@ -77,26 +80,29 @@ module.exports = function ()
             return next();
         }
 
-        var xmlUrl = path.dirname(resource.url);
+        var xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
-        if (xmlUrl === '.') {
-            xmlUrl = '';
-        }
-
-        if (this.baseUrl && xmlUrl) {
-            // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-            if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
-                xmlUrl += '/';
+        if (resource.isDataUrl) {
+            if (xmlUrl === '.') {
+                xmlUrl = '';
             }
 
-            // remove baseUrl from xmlUrl
-            xmlUrl = xmlUrl.replace(this.baseUrl, '');
-        }
+            if (this.baseUrl && xmlUrl) {
+                // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                    xmlUrl += '/';
+                }
 
+                // remove baseUrl from xmlUrl
+                xmlUrl = xmlUrl.replace(this.baseUrl, '');
+            }
+        }
+        
         // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
         if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
             xmlUrl += '/';
         }
+        
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         var id = textureUrl;
         if(core.utils.useFilenamesForTextures)

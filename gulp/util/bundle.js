@@ -39,14 +39,14 @@ function rebundle(devBundle) {
         .pipe(handleErrors())
         .pipe(source('pixi.js'))
         .pipe(buffer())
-        .pipe(header(
+        /*.pipe(header(
             headerText,
             {
                 licenseText: licenseText,
                 date: new Date().toISOString(),
                 pkg: require('../../package.json')
             }
-        ));
+        ))*/;
 
     if (devBundle) {
         return stream.pipe(debug).once('end', function () {
@@ -60,7 +60,7 @@ function rebundle(devBundle) {
 
 function createBundler(args) {
     args = args || {};
-    args.debug = true;
+    args.debug = false;
     args.standalone = 'PIXI';
 
     var bundle = browserify(paths.jsEntry, args),

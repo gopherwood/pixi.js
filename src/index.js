@@ -9,7 +9,10 @@ core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
+core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
+core.extract  		= require('./extract');
+core.prepare        = require('./prepare');
 
 // export a premade loader instance
 /**
