@@ -1,9 +1,9 @@
-var math = require('../math'),
-    EventEmitter = require('eventemitter3'),
+var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    BoundsBulder = require('./BoundsBuilder'),
+    Bounds = require('./Bounds'),
+    math = require('../math'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -79,21 +79,20 @@ function DisplayObject()
      */
     this.filterArea = null;
 
-    /**
-     * The original, cached bounds of the object
-     *
-     * @member {PIXI.Rectangle}
-     * @private
-     */
-    this._bounds = new math.Rectangle(0, 0, 1, 1);
+    this._filters = null;
+    this._enabledFilters = null;
 
     /**
-     * The most up-to-date bounds of the object
+     * The bounds object, this is used to calculate and store the bounds of the displayObject
      *
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._currentBounds = null;
+    this._bounds = new Bounds();
+    this._boundsID = 0;
+    this._lastBoundsID = -1;
+    this._boundsRect = null;
+    this._localBoundsRect = null;
 
     /**
      * The original, cached mask of the object
@@ -103,7 +102,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this._bounds_ = new BoundsBulder();
+
 }
 
 // constructor
@@ -346,6 +345,8 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._bounds.updateID++;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -371,17 +372,19 @@ DisplayObject.prototype._recursivePostUpdateTransform = function()
 /**
  *
  *
- * Retrieves the bounds of the displayObject as a rectangle object
- *
+ * Retrieves the bounds of the displayObject as a rectangle object.
+ * @param skipUpdate {boolean} setting to true will stop the transforms of the scene graph from being updated. This means the calculation returned MAY be out of date BUT will give you a nice performance boost
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (skipUpdate)
+DisplayObject.prototype.getBounds = function (skipUpdate, rect)
 {
     if(!skipUpdate)
     {
         if(!this.parent)
         {
             this.parent = _tempDisplayObjectParent;
+            this.parent.transform._worldID++;
             this.updateTransform();
             this.parent = null;
         }
@@ -392,21 +395,30 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         }
     }
 
-    if(!this._currentBounds)
+    if(this._boundsID !== this._lastBoundsID)
     {
         this.calculateBounds();
-        this._currentBounds = this._bounds_.getRectangle(this._bounds);
     }
 
-    return this._currentBounds;
+    if(!rect)
+    {
+        if(!this._boundsRect)
+        {
+            this._boundsRect = new math.Rectangle();
+        }
+
+        rect = this._boundsRect;
+    }
+
+    return this._bounds.getRectangle(rect);
 };
 
 /**
  * Retrieves the local bounds of the displayObject as a rectangle object
- *
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getLocalBounds = function ()
+DisplayObject.prototype.getLocalBounds = function (rect)
 {
     var transformRef = this.transform;
     var parentRef = this.parent;
@@ -414,7 +426,17 @@ DisplayObject.prototype.getLocalBounds = function ()
     this.parent = null;
     this.transform = _tempDisplayObjectParent.transform;
 
-    var bounds = this.getBounds();
+    if(!rect)
+    {
+        if(!this._localBoundsRect)
+        {
+            this._localBoundsRect = new math.Rectangle();
+        }
+
+        rect = this._localBoundsRect;
+    }
+
+    var bounds = this.getBounds(false, rect);
 
     this.parent = parentRef;
     this.transform = transformRef;
@@ -558,11 +580,18 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
 };
 
 /**
- * Base destroy method for generic display objects
- *
+ * Base destroy method for generic display objects. This will automatically
+ * remove the display object from its parent Container as well as remove
+ * all current event listeners and internal references. Do not use a DisplayObject 
+ * after calling `destroy`.
  */
 DisplayObject.prototype.destroy = function ()
 {
+    this.removeAllListeners();
+    if (this.parent)
+    {
+        this.parent.removeChild(this);
+    }
     this.transform = null;
 
     this.parent = null;
