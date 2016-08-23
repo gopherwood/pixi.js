@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Wed Aug 17 2016 10:55:51 GMT-0300 (ADT)
+ * Compiled Tue Aug 23 2016 12:06:06 GMT-0300 (ADT)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -20219,15 +20219,15 @@ function WebGLState(gl)
     this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
     this.attribState = {tempAttribState:new Array(this.maxAttribs),
-                        attribState:new Array(this.maxAttribs)};
+        attribState:new Array(this.maxAttribs)};
 
     this.blendModes = mapWebGLBlendModesToPixi(gl);
 
     // check we have vao..
     this.nativeVaoExtension = (
-      gl.getExtension('OES_vertex_array_object') ||
-      gl.getExtension('MOZ_OES_vertex_array_object') ||
-      gl.getExtension('WEBKIT_OES_vertex_array_object')
+        gl.getExtension('OES_vertex_array_object') ||
+        gl.getExtension('MOZ_OES_vertex_array_object') ||
+        gl.getExtension('WEBKIT_OES_vertex_array_object')
     );
 }
 
@@ -20237,11 +20237,11 @@ function WebGLState(gl)
 WebGLState.prototype.push = function()
 {
     // next state..
-    var state = this.state[++this.stackIndex];
+    var state = this.stack[++this.stackIndex];
 
     if(!state)
     {
-        state = this.state[this.stackIndex] = new Uint8Array(16);
+        state = this.stack[this.stackIndex] = new Uint8Array(16);
     }
 
     // copy state..
@@ -20263,7 +20263,7 @@ var BLEND = 0,
  */
 WebGLState.prototype.pop = function()
 {
-    var state = this.state[--this.stackIndex];
+    var state = this.stack[--this.stackIndex];
     this.setState(state);
 };
 
@@ -20287,8 +20287,8 @@ WebGLState.prototype.setState = function(state)
 WebGLState.prototype.setBlend = function(value)
 {
     if(this.activeState[BLEND] === value|0) {
-    return;
-  }
+        return;
+    }
 
     this.activeState[BLEND] = value|0;
 
@@ -20311,8 +20311,8 @@ WebGLState.prototype.setBlend = function(value)
 WebGLState.prototype.setBlendMode = function(value)
 {
     if(value === this.activeState[BLEND_FUNC]) {
-    return;
-  }
+        return;
+    }
 
     this.activeState[BLEND_FUNC] = value;
 
@@ -20435,7 +20435,7 @@ WebGLState.prototype.resetToDefault = function()
     // set active state so we can force overrides of gl state
     for (var i = 0; i < this.activeState.length; i++)
     {
-        this.activeState[i] = 2;
+        this.activeState[i] = 32;
     }
 
     var gl = this.gl;
@@ -23299,7 +23299,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     glCore = require('pixi-gl-core'),
     bitTwiddle = require('bit-twiddle');
 
-
+    var TICK = 0;
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -23355,13 +23355,12 @@ function SpriteRenderer(renderer)
      * The default shaders that is used if a sprite doesn't have a more specific one.
      * there is a shader for each number of textures that can be rendererd.
      * These shaders will also be generated on the fly as required.
-     * @member {PIXI.Shader}
+     * @member {PIXI.Shader[]}
      */
     this.shaders = null;
 
-    this.textureCount = 0;
     this.currentIndex = 0;
-    this.tick =0;
+    TICK =0;
     this.groups = [];
 
     for (var k = 0; k < this.size; k++)
@@ -23502,7 +23501,7 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.start = 0;
     currentGroup.blend = blendMode;
 
-    this.tick++;
+    TICK++;
 
     for (var i = 0; i < this.currentIndex; i++)
     {
@@ -23519,18 +23518,18 @@ SpriteRenderer.prototype.flush = function ()
             // force the batch to break!
             currentTexture = null;
             textureCount = this.MAX_TEXTURES;
-            this.tick++;
+            TICK++;
         }
 
         if(currentTexture !== nextTexture)
         {
             currentTexture = nextTexture;
 
-            if(nextTexture._enabled !== this.tick)
+            if(nextTexture._enabled !== TICK)
             {
                 if(textureCount === this.MAX_TEXTURES)
                 {
-                    this.tick++;
+                    TICK++;
 
                     textureCount = 0;
 
@@ -23542,7 +23541,7 @@ SpriteRenderer.prototype.flush = function ()
                     currentGroup.start = i;
                 }
 
-                nextTexture._enabled = this.tick;
+                nextTexture._enabled = TICK;
                 nextTexture._id = textureCount;
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
@@ -23666,8 +23665,8 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
- //   this.renderer.bindShader(this.shader);
-    this.tick %= 1000;
+    //this.renderer.bindShader(this.shader);
+    //TICK %= 1000;
 };
 
 SpriteRenderer.prototype.stop = function ()
@@ -23681,7 +23680,7 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    for (var i = 0; i < this.vertexCount; i++) {
+    for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i].destroy();
         this.vaos[i].destroy();
     }
@@ -24044,7 +24043,7 @@ Text.prototype.updateText = function (respectDirty)
     // calculate text height
     var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
-    var height = lineHeight * lines.length;
+    var height = Math.max(lineHeight, fontProperties.fontSize  + style.strokeThickness) + (lines.length - 1) * lineHeight;
     if (style.dropShadow)
     {
         height += style.dropShadowDistance;
@@ -29161,6 +29160,7 @@ MovieClip.fromImages = function (images)
 },{"../core":60}],123:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
+    Texture = require('../core/textures/Texture'),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
     TilingShader = require('./webgl/TilingShader'),
     tempArray = new Float32Array(4);
@@ -29559,6 +29559,23 @@ TilingSprite.prototype.destroy = function () {
 };
 
 /**
+ * Helper function that creates a new tiling sprite based on the source you provide.
+ * The source can be - frame id, image url, video url, canvas element, video element, base texture
+ *
+ * @static
+ * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+* @param width {number}  the width of the tiling sprite
+ * @param height {number} the height of the tiling sprite
+ * @return {PIXI.Texture} The newly created texture
+ */
+TilingSprite.from = function (source,width,height)
+{
+    return new TilingSprite(Texture.from(source),width,height);
+};
+
+
+
+/**
  * Helper function that creates a tiling sprite that will use a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
  *
@@ -29598,7 +29615,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":60,"../core/sprites/canvas/CanvasTinter":98,"./webgl/TilingShader":128}],124:[function(require,module,exports){
+},{"../core":60,"../core/sprites/canvas/CanvasTinter":98,"../core/textures/Texture":107,"./webgl/TilingShader":128}],124:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -32578,7 +32595,8 @@ var interactiveTarget = {
     
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
+     * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
+     * 
      * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
     hitArea: null,
