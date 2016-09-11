@@ -666,8 +666,6 @@ InteractionManager.prototype.onMouseDown = function (event)
     {
         this.mouse.originalEvent.preventDefault();
     }
-    
-    this.emit('stagedown', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 
@@ -709,8 +707,6 @@ InteractionManager.prototype.onMouseUp = function (event)
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
-    
-    this.emit('stageup', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 
@@ -770,8 +766,6 @@ InteractionManager.prototype.onMouseMove = function (event)
     this.didMove = true;
 
     this.cursor = this.defaultCursorStyle;
-    
-    this.emit('stagemove', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
 
@@ -836,8 +830,6 @@ InteractionManager.prototype.onMouseOut = function (event)
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY );
 
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
-    
-    this.emit('stageout');
 
     this.emit('mouseout', this.eventData);
 };
@@ -886,7 +878,6 @@ InteractionManager.prototype.onMouseOver = function(event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
-    this.emit('stagein');
     this.emit('mouseover', this.eventData);
 };
 
@@ -917,8 +908,6 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.eventData.data = touchData;
         this.eventData.stopped = false;
-        
-        this.emit('stagedown', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
@@ -972,8 +961,6 @@ InteractionManager.prototype.onTouchEnd = function (event)
         //TODO this should be passed along.. no set
         this.eventData.data = touchData;
         this.eventData.stopped = false;
-
-        this.emit('stageup', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
@@ -1038,8 +1025,6 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         this.eventData.data = touchData;
         this.eventData.stopped = false;
-        
-        this.emit('stagemove', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
