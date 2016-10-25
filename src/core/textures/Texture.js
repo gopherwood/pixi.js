@@ -480,6 +480,11 @@ Texture.from = function (source)
     {
         return new Texture(BaseTexture);
     }
+    else
+    {
+        // lets assume its a texture!
+        return source;
+    }
 };
 
 
